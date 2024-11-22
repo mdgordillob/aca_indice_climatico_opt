@@ -1,1 +1,1 @@
-Hola
+# En esta carpeta se pueden dejar los scripts que se necesiten para descargar archivos de internet
