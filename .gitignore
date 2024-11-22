@@ -1,0 +1,5 @@
+# Ignorar los archivos descargados
+data/*
+
+# Ignorar los archivos de ambiente de python
+myenv/*
