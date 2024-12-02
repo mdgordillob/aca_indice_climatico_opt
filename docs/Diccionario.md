@@ -69,6 +69,8 @@ Unidad de Planificación Rural Agropecuaria
 [INMET](https://medium.com/@victorfoscarini/processing-brazils-climate-data-aggregating-inmet-data-from-brazilian-state-capitals-912de4d55e32)
 Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 
+# Google Earth Engine
+[INMET](https://earthengine.google.com/)
 
 ---
 
@@ -122,58 +124,117 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 
 ---
 
-## **Fuente de Datos:  Global Forecas System
-
-### **1. Disponibilidad y Acceso**
-
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
-  Sí
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
-  Sí
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
-  Sí
-- **¿Tiene acceso libre?** 
-- **¿Desde cuándo hay datos?** 
-- **¿Necesitamos un permiso especial?** 
-- **¿Cómo se puede acceder a los datos?** 
-- **¿Podemos crear una automatización para la descarga de los datos?** 
-- **¿Cuál es la frecuencia de actualización de los datos?** 
-- **¿En qué formato están disponibles los datos?** 
-- **¿Existen restricciones geográficas en el acceso?**
-
-### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** 
-- **¿Incluyen metadatos detallados y consistentes?**
-
-### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** 
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** 
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
-
-### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** 
-- **¿Se requiere atribuir la fuente en caso de uso?** 
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
-
-### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?** 
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
-
-### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** 
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** 
-- **¿Hay documentación técnica detallada para entender los datos?**
-
-### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** 
-- **¿Qué soporte técnico está disponible para resolver problemas?**
-
 ---
+# **Fuente de Datos: Global Forecast System**
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+
+- **¿Tiene acceso libre?**  
+  Sí, el acceso es libre.
+
+- **¿Desde cuándo hay datos?**  
+  Desde 2015 para datos históricos; las proyecciones actuales están disponibles continuamente.
+
+- **¿Necesitamos un permiso especial?**  
+  No, el acceso no requiere permisos especiales.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de servidores FTP/HTTP proporcionados por la NOAA o mediante APIs de servicios secundarios.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí, es posible automatizar la descarga con scripts que accedan a los servidores o APIs.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Los datos se actualizan cada 6 horas.
+
+- **¿En qué formato están disponibles los datos?**  
+  Generalmente en formato GRIB2 o NetCDF.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No, los datos tienen cobertura global sin restricciones geográficas.
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Resolución global con cuadrículas de 0.25°, 0.5°, o 1.0°, dependiendo de la versión y producto. 1° de latitud es aproximadamente constante en todo el mundo y equivale a 111 kilómetros, por lo tanto la resoluciones que hay disponibles son a 28, 55 y 111 kilómetros respectivamente.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Datos cada 6 horas.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Los datos se generan con modelos numéricos avanzados que incluyen procesos de validación y ajustes durante la asimilación.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí, los metadatos están incluidos en los archivos y documentación técnica.
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Temperatura, precipitación, viento, presión, humedad, radiación, y muchas más.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Incluyen ambos: mediciones históricas (reanálisis) y simulaciones pronosticadas.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  Sí, aunque las derivadas suelen estar disponibles en bases de datos especializadas.
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre, con atribución a la NOAA.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Generalmente no, aunque puede haber restricciones de ancho de banda.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí, se debe atribuir a la NOAA como fuente.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí, bajo las condiciones de la licencia abierta.
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Indirectamente, mediante servicios de terceros como Open-Meteo o APIs personalizadas.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  Puede haber restricciones de ancho de banda dependiendo del servidor utilizado.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Compatible con Python, R, C++, y cualquier lenguaje que maneje GRIB2 o NetCDF.
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La NOAA (National Oceanic and Atmospheric Administration) de Estados Unidos.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Muy alta, considerada una de las fuentes más confiables en meteorología.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, disponible en el sitio oficial de la NOAA y en guías asociadas.
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Dependiendo del proyecto, puede requerirse reformatar o interpolar los datos.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Fácil, gracias a su estandarización y formatos comunes.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Documentación oficial, foros de usuarios, y soporte comunitario.
+
 
 ## **Fuente de Datos: [Nombre de la Fuente]**
 
