@@ -123,6 +123,8 @@ Unidad de Planificación Rural Agropecuaria
 ## ANLA
 # Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
 
+# Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
+
 ## 1. Disponibilidad y Acceso
 - **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
   Sí, la ANLA dispone de información sobre precipitaciones como parte de monitoreos climáticos en proyectos de evaluación ambiental, aunque puede estar enfocada en áreas específicas bajo licenciamiento ambiental.
@@ -190,7 +192,51 @@ Unidad de Planificación Rural Agropecuaria
 - **¿Qué tipo de licencia tienen los datos?**  
   Los datos están bajo licencias restringidas. Parte de ellos son de dominio público, pero otros son confidenciales.
 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Sí, según las restricciones impuestas por la ANLA.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí, la ANLA debe ser citada como fuente.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  No sin autorización expresa.
+
+---
+
+## 5. Automatización y Escalabilidad
+- **¿Los datos están disponibles a través de APIs?**  
+  No, la ANLA no ofrece APIs públicas.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes?**  
+  Sí, ya que el acceso no es automatizado.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos?**  
+  PDF y Excel pueden analizarse con Python o R tras una conversión manual.
+
+---
+
+## 6. Contexto y la Institución
+- **¿Quién es la entidad responsable de los datos?**  
+  La Autoridad Nacional de Licencias Ambientales (ANLA).
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Alta, ya que cumple estándares técnicos rigurosos.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, en los informes asociados a los proyectos licenciados.
+
+---
+
+## 7. Usabilidad
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Frecuentemente, sí, ya que no están en formatos listos para análisis inmediato.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Moderadamente fácil con herramientas de procesamiento de datos.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Limitado, depende de consultas formales a la ANLA.
+
 
 
 
