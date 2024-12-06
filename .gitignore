@@ -1,6 +1,8 @@
 # Ignorar los archivos descargados
-data/*
-
+data/indices/*
+data/processed/*
+data/raw/*
+data/zones/*
 
 # Ignorar los archivos de ambiente de python
 myenv/*
