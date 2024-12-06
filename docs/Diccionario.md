@@ -478,6 +478,230 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Soporte a través de la documentación, foros de usuarios, y recursos educativos en línea.
 
+# Power NASA
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+- **¿Tiene acceso libre?**  
+  Sí.
+- **¿Desde cuándo hay datos?**  
+  Desde 1981.
+- **¿Necesitamos un permiso especial?**  
+  No.
+- **¿Cómo se puede acceder a los datos?**  
+  Descargas en formato CSV o acceso mediante JSON.
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Buscando alternativa para automatizar.
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Diaria.
+- **¿En qué formato están disponibles los datos?**  
+  CSV, ASCII, JSON.
+- **¿Existen restricciones geográficas en el acceso?**  
+  Sí, solo se pueden tomar regiones de tamaño 10° por archivo CSV.
+
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  A escala global con resolución adaptativa.
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Datos desde 1981 hasta la actualidad.
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Contiene las cinco variables del índice del clima actuarial mencionadas en el PDF.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ambos.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Cada archivo CSV permite descargar por periodos de un año; sin embargo, no hay límite de archivos descargables.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí, cumpliendo las condiciones establecidas por la NASA. Los datos son de dominio público, pero su redistribución debe respetar los términos de uso.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí. [API de NASA POWER](https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-77.0369&latitude=38.9072&start=20230101&end=20231231&format=JSON)  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  - **Límite de solicitudes por minuto/hora:** Entre 60 y 120 solicitudes por minuto.  
+  - **Volumen de datos:** Máximo de 366 días por solicitud.  
+  - **Uso justo:** El servicio está diseñado para fines científicos y educativos; solicitudes masivas podrían restringirse.  
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, MATLAB.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La NASA, específicamente a través de la herramienta NASA POWER del Langley Research Center (LaRC).  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  La NASA tiene una reputación mundialmente reconocida por la calidad y fiabilidad de sus datos. Los datos de NASA POWER son validados mediante estaciones meteorológicas y modelos precisos.  
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, incluye metodología, variables y ejemplos prácticos.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Los datos están en formatos estándar como CSV o JSON, adaptables a diversas herramientas.  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  - **Formatos estándar:** Compatibles con Python, R, MATLAB, Power BI y Tableau.  
+  - **API accesible:** Permite integrar datos en flujos de trabajo automatizados.  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  - **Documentación detallada:** Con ejemplos y guías.  
+  - **Correo de soporte:** [power@larc.nasa.gov](mailto:power@larc.nasa.gov).  
+  - **FAQ:** Página oficial con preguntas frecuentes.  
+
+---
+
+## **Power NASA**  
+**[https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)**
+
+
+=======
+# Google Earth Engine
+[INMET](https://earthengine.google.com/)
+
+## [POWER NASA](https://power.larc.nasa.gov/)
+=======
+---
+# **Fuente de Datos: Global Forecast System**
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+
+- **¿Tiene acceso libre?**  
+  Sí, el acceso es libre.
+
+- **¿Desde cuándo hay datos?**  
+  Desde 2015 para datos históricos; las proyecciones actuales están disponibles continuamente.
+
+- **¿Necesitamos un permiso especial?**  
+  No, el acceso no requiere permisos especiales.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de servidores FTP/HTTP proporcionados por la NOAA o mediante APIs de servicios secundarios.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí, es posible automatizar la descarga con scripts que accedan a los servidores o APIs.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Los datos se actualizan cada 6 horas.
+
+- **¿En qué formato están disponibles los datos?**  
+  Generalmente en formato GRIB2 o NetCDF.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No, los datos tienen cobertura global sin restricciones geográficas.
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Resolución global con cuadrículas de 0.25°, 0.5°, o 1.0°, dependiendo de la versión y producto. 1° de latitud es aproximadamente constante en todo el mundo y equivale a 111 kilómetros, por lo tanto la resoluciones que hay disponibles son a 28, 55 y 111 kilómetros respectivamente.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Datos cada 6 horas.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Los datos se generan con modelos numéricos avanzados que incluyen procesos de validación y ajustes durante la asimilación.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí, los metadatos están incluidos en los archivos y documentación técnica.
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Temperatura, precipitación, viento, presión, humedad, radiación, y muchas más.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Incluyen ambos: mediciones históricas (reanálisis) y simulaciones pronosticadas.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  Sí, aunque las derivadas suelen estar disponibles en bases de datos especializadas.
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre, con atribución a la NOAA.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Generalmente no, aunque puede haber restricciones de ancho de banda.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí, se debe atribuir a la NOAA como fuente.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí, bajo las condiciones de la licencia abierta.
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Indirectamente, mediante servicios de terceros como Open-Meteo o APIs personalizadas.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  Puede haber restricciones de ancho de banda dependiendo del servidor utilizado.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Compatible con Python, R, C++, y cualquier lenguaje que maneje GRIB2 o NetCDF.
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La NOAA (National Oceanic and Atmospheric Administration) de Estados Unidos.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Muy alta, considerada una de las fuentes más confiables en meteorología.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, disponible en el sitio oficial de la NOAA y en guías asociadas.
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Dependiendo del proyecto, puede requerirse reformatar o interpolar los datos.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Fácil, gracias a su estandarización y formatos comunes.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Documentación oficial, foros de usuarios, y soporte comunitario.
 
 ## **Fuente de Datos: [Nombre de la Fuente]**
 
