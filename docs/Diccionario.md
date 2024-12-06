@@ -22,91 +22,107 @@ Estudio de Riesgo por Efectos del Cambio Climático y Medidas de Adaptación par
 
 ## UNGRD
 
-
-
 ### **1. Disponibilidad y Acceso**
 
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
-  No.
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
-  No.
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
-  No.
-- **¿Tiene acceso libre?**
-  Si.
-- **¿Desde cuándo hay datos?**
-  1980.
-- **¿Necesitamos un permiso especial?**
-  No.
-- **¿Cómo se puede acceder a los datos?**
-  En datos abiertos gov o directamentre desde su pagina web
-- **¿Podemos crear una automatización para la descarga de los datos?**
-  No
-- **¿Cuál es la frecuencia de actualización de los datos?**
- Anual.
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  No.  
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  No.  
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  No.  
+- **¿Tiene acceso libre?**  
+  Sí.  
+- **¿Desde cuándo hay datos?**  
+  1980.  
+- **¿Necesitamos un permiso especial?**  
+  No.  
+- **¿Cómo se puede acceder a los datos?**  
+  En datos abiertos gov o directamente desde su página web.  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  No.  
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Anual.  
+- **¿En qué formato están disponibles los datos?**  
+  CSV.  
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.  
 
-- **¿En qué formato están disponibles los datos?**
-
- CSV.
-
-- **¿Existen restricciones geográficas en el acceso?**
-
+---
 
 ### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?**
-  No hay.
 
-  **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
-  NO
-- **¿Incluyen metadatos detallados y consistentes?**
-  SI
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  No hay.  
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  No especificado.  
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  No.  
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.  
+
+---
 
 ### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
-- fecha, tipo de catastrofe y lugar
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
-- Ninguna
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
-- NO
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Fecha, tipo de catástrofe y lugar.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ninguna.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.  
+
+---
 
 ### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
-libre
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
-No
-- **¿Se requiere atribuir la fuente en caso de uso?**
-Si
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
-Si
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí.  
+
+---
+
 ### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?**
-  si
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
-  no
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
-  Phython,R.
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.  
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R.  
+
+---
 
 ### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?**
-  
-  La Unidad Nacional para la Gestión del Riesgo de Desastres (UNGRD) en Colombia
-  
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
-Buena
-  
-- **¿Hay documentación técnica detallada para entender los datos?**
-No
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La Unidad Nacional para la Gestión del Riesgo de Desastres (UNGRD) en Colombia.  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Buena.  
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  No.  
+
+---
 
 ### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
-  SI 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?**
-  Complicado
-- **¿Qué soporte técnico está disponible para resolver problemas?**
 
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Sí.  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Complicado.  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  No especificado.  
+
+---
 
 ## **[Repositorio UNGRD](https://repositorio.gestiondelriesgo.gov.co/handle/20.500.11762/27179)**
+
+[Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
+
 
 ---
 
