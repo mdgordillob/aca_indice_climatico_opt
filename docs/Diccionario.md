@@ -676,7 +676,7 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
   Indirectamente, mediante servicios de terceros como Open-Meteo o APIs personalizadas.
 
 - **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
-  Puede haber restricciones de ancho de banda dependiendo del servidor utilizado.
+  Puede haber restricciones de ancho de banda dependiendo del servidor que sea utilizado.
 
 - **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
   Compatible con Python, R, C++, y cualquier lenguaje que maneje GRIB2 o NetCDF.
