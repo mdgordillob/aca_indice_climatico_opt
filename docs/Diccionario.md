@@ -27,35 +27,36 @@ Estudio de Riesgo por Efectos del Cambio Climático y Medidas de Adaptación par
 ### **1. Disponibilidad y Acceso**
 
 - **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
-  NO
+  No.
 - **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
-  NO 
+  No.
 - **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
-  NO
+  No.
 - **¿Tiene acceso libre?**
-  Si
+  Si.
 - **¿Desde cuándo hay datos?**
-  1980
+  1980.
 - **¿Necesitamos un permiso especial?**
-  NO
+  No.
 - **¿Cómo se puede acceder a los datos?**
   En datos abiertos gov o directamentre desde su pagina web
 - **¿Podemos crear una automatización para la descarga de los datos?**
-  no
+  No
 - **¿Cuál es la frecuencia de actualización de los datos?**
- Anual
+ Anual.
 
 - **¿En qué formato están disponibles los datos?**
 
- CSV
+ CSV.
 
 - **¿Existen restricciones geográficas en el acceso?**
 
 
 ### **2. Calidad y Estandarización**
 - **¿Qué nivel de resolución espacial tienen los datos?**
-  No es viable
-- **¿Qué nivel de resolución temporal tienen los datos?** 
+  No hay.
+
+  **¿Qué nivel de resolución temporal tienen los datos?** 
 - **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
   NO
 - **¿Incluyen metadatos detallados y consistentes?**
@@ -232,137 +233,113 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 
 -No hay bases de datos en regiones colombianas.
 
-# Power NASA 
+# Power NASA
 
+## **1. Disponibilidad y Acceso**
 
-### **1. Disponibilidad y Acceso**
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+- **¿Tiene acceso libre?**  
+  Sí.
+- **¿Desde cuándo hay datos?**  
+  Desde 1981.
+- **¿Necesitamos un permiso especial?**  
+  No.
+- **¿Cómo se puede acceder a los datos?**  
+  Descargas en formato CSV o acceso mediante JSON.
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Buscando alternativa para automatizar.
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Diaria.
+- **¿En qué formato están disponibles los datos?**  
+  CSV, ASCII, JSON.
+- **¿Existen restricciones geográficas en el acceso?**  
+  Sí, solo se pueden tomar regiones de tamaño 10° por archivo CSV.
 
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
-  si
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
-  si
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
-  si
-- **¿Tiene acceso libre?**
-  si
-- **¿Desde cuándo hay datos?**
-  1981
-- **¿Necesitamos un permiso especial?**
-  no
-- **¿Cómo se puede acceder a los datos?**
+---
 
-  descargas csv o acceso JSON
-  
-- **¿Podemos crear una automatización para la descarga de los datos?**
-- Buscando alternativa para automatizar 
-  **¿Cuál es la frecuencia de actualización de los datos?**
-- diaria
-- **¿En qué formato están disponibles los datos?**
-  CSV, ASCII, JSON
-- **¿Existen restricciones geográficas en el acceso?**
+## **2. Calidad y Estandarización**
 
-  si, solo se pueden tomar regiones de tamaño 10 por csv
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  A escala global con resolución adaptativa.
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Datos desde 1981 hasta la actualidad.
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.
 
-### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?**
- 1981-actualidad
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
- si
-- **¿Incluyen metadatos detallados y consistentes?**
- si
+---
 
-### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
-- 
-  Contine las 5 variables del indice del clima actuarial mencionadas en el pdf
-  
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
-  
-  ambos
-  
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
-  no
+## **3. Contenido de los Datos**
 
-### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
-  
- libre
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Contiene las cinco variables del índice del clima actuarial mencionadas en el PDF.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ambos.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
-  
- Cada csv deja descargar por periodos de un año, sin embargo, no hay limite de csv descargables.
- 
-- **¿Se requiere atribuir la fuente en caso de uso?**
-  
- si
- 
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
-  
-Sí, es posible redistribuir los datos o integrarlos en nuevos productos provenientes de la herramienta NASA POWER, pero esto debe hacerse cumpliendo con ciertas condiciones específicas establecidas por la NASA. En general, los datos de la NASA son de dominio público, pero su redistribución e integración requieren cumplir con los términos de uso.
+---
 
+## **4. Uso y Licencia**
 
-### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?**
-- ¡Sí! Los datos de NASA POWER están disponibles a través de una API REST para facilitar el acceso automatizado a la información.
-  [https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-77.0369&latitude=38.9072&start=20230101&end=20231231&format=JSON]
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Cada archivo CSV permite descargar por periodos de un año; sin embargo, no hay límite de archivos descargables.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí, cumpliendo las condiciones establecidas por la NASA. Los datos son de dominio público, pero su redistribución debe respetar los términos de uso.
 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
-Límite de solicitudes por minuto/hora:
+---
 
-Aunque la documentación de NASA POWER no siempre especifica un número exacto, muchas APIs públicas tienen límites de entre 60 y 120 solicitudes por minuto. Si excedes este límite, podrías recibir un error de tipo 429 Too Many Requests.
-Volumen de datos:
+## **5. Automatización y Escalabilidad**
 
-La API restringe solicitudes que abarcan más de 366 días en un solo intervalo de tiempo.
-El tamaño de la respuesta puede ser un factor, especialmente si solicitas un gran número de variables o datos detallados para un rango extenso de fechas.
-Uso justo:
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí. [API de NASA POWER](https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-77.0369&latitude=38.9072&start=20230101&end=20231231&format=JSON)  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  - **Límite de solicitudes por minuto/hora:** Entre 60 y 120 solicitudes por minuto.  
+  - **Volumen de datos:** Máximo de 366 días por solicitud.  
+  - **Uso justo:** El servicio está diseñado para fines científicos y educativos; solicitudes masivas podrían restringirse.  
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, MATLAB.
 
-El servicio está diseñado para ser utilizado con fines científicos, educativos y de investigación, por lo que las solicitudes masivas o frecuentes que afectan el rendimiento para otros usuarios pueden estar restringidas.
+---
 
+## **6. Contexto y la Institución**
 
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
-Phyton, R, MATLAB.
+- **¿Quién es la entidad responsable de los datos?**  
+  La NASA, específicamente a través de la herramienta NASA POWER del Langley Research Center (LaRC).  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  La NASA tiene una reputación mundialmente reconocida por la calidad y fiabilidad de sus datos. Los datos de NASA POWER son validados mediante estaciones meteorológicas y modelos precisos.  
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, incluye metodología, variables y ejemplos prácticos.
 
-### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?**
-  La NASA (National Aeronautics and Space Administration) es la entidad responsable de los datos proporcionados a través de la herramienta NASA POWER (Prediction of Worldwide Energy Resource). POWER es un servicio creado por la NASA en colaboración con el Langley Research Center (LaRC). Su misión es proporcionar datos climáticos globales y de energía renovable, especialmente enfocados en la radiación solar, temperatura, velocidad del viento, y otros parámetros atmosféricos. Los datos se utilizan en diversos campos, como la investigación climática, la energía renovable y la agricultura.
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
-La NASA tiene una reputación mundialmente reconocida por la alta calidad y fiabilidad de los datos que genera. Como agencia espacial gubernamental de los Estados Unidos, la NASA es líder en investigación científica y tecnológica. Los datos provenientes de NASA POWER se basan en modelos de simulación de alta precisión y observaciones satelitales. Esto hace que los datos sean altamente confiables y utilizados por investigadores, gobiernos, empresas y universidades a nivel global.
+---
 
-La calidad de los datos de POWER ha sido validada mediante comparaciones con estaciones meteorológicas y otras fuentes confiables, lo que respalda su utilidad en estudios climáticos y energéticos.
-- **¿Hay documentación técnica detallada para entender los datos?**
+## **7. Usabilidad**
 
-- Sí, la NASA POWER proporciona documentación técnica completa que describe la metodología utilizada para generar y procesar los datos. Esto incluye detalles sobre los modelos de simulación, las fuentes de datos satelitales, los parámetros disponibles y cómo interpretar las variables meteorológicas y de energía.
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Los datos están en formatos estándar como CSV o JSON, adaptables a diversas herramientas.  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  - **Formatos estándar:** Compatibles con Python, R, MATLAB, Power BI y Tableau.  
+  - **API accesible:** Permite integrar datos en flujos de trabajo automatizados.  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  - **Documentación detallada:** Con ejemplos y guías.  
+  - **Correo de soporte:** [power@larc.nasa.gov](mailto:power@larc.nasa.gov).  
+  - **FAQ:** Página oficial con preguntas frecuentes.  
 
-### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
-Formato de los datos: Los datos suelen ser entregados en formatos como CSV o JSON. 
-  
-- **¿Qué tan fácil es integrar los datos con otras fuentes?**
-Integrar los datos de NASA POWER con otras fuentes de datos es bastante sencillo, por varias razones:
+---
 
-Formatos estándar: Los datos están disponibles en formatos comunes como CSV, JSON o NetCDF, que son ampliamente compatibles con herramientas de análisis de datos como Python, R, MATLAB, y plataformas de análisis de datos como Power BI o Tableau.
+## **Power NASA**  
+**[https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)**
 
-API accesible: Dado que los datos se pueden obtener mediante una API RESTful, puedes integrar fácilmente los datos de NASA POWER con otras fuentes en tiempo real. Esto permite crear flujos de trabajo automatizados donde los datos meteorológicos y de energía renovable se integran con otras bases de datos o servicios web (por ejemplo, bases de datos climáticas adicionales, servicios de pronóstico del clima, o incluso fuentes de datos socioeconómicos).
-
-- **¿Qué soporte técnico está disponible para resolver problemas?**
-
-NASA POWER ofrece varios recursos de soporte técnico:
-
-Documentación detallada: La documentación oficial de NASA POWER está muy bien estructurada, y ofrece ejemplos prácticos sobre cómo obtener y procesar los datos. Esta documentación incluye detalles sobre:
-
-Cómo hacer solicitudes a la API.
-Descripción de las variables disponibles y cómo interpretarlas.
-Procedimientos para acceder a los datos en diferentes formatos.
-Cómo realizar análisis y validaciones de los datos obtenidos.
-Correo electrónico de soporte: Para dudas específicas o problemas que no puedan resolverse con la documentación, NASA POWER ofrece soporte por correo electrónico a través de la dirección: power@larc.nasa.gov. Este canal es útil para resolver problemas técnicos, aclarar dudas sobre los datos o recibir orientación sobre el uso adecuado de los mismos.
-
-Foros y comunidad en línea: Aunque NASA POWER no tiene foros dedicados exclusivamente a la plataforma, muchos usuarios de estos datos (investigadores, científicos, ingenieros) participan en foros más amplios relacionados con la energía renovable y el cambio climático, donde se pueden intercambiar experiencias y resolver problemas comunes.
-
-Preguntas frecuentes (FAQ): La página web de NASA POWER también incluye una sección de FAQ donde se responden las preguntas más comunes acerca de los datos, el acceso, y las herramientas disponibles, lo que puede ayudar a resolver problemas rápidamente sin necesidad de contactar al soporte.
-
-
-## **Power NASA [https://power.larc.nasa.gov/]**
 
 
 ---
