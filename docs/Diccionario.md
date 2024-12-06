@@ -235,6 +235,249 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Documentación oficial, foros de usuarios, y soporte comunitario.
 
+# **Fuente de Datos: MeteoBlue**
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí, MeteoBlue proporciona datos detallados sobre precipitación, incluyendo intensidad y acumulación.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí, ofrece información sobre velocidad y dirección del viento, así como ráfagas.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí, proporciona datos de temperatura máxima, mínima, promedio y registros horarios.
+
+- **¿Tiene acceso libre?**  
+  MeteoBlue ofrece una API meteorológica gratuita para uso no comercial durante un año.
+
+- **¿Desde cuándo hay datos?**  
+  Los datos históricos están disponibles desde 1940.
+
+- **¿Necesitamos un permiso especial?**  
+  Para usos comerciales o acceso a datos avanzados, se requiere una suscripción o acuerdo específico.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de diversas APIs que proporcionan datos en formatos como CSV y JSON.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí, las APIs permiten la automatización en la descarga de datos.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Los datos de previsión se actualizan constantemente para garantizar la máxima precisión.
+
+- **¿En qué formato están disponibles los datos?**  
+  Los datos están disponibles en formatos como CSV y JSON.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No, los datos están disponibles para cualquier ubicación en el mundo.
+
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  La resolución espacial varía según el modelo, llegando hasta 1 km en algunas regiones.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Los datos están disponibles en resoluciones horarias y diarias.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí, los datos se someten a procesos de validación para garantizar su precisión.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí, se proporcionan metadatos detallados para facilitar su interpretación.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Están disponibles variables como temperatura, precipitación, viento, humedad, radiación solar, entre otras.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Incluyen tanto datos históricos como previsiones y simulaciones.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  Sí, se ofrecen variables derivadas como índices climáticos y anomalías.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Las licencias varían desde uso libre para fines no comerciales hasta licencias comerciales para usos empresariales.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Sí, existen límites que dependen del plan de suscripción o acuerdo establecido.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Para usos no comerciales, se recomienda atribuir la fuente; en usos comerciales, depende del acuerdo.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  La redistribución y la integración en nuevos productos están sujetas a los términos de la licencia adquirida.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí, MeteoBlue ofrece diversas APIs para acceder a los datos.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  Sí, se imponen límites en la cantidad de llamadas por minuto y por día, dependiendo del plan.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Las APIs son compatibles con cualquier lenguaje que soporte solicitudes HTTP, como Python, R, entre otros.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  MeteoBlue AG, una empresa suiza especializada en datos meteorológicos.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Alta reputación por su precisión y confiabilidad en el sector meteorológico.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, hay documentación técnica extensa disponible.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Depende del objetivo, pero los datos suelen estar listos para su análisis directo.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Relativamente fácil debido a su formato estándar y metadatos consistentes.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Se ofrece soporte técnico a través de la documentación y contacto directo para usuarios comerciales.
+
+
+# **Fuente de Datos: Google Earth Engine**
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí, a través de datasets como CHIRPS y ERA5, que incluyen datos de precipitación histórica y estimada.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí, se pueden consultar datos de modelos globales como ERA5 y NCEP/NCAR.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí, está disponible en datasets como ERA5 y TerraClimate.
+
+- **¿Tiene acceso libre?**  
+  Sí, Google Earth Engine es gratuito para usos de investigación, educativos y no comerciales.
+
+- **¿Desde cuándo hay datos?**  
+  La disponibilidad varía según el dataset; algunos tienen datos desde la década de 1940, como ERA5.
+
+- **¿Necesitamos un permiso especial?**  
+  No para la mayoría de los usos académicos y de investigación, pero se deben aceptar los términos de servicio.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de la plataforma Google Earth Engine mediante programación en JavaScript o Python.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí, usando scripts en Python con la API de Earth Engine.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Varía según el dataset; algunos datos son actualizados diariamente (e.g., MODIS).
+
+- **¿En qué formato están disponibles los datos?**  
+  Los datos se procesan en formatos de imágenes rasterizadas y vectores, y se pueden exportar en formatos como GeoTIFF y CSV.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No, los datos son globales, pero algunos datasets pueden estar restringidos por licencias locales.
+
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Depende del dataset; por ejemplo, MODIS tiene una resolución de 500 m, mientras que Landsat tiene 30 m.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Varía entre diaria (e.g., MODIS) y mensual (e.g., CHIRPS).
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí, la mayoría de los datasets han sido preprocesados y validados por las instituciones que los generan.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí, cada dataset incluye descripciones detalladas y metadatos.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Variables como precipitación, temperatura, humedad, viento, índices de vegetación, entre otras.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Incluyen ambos; hay datos históricos de sensores remotos y simulaciones de modelos climáticos.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  Sí, se incluyen índices como NDVI, EVI, y anomalías climáticas.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Los datos varían en sus licencias; muchos son gratuitos para uso público, pero algunos requieren permisos adicionales.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Sí, Google Earth Engine tiene políticas de cuota que limitan la capacidad de procesamiento y descarga.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí, se debe atribuir tanto a Google Earth Engine como a la institución propietaria del dataset.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  La redistribución está sujeta a las licencias individuales de cada dataset.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí, Google Earth Engine proporciona una API potente para Python y JavaScript.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  Sí, existen cuotas que limitan las solicitudes por usuario y día.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Compatible con Python, JavaScript, y puede integrarse con R mediante paquetes como `rgee`.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  Google y las instituciones propietarias de los datasets, como NASA, NOAA, y ECMWF.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Altamente reputada por su precisión y soporte global.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, la plataforma incluye documentación detallada para cada dataset.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Puede ser necesario dependiendo del análisis; las herramientas de Earth Engine facilitan estas transformaciones.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Muy fácil debido al soporte de formatos estándar y APIs flexibles.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Soporte a través de la documentación, foros de usuarios, y recursos educativos en línea.
+
 
 ## **Fuente de Datos: [Nombre de la Fuente]**
 
