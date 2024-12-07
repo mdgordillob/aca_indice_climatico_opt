@@ -19,6 +19,8 @@
     * EstacionesIDEAMTMax: Contiene las estaciones con datos de Temperatura Máxima
     * EstacionesIDEAMTMed: Contiene las estaciones con datos de Temperatura Media
     * EstacionesIDEAMTMin: Contiene las estaciones con datos de Temperatura Mínima
+  - Fecha de creación
+   2016-11-30
 
 2. _*Set de mapas de temperatura máxima para los doce meses del año con resolución espacial de 90 m. 2014.*_ [Link](http://geonetwork.humboldt.org.co/geonetwork/srv/spa/catalog.search#/metadata/37b48a60-3379-425f-95a8-ab6e3c708f77): 
   - Esta base de datos es producto de la organización ,estandarización y limpieza ETL, sobre series de tiempos de la base de datos  del Banco de Datos 
