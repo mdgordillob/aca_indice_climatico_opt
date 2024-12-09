@@ -2,23 +2,567 @@
 
 # Posibles fuentes de información
 
-## DNP
-[Portal Territorial DNP](https://portalterritorial.dnp.gov.co/AdmGesRiesgo/iGesRiesgoIndice)
 
-## SIAC
+## **Fuente de Datos:  [Departamento Nacional de Planeación (DNP)]**
+
+### **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  No.
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+  No.
+- **¿Tiene acceso libre?**
+  Si.
+- **¿Desde cuándo hay datos?**
+  Solo para 2018.
+- **¿Necesitamos un permiso especial?**
+  No.
+- **¿Cómo se puede acceder a los datos?**
+  Descargarlos a través de la página del DNP.
+- **¿Podemos crear una automatización para la descarga de los datos?**
+  No es necesario, es más útil descargarlos manualmente. 
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  No hay actualización de los datos.
+- **¿En qué formato están disponibles los datos?**
+  En TIIF (shp) y en xlsx (Excel).
+- **¿Existen restricciones geográficas en el acceso?**
+  No.
+
+### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**
+   Los datos tienen resolución por el tamaño de cada municipio de Colombia.
+- **¿Qué nivel de resolución temporal tienen los datos?**
+  Solo para el año 2018.
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+  Si, validación por el DNP en el 2017.
+- **¿Incluyen metadatos detallados y consistentes?**
+  Si, los metadatos están incluidos en los archivos y documentación técnica.
+
+### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+  Movimientos en masas, flujos torrenciales, inundaciones lentas, Índices de Pobreza Multidimensional, y variables financieras y socioeconómicas asociadas a cada municipio 
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  No incluye ninguna de las anteriores.
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+  Se derivan índices de amenazas potenciales, la capacidad de repuesta, exposición a inundaciones para cada municipio.
+
+### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  Libre.
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  No,
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  Si, es necesario citar al DNP.
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Si, pero no son necesarios para el proyecto.
+
+### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**
+  No.
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  No
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+  R, python.
+
+### **6. Contexto y la Institución**
+- **¿Quién es la entidad responsable de los datos?**
+  Departamento Nacional de Planeación.
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  Muy confiable.
+- **¿Hay documentación técnica detallada para entender los datos?**
+  Si, disponible en la misma página.
+
+### **7. Usabilidad**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Considero que los datos e infomación no es útil para el proyecto.
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Dependiendo de la dirección del proyecto, si se trabaja con datos tipo área, si.
+- **¿Qué soporte técnico está disponible para resolver problemas?**
+  Soporte del DPN.
+
+# **Fuente de Datos: : Sistema de Información Ambiental de Colombia - SIAC**
+
 [SIAC Datos Abiertos](https://siac-datosabiertos-mads.hub.arcgis.com/)
 
-Estudio de Riesgo por Efectos del Cambio Climático y Medidas de Adaptación para la Estrategia a Largo Plazo E2050 de Colombia – Fase 1. Cardona, O.D., et al. (2020)
+## **1. Disponibilidad y Acceso**
 
-## Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  No.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí, proporciona datos de temperatura máxima, mínima, promedio y registros horarios.
+
+- **¿Tiene acceso libre?**  
+  Si.
+  
+- **¿Desde cuándo hay datos?**  
+  Desde 1981 hasta 2010.
+
+- **¿Necesitamos un permiso especial?**  
+   No es necesario.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de la página de datos abiertos.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Considero que no es necesario. Pero si.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+No hay actualización.
+
+- **¿En qué formato están disponibles los datos?**  
+  Los datos están disponibles en formatos como CSV.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+ Solo en el departamento de Cundinamarca.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Anual.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  No.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Están disponibles variables como temperatura, precipitación.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  No.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+   Si.
+  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Si.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, entre otros.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  SIAC.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Confiable.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Hay documentación técnica.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Considero que esta página no es útil para el proyecto, su información es limitada en cuanto a espacio y tiempo. Además, no hay actualizaciones. Sin embargo, es útil para ver otras bases de datos de otras organizaciones.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Relativamente fácil debido a su formato estándar y metadatos consistentes.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Por correo a sigsiac.tic@minambiente.gov.co
+
+## **Fuente de Datos:  [Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)]**
 [Atención al Ciudadano](http://dhime.ideam.gov.co/atencionciudadano/)
 [Galería de Mapas](https://www.ideam.gov.co/web/guest/galeria-de-mapas)
 [Resultados de Cambio Climático](http://www.cambioclimatico.gov.co/resultados#:~:text=El%20%22An%C3%A1lisis%20de%20Vulnerabilidad%20y,de%20equipo%20con%20el%20INVEMAR)
 [Datos Abiertos IDEAM](http://www.pronosticosyalertas.gov.co/datos-abiertos-ideam)
 [3ra Comunicación Cambio Climático](http://www.cambioclimatico.gov.co/3ra-comunicacion-cambio-climatico)
 
-## IGAC
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Si.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+  
+- **¿Tiene acceso libre?**  
+  Si.
+  
+- **¿Desde cuándo hay datos?**  
+  Dependiendo de la variable y estación a consultar, esta puede variar. Se tienen datos desde el 2014 hasta el 2023.
+
+- **¿Necesitamos un permiso especial?**  
+   No es necesario.
+
+- **¿Cómo se puede acceder a los datos?**
+  A través de la página http://dhime.ideam.gov.co/atencionciudadano/
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Si.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+Anual.
+
+- **¿En qué formato están disponibles los datos?**  
+  Los datos están disponibles en formatos como CSV o XLSX.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+ Los datos tienen resolución por cada estación disponible (punto en el mapa).
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Dependiendo de la variable de selección, puede ser diaria, mensual o anual.
+
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Si.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+Temperatura, precipitación, radiación, variables relacionadas con el viento etc.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Incluye mediciones históricas.
+
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+   Sí, se debe citar al IDEAM como fuente.
+  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Si es posible.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, entre otros.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  IDEAM.
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Muy confiable.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+Sí, disponible en la misma página y atenciones al ciudadano puestas por el mismo IDEAM.
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Si, dependiendo de la base a usar en el proyecto.
+  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Fácil debido a su formato puntual.
+  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Soporte telefónico, por correo o en oficinas del IDEAM.
+
+## **Fuente de Datos:  [Instituto Geográfico Agustin Codazzi - IGAC]**
 [Geoportal IGAC](https://geoportal.igac.gov.co/contenido/tematicos)
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  No.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  No.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  No.
+  
+- **¿Tiene acceso libre?**  
+  Si.
+  
+- **¿Necesitamos un permiso especial?**  
+   Es necesario registrarse.
+
+- **¿Cómo se puede acceder a los datos?**
+  A través de la página
+  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Si, pero no lo considero necesario.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  No se actualzan.
+
+- **¿En qué formato están disponibles los datos?**  
+  Los datos están disponibles en formatos como shapefile o geopack.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+ Los datos están disponibles en distintos formatos espaciales (ya sea por municipio, zona rural, urbana). Escalas desde 1:500.000, 1:250.000, 1:200.000, 1:100.000, 1:50.000, 1: 25.000, 1:10.000, 1:5000, 1:2.000 y 1:1000,
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+ No tienen resolución temporal.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Si.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+Disponible distintos tipos de mapas, como de terreno, politico-administrativo, entre otros.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ninguna de las anteriores.
+  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+   Sí, se debe citar.
+  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Si es posible.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, entre otros.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+INSTITUTO GEOGRÁFICO AGUSTÍN CODAZZI - IGAC
+  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Muy confiable.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+Sí, disponible en la misma página.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+Considero que los datos proporcionados son útiles para el proyecto si se trabaja con datos espaciales de área, o se necesitan hacer recortes.
+  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Fácil debido a su formato shapefile.
+  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Correos, atención al público y líneas de atención.
+
+
+## **Fuente de Datos:  [WorldClim]**
+[Geoportal IGAC](https://geoportal.igac.gov.co/contenido/tematicos)
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Si.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Si.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Si.
+  
+- **¿Tiene acceso libre?**  
+  Si.
+  
+- **¿Necesitamos un permiso especial?**  
+   No.
+  
+- **¿Cómo se puede acceder a los datos?**
+  A través de la página  https://www.worldclim.org/data/worldclim21.html.
+  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Si.
+  
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  No se actualzan.
+
+- **¿En qué formato están disponibles los datos?**  
+  TIFF (shapefile).
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+ Los datos están disponibles entre 30 segundos (~1 km2) a 10 minutos (~340 km2).
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+ Ventana de tiempo de cada 10 años. Se puede descargar promedios mensuales.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Si.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+Temperatura mínima, máxima, promedio, precipitación, radiación solar, velocidad del viento, presión de vapor del agua.
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ambas.
+  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+   Sí, se debe citar.
+  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Si es posible.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, entre otros.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+worldclim
+  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Confiable.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+No hay mucha documentación sobre los datos.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+De acuerdo con los objetivos del proyecto, podría ser necesario.
+  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Fácil debido a su formato shapefile.
+  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+Por correo a info@worldclim.org 
+
 
 ## UNGRD
 [Repositorio UNGRD](https://repositorio.gestiondelriesgo.gov.co/handle/20.500.11762/27179)
