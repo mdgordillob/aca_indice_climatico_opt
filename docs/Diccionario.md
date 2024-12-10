@@ -584,100 +584,163 @@ Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 ## **Fuente de Datos:  [HUMBOLDT]**
 
 ### **1. Disponibilidad y Acceso**
+[Visor I2D](http://i2d.humboldt.org.co/visor-I2D/)
+[**El siguiente link contiene la información que proporciona HUMBOLDT**](http://geonetwork.humboldt.org.co/geonetwork/srv/spa/catalog.search#/search?facet.q=topicCat%2Fenvironment&resultType=details&fast=index&_content_type=json&from=1&to=100&sortBy=relevance)
 
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?** 
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?** 
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** 
-- **¿Tiene acceso libre?** 
-- **¿Desde cuándo hay datos?** 
-- **¿Necesitamos un permiso especial?** 
-- **¿Cómo se puede acceder a los datos?** 
-- **¿Podemos crear una automatización para la descarga de los datos?** 
-- **¿Cuál es la frecuencia de actualización de los datos?** 
-- **¿En qué formato están disponibles los datos?** 
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  Sí
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  Sí
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+  Sí
+- **¿Tiene acceso libre?**
+  Sí
+- **¿Desde cuándo hay datos?**
+  En bases desde el 2012, en forma de estudios 1986
+- **¿Necesitamos un permiso especial?**
+  No
+- **¿Cómo se puede acceder a los datos?**
+  Directamente por la página
+- **¿Podemos crear una automatización para la descarga de los datos?**
+  Sí 
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  Soy estudios sobre datos del IDEAM, se podría revisar el IDEAM
+- **¿En qué formato están disponibles los datos?**
+  metadata,  Csv, Tsv, Rdf, XML
 - **¿Existen restricciones geográficas en el acceso?**
+  No
 
 ### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** 
+- **¿Qué nivel de resolución espacial tienen los datos?**
+Son de toda Colombia
+- **¿Qué nivel de resolución temporal tienen los datos?**
+De decada
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+Sí son datos del IDEAM
 - **¿Incluyen metadatos detallados y consistentes?**
+Sí
 
 ### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** 
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** 
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+- Temperatura, precipitación y geológicas de todo tipo
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  temperatura máxima y humedad máxima o míninma sobre mes.
 - **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+  No, solo mediciones más no indicadores
 
 ### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** 
-- **¿Se requiere atribuir la fuente en caso de uso?** 
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  libre
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  No
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  Sí
 - **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Sí
 
 ### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?** 
+- **¿Los datos están disponibles a través de APIs?**
+  POsiblemente, en formato json se puede scrapear, más tener una Apu pública no.
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  NO
 - **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+Python
 
 ### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** 
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** 
+- **¿Quién es la entidad responsable de los datos?**
+  IDEAM y el propio instituto Humbold
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  TIenen clificaciones de usuarios lo cuál puede dar veracidad
 - **¿Hay documentación técnica detallada para entender los datos?**
+  Sí
 
 ### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** 
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Sí
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Hay que confirmarlo
 - **¿Qué soporte técnico está disponible para resolver problemas?**
-
+  No
 ---
 
 ## **Fuente de Datos:  [Invemar ]**
 
 ### **1. Disponibilidad y Acceso**
 
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?** 
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?** 
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** 
-- **¿Tiene acceso libre?** 
-- **¿Desde cuándo hay datos?** 
-- **¿Necesitamos un permiso especial?** 
-- **¿Cómo se puede acceder a los datos?** 
-- **¿Podemos crear una automatización para la descarga de los datos?** 
-- **¿Cuál es la frecuencia de actualización de los datos?** 
-- **¿En qué formato están disponibles los datos?** 
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  No
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+  No
+- **¿Tiene acceso libre?**
+  Sí
+- **¿Desde cuándo hay datos?**
+  De los últimos 10 años (2024)
+- **¿Necesitamos un permiso especial?**
+  No
+- **¿Cómo se puede acceder a los datos?**
+  Mediante API, yaque está directamente en la página de datos abiertos
+- **¿Podemos crear una automatización para la descarga de los datos?**
+  Sí
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  Sin definir
+- **¿En qué formato están disponibles los datos?**
+  Csv, Tsv, Rdf, XML
 - **¿Existen restricciones geográficas en el acceso?**
+  No
 
 ### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** 
+- **¿Qué nivel de resolución espacial tienen los datos?**
+  Tiene Polygonos, o puntos (Lat, long)
+- **¿Qué nivel de resolución temporal tienen los datos?**
+  Tiene Día, mes y año
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+  Sí
 - **¿Incluyen metadatos detallados y consistentes?**
+- Sí
 
 ### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** 
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** 
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+  Puntos geoespaciales donde se encuentran arrecifes y Activos de Información, Áreas Coralinas 
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  Mediciones Históricas
 - **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+  No
 
 ### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** 
-- **¿Se requiere atribuir la fuente en caso de uso?** 
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+    libre
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  Sí, pero es manejo de la API, se puede hacer para que tome más de 1000 registros
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  No
 - **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Sí
 
 ### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?** 
+- **¿Los datos están disponibles a través de APIs?**
+  Sí
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  No
 - **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
-
+  Python, R y Java
 ### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** 
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** 
+- **¿Quién es la entidad responsable de los datos?**
+  INVEMAR 
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  Es buena
 - **¿Hay documentación técnica detallada para entender los datos?**
-
+  Sí, en la misma página de datos abiertos
+  
 ### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** 
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Sí, hacer uniones entre diferentes valores y variables
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Al tener geoespaciales, se pueden manejar los centroides de los polygonos para diferentes estudios.
 - **¿Qué soporte técnico está disponible para resolver problemas?**
+  El de datosabiertos
 
 ---
 
