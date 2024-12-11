@@ -1457,6 +1457,86 @@ Latitude (latitude)	grid: /Y (degree_north) ordered (5S) to (15N) by 0.1 N= 201 
   Es información que sirve para el área de riesgo de un municipio
 
 
+## **Fuente de Datos:  [CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations]**
+
+### **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  Precipitación global diaria y mensual
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+ global 2-m maximum temperature (Tmax)  a monthly estimate of the daily maximum temperature for the 1983-2016 time period.
+- **¿Tiene acceso libre?**
+  Si.
+- **¿Desde cuándo hay datos?**
+  Precipitación 1981 en adenlante para colombia
+- **¿Necesitamos un permiso especial?**
+  No.
+- **¿Cómo se puede acceder a los datos?**
+  Descargarlos a través de la página https://data.chc.ucsb.edu/products/CHIRPS-2.0/
+- **¿Podemos crear una automatización para la descarga de los datos?**
+- No es claro si se puede
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  Los CHIRPS finales (todos los datos de la estación) estarán disponibles en algún momento de la tercera semana del mes 
+  siguiente.
+- **¿En qué formato están disponibles los datos?**
+  .tif,  .bil,   .netcdf
+- **¿Existen restricciones geográficas en el acceso?**
+  No.
+
+### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**
+  CAmer-Carib 23.5N-6N, 93W- 57W @0.05 deg resolution = maps 720 x 350 pixels
+- **¿Qué nivel de resolución temporal tienen los datos?**
+  Desde 1981 en adelante y tiempo real
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+Un producto de datos en formato gridded construido utilizando un enfoque de modelado geoespacial basado en regresiones de ventana móvil e interpolación por ponderación de la distancia inversa. Este enfoque combina campos satelitales, indicadores fisiográficos en grilla y datos climáticos normales in situ provenientes de estaciones meteorológicas. La climatología global de precipitación resultante, con una resolución de 0.05° y datos mensuales para 12 meses, puede superar en desempeño a productos globales de climatología similares, especialmente en áreas con terreno complejo y baja densidad de estaciones meteorológicas.
+- **¿Incluyen metadatos detallados y consistentes?**
+  Si, los metadatos están incluidos en los archivos y documentación técnica.
+
+### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+Temperatura y precipitación y sequía
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  Historicas y forecasting del tiempo y clima por temporados no a nivel de escenarios de cambio climatico
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+NA
+
+### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  Libre.
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  No
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  Si, es necesario citar
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Si
+
+### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**
+  No es claro, en teoria si
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  No
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+  R, python, julia
+
+### **6. Contexto y la Institución**
+- **¿Quién es la entidad responsable de los datos?**
+  University of California, Santa Barbara
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  Muy confiable.
+- **¿Hay documentación técnica detallada para entender los datos?**
+  Si, disponible en la misma página.
+
+### **7. Usabilidad**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Considero que los datos e infomación es útil para el proyecto.
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Es viable integralos con otras fuentes de información
+- **¿Qué soporte técnico está disponible para resolver problemas?**
+  _________________________
+  
 ## **Fuente de Datos: [Nombre de la Fuente]**
 
 *(Repetir la estructura anterior para cada fuente de datos)*
