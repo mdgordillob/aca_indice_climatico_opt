@@ -1456,7 +1456,253 @@ Latitude (latitude)	grid: /Y (degree_north) ordered (5S) to (15N) by 0.1 N= 201 
 - ** Otras observaciones
   Es información que sirve para el área de riesgo de un municipio
 
+__________________________
+## **Fuente de Datos:  [CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations]**
 
+### **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  Precipitación global diaria y mensual
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+ global 2-m maximum temperature (Tmax)  a monthly estimate of the daily maximum temperature for the 1983-2016 time period.
+- **¿Tiene acceso libre?**
+  Si.
+- **¿Desde cuándo hay datos?**
+  Precipitación 1981 en adenlante para colombia
+- **¿Necesitamos un permiso especial?**
+  No.
+- **¿Cómo se puede acceder a los datos?**
+  Descargarlos a través de la página https://data.chc.ucsb.edu/products/CHIRPS-2.0/
+- **¿Podemos crear una automatización para la descarga de los datos?**
+- No es claro si se puede
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  Los CHIRPS finales (todos los datos de la estación) estarán disponibles en algún momento de la tercera semana del mes 
+  siguiente.
+- **¿En qué formato están disponibles los datos?**
+  .tif,  .bil,   .netcdf
+- **¿Existen restricciones geográficas en el acceso?**
+  No.
+
+### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**
+  CAmer-Carib 23.5N-6N, 93W- 57W @0.05 deg resolution = maps 720 x 350 pixels
+- **¿Qué nivel de resolución temporal tienen los datos?**
+  Desde 1981 en adelante y tiempo real
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+Un producto de datos en formato gridded construido utilizando un enfoque de modelado geoespacial basado en regresiones de ventana móvil e interpolación por ponderación de la distancia inversa. Este enfoque combina campos satelitales, indicadores fisiográficos en grilla y datos climáticos normales in situ provenientes de estaciones meteorológicas. La climatología global de precipitación resultante, con una resolución de 0.05° y datos mensuales para 12 meses, puede superar en desempeño a productos globales de climatología similares, especialmente en áreas con terreno complejo y baja densidad de estaciones meteorológicas.
+- **¿Incluyen metadatos detallados y consistentes?**
+  Si, los metadatos están incluidos en los archivos y documentación técnica.
+
+### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+Temperatura y precipitación y sequía
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  Historicas y forecasting del tiempo y clima por temporados no a nivel de escenarios de cambio climatico
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+NA
+
+### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  Libre.
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  No
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  Si, es necesario citar
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Si
+
+### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**
+  No es claro, en teoria si
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  No
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+  R, python, julia
+
+### **6. Contexto y la Institución**
+- **¿Quién es la entidad responsable de los datos?**
+  University of California, Santa Barbara
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  Muy confiable.
+- **¿Hay documentación técnica detallada para entender los datos?**
+  Si, disponible en la misma página.
+
+### **7. Usabilidad**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Considero que los datos e infomación SON UTILES para el proyecto.
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Es viable integralos con otras fuentes de información
+- **¿Qué soporte técnico está disponible para resolver problemas?**
+Pete Peterson
+pete@geog.ucsb.edu
+https://wiki.chc.ucsb.edu/CHIRPS_FAQ
+  _________________________
+
+## **Fuente de Datos:  [CAR]**
+
+### **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+- No
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+ No.
+- **¿Tiene acceso libre?**
+  No.
+- **¿Desde cuándo hay datos?**
+  No.
+- **¿Necesitamos un permiso especial?**
+  No.
+- **¿Cómo se puede acceder a los datos?**
+  Podemos indagar haciendo una solciitud formal. En la pagina web solo hay estudios y resultados pero no datos para acceso libre
+- **¿Podemos crear una automatización para la descarga de los datos?**
+- No
+- **¿Cuál es la frecuencia de actualización de los datos?**
+  NA
+- **¿En qué formato están disponibles los datos?**
+ NA
+- **¿Existen restricciones geográficas en el acceso?**
+ NA
+
+### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**
+ NA
+- **¿Qué nivel de resolución temporal tienen los datos?**
+No esta definido
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+NA
+- **¿Incluyen metadatos detallados y consistentes?**
+  NA
+
+### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+NA
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+ NA
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+NA
+
+### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  NA
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  NA
+- **¿Se requiere atribuir la fuente en caso de uso?**
+NA
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+ NA
+
+### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**
+  NA
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+NA
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+  NA
+
+### **6. Contexto y la Institución**
+- **¿Quién es la entidad responsable de los datos?**
+  CAR CUNDINAMARCA
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+ NA
+- **¿Hay documentación técnica detallada para entender los datos?**
+  NO
+
+### **7. Usabilidad**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Considero que los datos e infomación NO es útil para el proyecto.
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  NA
+- **¿Qué soporte técnico está disponible para resolver problemas?**
+NA
+________________________________________
+__________________________
+## **Fuente de Datos:  [Climate data library: INPE CPTEC latam]**
+
+### **1. Disponibilidad y Acceso**
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
+  Precipitación global diaria y mensual
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
+  No.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**
+ NO
+- **¿Tiene acceso libre?**
+  Si.
+- **¿Desde cuándo hay datos?**
+  Precipitación 1981 en adenlante para colombia
+- **¿Necesitamos un permiso especial?**
+  No.
+- **¿Cómo se puede acceder a los datos?**
+  Descargarlos a través de la página https://iridl.ldeo.columbia.edu/SOURCES/.INPE/.CPTEC/.latam/.CoSch/
+- **¿Podemos crear una automatización para la descarga de los datos?**
+- No es claro si se puede
+- **¿Cuál es la frecuencia de actualización de los datos?**
+Última Actualización: Mon, 23 Oct 2023
+- **¿En qué formato están disponibles los datos?**
+  .tif,  .bil,   .netcdf
+- **¿Existen restricciones geográficas en el acceso?**
+  No.
+
+### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**
+  Time (time)	grid: /T (days since 1960-01-01) ordered (2 Jun 2000) to (2 Jun 2024) by 1.0 N= 8767 pts :grid
+Longitude (longitude)	grid: /X (degree_east) ordered (115.95W) to (30.14999W) by 0.1 N= 859 pts :grid
+Latitude (latitude)	grid: /Y (degree_north) ordered (59.95S) to (32.85N) by 0.1 N= 929 pts :grid
+- **¿Qué nivel de resolución temporal tienen los datos?**
+ Time (time)	grid: /T (days since 1960-01-01) ordered (2 Jun 2000) to (2 Jun 2024) by 1.0 N= 8767 pts :grid
+1981 PARA colombia
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**
+Durante este proyecto, se implementaron varias estrategias de validación para verificar el rendimiento del conjunto de datos de LatAm. La primera es un enfoque estadístico clásico que utiliza un proceso de correlación cruzada con pluviómetros diarios como referencia en terreno (ground truth). La segunda estrategia se basa en pérdidas relevantes para el sector asegurador ocurridas en terreno en América Central y del Sur, utilizando herramientas e información desarrolladas y recopiladas por el IRI a través de esfuerzos relacionados con el IIF y otras iniciativas.
+
+Con estas herramientas, se demuestra que el conjunto de datos de LatAm es una fuente comparable a otros conjuntos de datos que se utilizan actualmente para productos de seguros índice operativos. Para más información, consulte el siguiente enlace: ftp://ftp.cptec.inpe.br/rainfall/cif.latam/output_americas/documents/20180501_LatAmDatasetValidation.docx.
+- **¿Incluyen metadatos detallados y consistentes?**
+  Si, los metadatos están incluidos en los archivos y documentación técnica.
+
+### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**
+precipitación 
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**
+  Historicas
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+NA
+
+### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**
+  Libre.
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**
+  No
+- **¿Se requiere atribuir la fuente en caso de uso?**
+  Si, es necesario citar
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+  Si
+
+### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**
+  No es claro, en teoria si
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**
+  No
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+  R, python, julia
+
+### **6. Contexto y la Institución**
+- **¿Quién es la entidad responsable de los datos?**
+https://satelite.cptec.inpe.br/latamdataset/
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**
+  COnfiable.
+- **¿Hay documentación técnica detallada para entender los datos?**
+  Si, disponible en la misma página.
+
+### **7. Usabilidad**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**
+  Considero que los datos e infomación SON UTILES para el proyecto.
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**
+  Es viable integralos con otras fuentes de información
+- **¿Qué soporte técnico está disponible para resolver problemas?**
+https://satelite.cptec.inpe.br/latamdataset/
+  
 ## **Fuente de Datos: [Nombre de la Fuente]**
 
 *(Repetir la estructura anterior para cada fuente de datos)*
