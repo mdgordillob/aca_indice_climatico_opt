@@ -290,10 +290,84 @@ Unidad de Planificación Rural Agropecuaria
 [IRI](https://iridl.ldeo.columbia.edu/)
 
 # INMET
-[INMET](https://medium.com/@victorfoscarini/processing-brazils-climate-data-aggregating-inmet-data-from-brazilian-state-capitals-912de4d55e32)
-Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
 
--No hay bases de datos en regiones colombianas.
+### **Análisis de Datos Climáticos - INMET (Instituto Nacional de Meteorología, Brasil)**
+
+---
+
+#### **1. Disponibilidad y Acceso**
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.  
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.  
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.  
+- **¿Tiene acceso libre?**  
+  Sí, requiere registro.  
+- **¿Desde cuándo hay datos?**  
+  Desde 1961, pero no tiene datos en colombia.  
+- **¿Necesitamos un permiso especial?**  
+  No, solo registro.  
+- **¿Cómo se puede acceder a los datos?**  
+  A través de su sitio web o API.  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí.  
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Diaria.  
+- **¿En qué formato están disponibles los datos?**  
+  CSV, TXT.  
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.  
+
+---
+
+#### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Estaciones meteorológicas.  
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Diaria y horaria.  
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.  
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.  
+
+---
+
+#### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  - Temperatura (máxima, mínima, promedio).  
+  - Precipitación.  
+  - Velocidad del viento.  
+  - Humedad relativa.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Mediciones históricas.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.  
+
+---
+
+#### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre, con registro.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí.  
+
+---
+
+#### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.
+
+
+
+[INMET](https://portal.inmet.gov.br/).
+
 
 # Power NASA
 
