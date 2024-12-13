@@ -1486,20 +1486,11 @@ Latitude (latitude)	grid: /Y (degree_north) ordered (5S) to (15N) by 0.1 N= 201 
 - **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
   No.
 
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
-  Sí, proporciona datos de temperatura máxima, mínima, promedio y registros horarios.
-
-- **¿Tiene acceso libre?**  
-  Si.
-  
-- **¿Desde cuándo hay datos?**  
-  Desde 1981 hasta 2010.
 
 - **¿Necesitamos un permiso especial?**  
    No es necesario.
 
-- **¿Cómo se puede acceder a los datos?**  
-  A través de la página de datos abiertos.
+
 
 - **¿Podemos crear una automatización para la descarga de los datos?**  
   Considero que no es necesario. Pero si.
@@ -1532,11 +1523,6 @@ No hay actualización.
 
 ## **3. Contenido de los Datos**
 
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
-  Están disponibles variables como temperatura, precipitación.
-
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
-  No.
 
 - **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
   No.
@@ -1595,8 +1581,452 @@ No hay actualización.
 
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Por correo a sigsiac.tic@minambiente.gov.co
+  
+
+## ANLA
+# Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
+
+# Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
+
+## 1. Disponibilidad y Acceso
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí, la ANLA dispone de información sobre precipitaciones como parte de monitoreos climáticos en proyectos de evaluación ambiental, aunque puede estar enfocada en áreas específicas bajo licenciamiento ambiental.
+
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  La información de vientos puede estar disponible en estudios ambientales de proyectos con requerimientos específicos, pero no es un dato de acceso estándar como en meteorología.
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Los datos de temperatura pueden estar disponibles en los informes de impacto ambiental asociados con licencias específicas, aunque no son centralizados ni de alta resolución.
+
+- **¿Tiene acceso libre?**  
+  No, los datos no son de acceso completamente libre; algunos están en informes públicos, pero otros requieren permisos o solicitudes específicas.
+
+- **¿Desde cuándo hay datos?**  
+  Los datos pueden variar según el proyecto. Generalmente, se recopilan desde el inicio del proceso de evaluación ambiental.
+
+- **¿Necesitamos un permiso especial?**  
+  Sí, para acceder a información específica o confidencial relacionada con proyectos licenciados.
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de solicitudes formales a la ANLA o por medio de informes públicos publicados en su sitio web.
+
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  No, ya que los datos no suelen estar en APIs ni en plataformas diseñadas para descargas masivas.
+
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Depende del proyecto y de la periodicidad de los reportes asociados (mensual, anual, etc.).
+
+- **¿En qué formato están disponibles los datos?**  
+  PDF para informes, ocasionalmente en tablas de Excel o formatos geográficos como shapefiles.
+
+- **¿Existen restricciones geográficas en el acceso?**  
+  Los datos suelen estar restringidos al área de estudio de los proyectos licenciados.
+
+---
+
+## 2. Calidad y Estandarización
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Resolución específica al área de impacto de los proyectos. Puede ser alta a nivel local, pero no a nivel nacional.
+
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Resolución baja (mensual, anual o por evento). No se ofrecen datos en tiempo real.
+
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí, los datos se validan en el contexto de estudios de impacto ambiental.
+
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí, en los informes técnicos se incluyen descripciones metodológicas y metadatos.
+
+---
+
+## 3. Contenido de los Datos
+- **¿Qué variables están disponibles?**  
+  Variables climáticas (precipitación, temperatura, viento), calidad del aire, calidad del agua, entre otras relacionadas con impactos ambientales.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Predominantemente mediciones históricas recopiladas durante el proceso de evaluación.
+
+- **¿Existen variables derivadas?**  
+  Sí, como índices de impacto ambiental o cálculos de capacidad de carga ambiental.
+
+---
+
+## 4. Uso y Licencia
+- **¿Qué tipo de licencia tienen los datos?**  
+  Los datos están bajo licencias restringidas. Parte de ellos son de dominio público, pero otros son confidenciales.
+
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Sí, según las restricciones impuestas por la ANLA.
+
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí, la ANLA debe ser citada como fuente.
+
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  No sin autorización expresa.
+
+---
+
+## 5. Automatización y Escalabilidad
+- **¿Los datos están disponibles a través de APIs?**  
+  No, la ANLA no ofrece APIs públicas.
+
+- **¿Existen restricciones en la velocidad o volumen de solicitudes?**  
+  Sí, ya que el acceso no es automatizado.
+
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos?**  
+  PDF y Excel pueden analizarse con Python o R tras una conversión manual.
+
+---
+
+## 6. Contexto y la Institución
+- **¿Quién es la entidad responsable de los datos?**  
+  La Autoridad Nacional de Licencias Ambientales (ANLA).
+
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Alta, ya que cumple estándares técnicos rigurosos.
+
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, en los informes asociados a los proyectos licenciados.
+
+---
+
+## 7. Usabilidad
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Frecuentemente, sí, ya que no están en formatos listos para análisis inmediato.
+
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Moderadamente fácil con herramientas de procesamiento de datos.
+
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  Limitado, depende de consultas formales a la ANLA.
 
 
+
+
+[Geovisores y Mapas ANLA](https://www.anla.gov.co/eureka/geovisores-y-mapas)
+
+- **¿Cómo se puede acceder a los datos?**  
+  A través de la página de datos abiertos.
+
+
+# INMET
+
+### **Análisis de Datos Climáticos - INMET (Instituto Nacional de Meteorología, Brasil)**
+
+---
+
+#### **1. Disponibilidad y Acceso**
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.  
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.  
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.  
+- **¿Tiene acceso libre?**  
+  Sí, requiere registro.  
+- **¿Desde cuándo hay datos?**  
+  Desde 1961, pero no tiene datos en colombia.  
+- **¿Necesitamos un permiso especial?**  
+  No, solo registro.  
+- **¿Cómo se puede acceder a los datos?**  
+  A través de su sitio web o API.  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Sí.  
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Diaria.  
+- **¿En qué formato están disponibles los datos?**  
+  CSV, TXT.  
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.  
+
+---
+
+#### **2. Calidad y Estandarización**
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  Estaciones meteorológicas.  
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Diaria y horaria.  
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.  
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.  
+
+---
+
+#### **3. Contenido de los Datos**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  - Temperatura (máxima, mínima, promedio).  
+  - Precipitación.  
+  - Velocidad del viento.  
+  - Humedad relativa.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Mediciones históricas.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.  
+
+---
+
+#### **4. Uso y Licencia**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre, con registro.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí.  
+
+---
+
+#### **5. Automatización y Escalabilidad**
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.
+
+
+
+[INMET](https://portal.inmet.gov.br/).
+
+
+# Power NASA
+
+## **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  Sí.
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  Sí.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí.
+- **¿Tiene acceso libre?**  
+  Sí.
+- **¿Desde cuándo hay datos?**  
+  Desde 1981.
+- **¿Necesitamos un permiso especial?**  
+  No.
+- **¿Cómo se puede acceder a los datos?**  
+  Descargas en formato CSV o acceso mediante JSON.
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  Buscando alternativa para automatizar.
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Diaria.
+- **¿En qué formato están disponibles los datos?**  
+  CSV, ASCII, JSON.
+- **¿Existen restricciones geográficas en el acceso?**  
+  Sí, solo se pueden tomar regiones de tamaño 10° por archivo CSV.
+
+---
+
+## **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  A escala global con resolución adaptativa.
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  Datos desde 1981 hasta la actualidad.
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  Sí.
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.
+
+---
+
+## **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Contiene las cinco variables del índice del clima actuarial mencionadas en el PDF.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ambos.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.
+
+---
+
+## **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  Cada archivo CSV permite descargar por periodos de un año; sin embargo, no hay límite de archivos descargables.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí, cumpliendo las condiciones establecidas por la NASA. Los datos son de dominio público, pero su redistribución debe respetar los términos de uso.
+
+---
+
+## **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí. [API de NASA POWER](https://power.larc.nasa.gov/api/temporal/daily/point?parameters=T2M&community=AG&longitude=-77.0369&latitude=38.9072&start=20230101&end=20231231&format=JSON)  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  - **Límite de solicitudes por minuto/hora:** Entre 60 y 120 solicitudes por minuto.  
+  - **Volumen de datos:** Máximo de 366 días por solicitud.  
+  - **Uso justo:** El servicio está diseñado para fines científicos y educativos; solicitudes masivas podrían restringirse.  
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R, MATLAB.
+
+---
+
+## **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La NASA, específicamente a través de la herramienta NASA POWER del Langley Research Center (LaRC).  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  La NASA tiene una reputación mundialmente reconocida por la calidad y fiabilidad de sus datos. Los datos de NASA POWER son validados mediante estaciones meteorológicas y modelos precisos.  
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  Sí, incluye metodología, variables y ejemplos prácticos.
+
+---
+
+## **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Los datos están en formatos estándar como CSV o JSON, adaptables a diversas herramientas.  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  - **Formatos estándar:** Compatibles con Python, R, MATLAB, Power BI y Tableau.  
+  - **API accesible:** Permite integrar datos en flujos de trabajo automatizados.  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  - **Documentación detallada:** Con ejemplos y guías.  
+  - **Correo de soporte:** [power@larc.nasa.gov](mailto:power@larc.nasa.gov).  
+  - **FAQ:** Página oficial con preguntas frecuentes.  
+
+---
+
+## **Power NASA**  
+**[https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)**
+
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Están disponibles variables como temperatura, precipitación.
+
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  No.
+
+
+## UNGRD
+
+### **1. Disponibilidad y Acceso**
+
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
+  No.  
+- **¿Tiene información de vientos, velocidad del viento, ráfagas de viento?**  
+  No.  
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  No.  
+- **¿Tiene acceso libre?**  
+  Sí.  
+- **¿Desde cuándo hay datos?**  
+  1980.  
+- **¿Necesitamos un permiso especial?**  
+  No.  
+- **¿Cómo se puede acceder a los datos?**  
+  En datos abiertos gov o directamente desde su página web.  
+- **¿Podemos crear una automatización para la descarga de los datos?**  
+  No.  
+- **¿Cuál es la frecuencia de actualización de los datos?**  
+  Anual.  
+- **¿En qué formato están disponibles los datos?**  
+  CSV.  
+- **¿Existen restricciones geográficas en el acceso?**  
+  No.  
+
+---
+
+### **2. Calidad y Estandarización**
+
+- **¿Qué nivel de resolución espacial tienen los datos?**  
+  No hay.  
+- **¿Qué nivel de resolución temporal tienen los datos?**  
+  No especificado.  
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?**  
+  No.  
+- **¿Incluyen metadatos detallados y consistentes?**  
+  Sí.  
+
+---
+
+### **3. Contenido de los Datos**
+
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?**  
+  Fecha, tipo de catástrofe y lugar.  
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
+  Ninguna.  
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**  
+  No.  
+
+---
+
+### **4. Uso y Licencia**
+
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?**  
+  Libre.  
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?**  
+  No.  
+- **¿Se requiere atribuir la fuente en caso de uso?**  
+  Sí.  
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**  
+  Sí.  
+
+---
+
+### **5. Automatización y Escalabilidad**
+
+- **¿Los datos están disponibles a través de APIs?**  
+  Sí.  
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  
+  No.  
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
+  Python, R.  
+
+---
+
+### **6. Contexto y la Institución**
+
+- **¿Quién es la entidad responsable de los datos?**  
+  La Unidad Nacional para la Gestión del Riesgo de Desastres (UNGRD) en Colombia.  
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?**  
+  Buena.  
+- **¿Hay documentación técnica detallada para entender los datos?**  
+  No.  
+
+---
+
+### **7. Usabilidad**
+
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?**  
+  Sí.  
+- **¿Qué tan fácil es integrar los datos con otras fuentes?**  
+  Complicado.  
+- **¿Qué soporte técnico está disponible para resolver problemas?**  
+  No especificado.  
+
+---
+
+## **[Repositorio UNGRD](https://repositorio.gestiondelriesgo.gov.co/handle/20.500.11762/27179)**
+
+[Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
+
+
+---
+
+[Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
+
+
+## HUMBOldt
+[Visor I2D](http://i2d.humboldt.org.co/visor-I2D/)
+
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
+  Sí, proporciona datos de temperatura máxima, mínima, promedio y registros horarios.
+
+- **¿Tiene acceso libre?**  
+  Si.
+  
+- **¿Desde cuándo hay datos?**  
+  Desde 1981 hasta 2010.
+
+
+______________________________________
 ## **Fuente de Datos:  [Nombre de la Fuente]**
 
 ### **1. Disponibilidad y Acceso**
@@ -1643,4 +2073,4 @@ No hay actualización.
 ### **7. Usabilidad**
 - **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
 - **¿Qué tan fácil es integrar los datos con otras fuentes?** 
-- **¿Qué soporte técnico está disponible para resolver problemas?**
+
