@@ -799,49 +799,50 @@ Python
 
 ### **1. Disponibilidad y Acceso**
 
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?** 
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?** 
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** 
-- **¿Tiene acceso libre?** 
-- **¿Desde cuándo hay datos?** 
-- **¿Necesitamos un permiso especial?** 
-- **¿Cómo se puede acceder a los datos?** 
-- **¿Podemos crear una automatización para la descarga de los datos?** 
-- **¿Cuál es la frecuencia de actualización de los datos?** 
-- **¿En qué formato están disponibles los datos?** 
-- **¿Existen restricciones geográficas en el acceso?**
+- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  Si, real time info
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**  Sí.
+- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** Sí
+- **¿Tiene acceso libre?**  Sí y no; hay unos [datos abiertos](https://www.ecmwf.int/en/forecasts/datasets/open-data) subidos cada tanto tiempo , y hay otros a los que se deben acercarse [pagando]( https://products.ecmwf.int/shopping-cart/orders/new/subset/163)
+- **¿Desde cuándo hay datos?** Son a tiempo real, o datasets actualizados del mismo mes.
+- **¿Necesitamos un permiso especial?** Hace uso de licencias https://www.ecmwf.int/sites/default/files/ECMWF_Standard_Licence.pdf
+- **¿Cómo se puede acceder a los datos?** Mediante requerimientos de información, muy seguramente APIs unicas
+- **¿Podemos crear una automatización para la descarga de los datos?**  Sí.
+- **¿Cuál es la frecuencia de actualización de los datos?** Continua, semanalmente.
+- **¿En qué formato están disponibles los datos?**  CCSDS, GRIB2
+- **¿Existen restricciones geográficas en el acceso?** No.
 
 ### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** 
-- **¿Incluyen metadatos detallados y consistentes?**
+- **¿Qué nivel de resolución espacial tienen los datos?** Tiene de toda Colombia (paga y si se selecciona un área específica) o datos zonales, por ejemplo Latinoamérica.
+- **¿Qué nivel de resolución temporal tienen los datos?**  Contiene datos históricos, y a su vez del año por mes.
+- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** No.
+- **¿Incluyen metadatos detallados y consistentes?** No.
 
 ### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** 
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** 
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
+- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** Sí.
+- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** Sí.
+- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?** Sí. Todo se encuentra [acá](https://www.ecmwf.int/en/forecasts/datasets/open-data) 
 
 ### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** 
-- **¿Se requiere atribuir la fuente en caso de uso?** 
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
+- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** Contiene de las tres maneras dependiendo del tipo de acercamiento a los datos que se le quieran dar.
+- **¿Existe un límite en la cantidad de datos que se pueden descargar?** No.
+- **¿Se requiere atribuir la fuente en caso de uso?**  Bajo the Creative
+Commons CC-BY-4.0 licence (https://creativecommons.org/licenses/by/4.0/legalcode)
+- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?** Sí
 
 ### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?** 
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
+- **¿Los datos están disponibles a través de APIs?** Sí, pero estos son bajo endpoints internos de la página.
+- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  No,
+- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?** Sí
 
 ### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** 
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** 
-- **¿Hay documentación técnica detallada para entender los datos?**
+- **¿Quién es la entidad responsable de los datos?** Ellos mismos.
+- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** Se ven muy completos, la información recolectada, y su cantidad, habla por si misma.
+- **¿Hay documentación técnica detallada para entender los datos?** Sí.
 
 ### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** 
-- **¿Qué soporte técnico está disponible para resolver problemas?**
+- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** Sí, siempre
+- **¿Qué tan fácil es integrar los datos con otras fuentes?** Mediante el ID que cada base de datos tiene, y el buen uso de las columnas se pueden hacer estudios sectoriales.
+- **¿Qué soporte técnico está disponible para resolver problemas?** Una guía de usuario
 
 ---
 ## **Power NASA**  
