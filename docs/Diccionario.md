@@ -746,10 +746,13 @@ Python
 
 ## **Fuente de Datos:  [Corporaciones autónomas ]**
 
+
+Sobre este, para entrar a estudiar su acceso hay que pedir requerimientos escritos a dicha asosiación. De igual manera algunas compañias que hacen parte de este, tienen bases de datos abiertas, muy textuales.
+
 ### **1. Disponibilidad y Acceso**
 
 - **¿Tiene información de lluvias (precipitación), fuertes lluvias?** 
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?** 
+- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
 - **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** 
 - **¿Tiene acceso libre?** 
 - **¿Desde cuándo hay datos?** 
