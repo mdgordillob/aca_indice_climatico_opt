@@ -1,66 +1,25 @@
-## DNP
-[Repositorio DNP](https://anda.dnp.gov.co/index.php/catalog)
-
-## SIAC
-[SIAC Datos Abiertos](https://siac-datosabiertos-mads.hub.arcgis.com/)
-
-## UNGRD
-[Repositorio UNGRD](https://repositorio.gestiondelriesgo.gov.co/handle/20.500.11762/27179)
-[Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
-
-## HUMBOldt
-[Visor I2D](http://i2d.humboldt.org.co/visor-I2D/)
-
-## UPRA
-Unidad de Planificación Rural Agropecuaria
-[SIPRA Nacional](https://sipra.upra.gov.co/nacional)
-
-## ANLA
-[Geovisores y Mapas ANLA](https://www.anla.gov.co/eureka/geovisores-y-mapas)
-
-## CAR
-[Datos Geográficos CAR](https://datosgeograficos.car.gov.co/)
-
-## Invemar
-[Datos Abiertos Invemar](https://portal.invemar.org.co/datos-abiertos)
-
-## Corporaciones autónomas
-[Corporaciones Autónomas Regionales y ESRI](https://www.asocars.org/corporaciones-autonomas-regionales-y-esri-se-unen-para-fortalecer-la-gestion-ambiental/)
-
-## GFS
-[Global Forecast System](https://www.ncei.noaa.gov/products/weather-climate-models/global-forecast)
-
-## ECMWF
-[ECMWF](https://www.ecmwf.int/)
-
-## Datos abiertos
-[Precipitación](https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Precipitaci-n/s54a-sgyg/about_data)
-
-## Meteoblue
-[Meteoblue Colombia](https://www.meteoblue.com/es/tiempo/historyclimate/climatemodelled/colombia_colombia_3686120)
+# Índice
+- [DNP](#dnp)
+- [SIAC](#siac)
+- [UNGRD](#ungrd)
+- [HUMBOLDT](#humboldt)
+- [UPRA](#upra)
+- [ANLA](#anla)
+- [CAR](#car)
+- [Invemar](#invemar)
+- [Corporaciones autónomas](#corporaciones-autónomas)
+- [GFS](#gfs)
+- [ECMWF](#ecmwf)
+- [SIAC Datos Abiertos](#datos-abiertos)
+- [Meteoblue](#meteoblue)
+- [CHIRPS](#chirps)
+- [IRI](#iri)
+- [INMET](#inmet)
+- [Google Earth Engine](#google-earth-engine)
 
 
-## CHIRPS
-[CHIRPS](https://www.chc.ucsb.edu/data/chirps)
-
-## IRI
-[IRI](https://iridl.ldeo.columbia.edu/)
-
-## IRI
-[IRI](https://iridl.ldeo.columbia.edu/)
-
-# INMET
-[INMET](https://medium.com/@victorfoscarini/processing-brazils-climate-data-aggregating-inmet-data-from-brazilian-state-capitals-912de4d55e32)
-Sé que hay otras páginas del inmet, les pido que me ayuden a buscarlas.
-
-# Google Earth Engine
-[INMET](https://earthengine.google.com/)
-# *Diccionario de información climática*
-
-
-# Posibles fuentes de información
-
-## **Fuente de Datos:  [Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)]**
+## IDEAM
+### **Fuente de Datos:  [Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)]**
 [Atención al Ciudadano](http://dhime.ideam.gov.co/atencionciudadano/)
 [Galería de Mapas](https://www.ideam.gov.co/web/guest/galeria-de-mapas)
 [Resultados de Cambio Climático](http://www.cambioclimatico.gov.co/resultados#:~:text=El%20%22An%C3%A1lisis%20de%20Vulnerabilidad%20y,de%20equipo%20con%20el%20INVEMAR)
@@ -185,7 +144,8 @@ Sí, disponible en la misma página y atenciones al ciudadano puestas por el mis
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Soporte telefónico, por correo o en oficinas del IDEAM.
 
-## **Fuente de Datos:  [Instituto Geográfico Agustin Codazzi - IGAC]**
+## IGAC
+### **Fuente de Datos:  [Instituto Geográfico Agustin Codazzi - IGAC]**
 [Geoportal IGAC](https://geoportal.igac.gov.co/contenido/tematicos)
 
 ## **1. Disponibilidad y Acceso**
@@ -303,7 +263,8 @@ Considero que los datos proporcionados son útiles para el proyecto si se trabaj
   Correos, atención al público y líneas de atención.
 
 
-## **Fuente de Datos:  [WorldClim]**
+## WorldClim
+### **Fuente de Datos:  [WorldClim]**
 [Geoportal IGAC](https://geoportal.igac.gov.co/contenido/tematicos)
 
 ## **1. Disponibilidad y Acceso**
@@ -425,11 +386,8 @@ Por correo a info@worldclim.org
 
 
 ---
-
----
-
----
-# **Fuente de Datos: Global Forecast System**
+## GFS
+**Fuente de Datos: Global Forecast System**
 
 ## **1. Disponibilidad y Acceso**
 
@@ -539,7 +497,8 @@ Por correo a info@worldclim.org
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Documentación oficial, foros de usuarios, y soporte comunitario.
 
-# **Fuente de Datos: MeteoBlue**
+## MeteoBlue
+**Fuente de Datos: MeteoBlue**
 
 ## **1. Disponibilidad y Acceso**
 
@@ -661,7 +620,8 @@ Por correo a info@worldclim.org
   Se ofrece soporte técnico a través de la documentación y contacto directo para usuarios comerciales.
 
 
-# **Fuente de Datos: Google Earth Engine**
+## Google Earth Engine
+**Fuente de Datos: Google Earth Engine**
 
 ## **1. Disponibilidad y Acceso**
 
@@ -782,7 +742,7 @@ Por correo a info@worldclim.org
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Soporte a través de la documentación, foros de usuarios, y recursos educativos en línea.
 
-# Power NASA
+## Power NASA
 
 ## **1. Disponibilidad y Acceso**
 
@@ -886,7 +846,7 @@ Por correo a info@worldclim.org
   - **FAQ:** Página oficial con preguntas frecuentes.  
 
 ---
-## **Fuente de Datos:  [HUMBOLDT]**
+## HUMBOLDT
 
 ### **1. Disponibilidad y Acceso**
 [Visor I2D](http://i2d.humboldt.org.co/visor-I2D/)
@@ -969,7 +929,8 @@ Python
   No
 ---
 
-## **Fuente de Datos:  [Invemar ]**
+## INVEMAR
+**Fuente de Datos:  [Invemar ]**
 
 ### **1. Disponibilidad y Acceso**
 
@@ -1049,9 +1010,8 @@ Python
 
 ---
 
-## **Fuente de Datos:  [Corporaciones autónomas ]**
-
-
+## Corporaciones Autónomas
+**Fuente de Datos: Corporaciones Autónomas Regionales**
 Sobre este, para entrar a estudiar su acceso hay que pedir requerimientos escritos a dicha asosiación. De igual manera algunas compañias que hacen parte de este, tienen bases de datos abiertas, muy textuales.
 
 ### **1. Disponibilidad y Acceso**
@@ -1101,63 +1061,12 @@ Sobre este, para entrar a estudiar su acceso hay que pedir requerimientos escrit
 - **¿Qué soporte técnico está disponible para resolver problemas?**
 
 ---
-
-
-## **Fuente de Datos:  [ECMWF ECWMF ]**
-
-### **1. Disponibilidad y Acceso**
-
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  Si, real time info
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**  Sí.
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** Sí
-- **¿Tiene acceso libre?**  Sí y no; hay unos [datos abiertos](https://www.ecmwf.int/en/forecasts/datasets/open-data) subidos cada tanto tiempo , y hay otros a los que se deben acercarse [pagando]( https://products.ecmwf.int/shopping-cart/orders/new/subset/163)
-- **¿Desde cuándo hay datos?** Son a tiempo real, o datasets actualizados del mismo mes.
-- **¿Necesitamos un permiso especial?** Hace uso de licencias https://www.ecmwf.int/sites/default/files/ECMWF_Standard_Licence.pdf
-- **¿Cómo se puede acceder a los datos?** Mediante requerimientos de información, muy seguramente APIs unicas
-- **¿Podemos crear una automatización para la descarga de los datos?**  Sí.
-- **¿Cuál es la frecuencia de actualización de los datos?** Continua, semanalmente.
-- **¿En qué formato están disponibles los datos?**  CCSDS, GRIB2
-- **¿Existen restricciones geográficas en el acceso?** No.
-
-### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** Tiene de toda Colombia (paga y si se selecciona un área específica) o datos zonales, por ejemplo Latinoamérica.
-- **¿Qué nivel de resolución temporal tienen los datos?**  Contiene datos históricos, y a su vez del año por mes.
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** No.
-- **¿Incluyen metadatos detallados y consistentes?** No.
-
-### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** Sí.
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** Sí.
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?** Sí. Todo se encuentra [acá](https://www.ecmwf.int/en/forecasts/datasets/open-data) 
-
-### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** Contiene de las tres maneras dependiendo del tipo de acercamiento a los datos que se le quieran dar.
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** No.
-- **¿Se requiere atribuir la fuente en caso de uso?**  Bajo the Creative
-Commons CC-BY-4.0 licence (https://creativecommons.org/licenses/by/4.0/legalcode)
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?** Sí
-
-### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** Sí, pero estos son bajo endpoints internos de la página.
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?**  No,
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?** Sí
-
-### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** Ellos mismos.
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** Se ven muy completos, la información recolectada, y su cantidad, habla por si misma.
-- **¿Hay documentación técnica detallada para entender los datos?** Sí.
-
-### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** Sí, siempre
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** Mediante el ID que cada base de datos tiene, y el buen uso de las columnas se pueden hacer estudios sectoriales.
-- **¿Qué soporte técnico está disponible para resolver problemas?** Una guía de usuario
-
----
-## **Power NASA**  
+## Power NASA  
 **[https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)**
 
 
-# **Fuente de Datos: International Research Institute for Climate and Society: IRI**
+## IRI
+**Fuente de Datos: International Research Institute for Climate and Society: IRI**
 
 ## **1. Disponibilidad y Acceso**
 
@@ -1275,7 +1184,8 @@ Temperatura: Stations from IDEAM + MERRA2
 Precipitación: Stations from IDEAM + CHIRPS
 
 =======
-# **Fuente de Datos:  [CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations]**
+## CHIRPS
+**Fuente de Datos:  [CHIRPS: Rainfall Estimates from Rain Gauge and Satellite Observations]**
 
 ### **1. Disponibilidad y Acceso**
 
@@ -1358,7 +1268,8 @@ pete@geog.ucsb.edu
 https://wiki.chc.ucsb.edu/CHIRPS_FAQ
   _________________________
 
-## **Fuente de Datos:  [CAR]**
+## CAR
+**Fuente de Datos:  [CAR] Corporación Autónomoa Regional de Cundinamarca**
 
 ### **1. Disponibilidad y Acceso**
 
@@ -1521,7 +1432,8 @@ https://satelite.cptec.inpe.br/latamdataset/
 - **¿Qué soporte técnico está disponible para resolver problemas?**
 https://satelite.cptec.inpe.br/latamdataset/
   
-# **Fuente de Datos: ECMWF (European Centre for Medium-Range Weather Forecasts)**
+## ECMWF
+**Fuente de Datos: ECMWF (European Centre for Medium-Range Weather Forecasts)**
 
 ## **1. Disponibilidad y Acceso**
 
@@ -1642,7 +1554,8 @@ https://satelite.cptec.inpe.br/latamdataset/
 - **¿Qué soporte técnico está disponible para resolver problemas?**  
   Soporte a través de documentación, foros de usuarios y contacto técnico directo para usuarios registrados.
 
-## **Fuente de Datos:  Departamento Nacional de Planeación
+## DNP
+**Fuente de Datos:  Departamento Nacional de Planeación
 
 ### **1. Disponibilidad y Acceso**
 
@@ -1740,7 +1653,8 @@ Latitude (latitude)	grid: /Y (degree_north) ordered (5S) to (15N) by 0.1 N= 201 
   La biblioteca de datos cuenta con una sección de Ayuda y Recursos que incluye tutoriales básicos y estadísticos, la documentación de las funciones, y otros recursos que permiten explotar la Biblioteca de Datos.
 
 
-# **Fuente de Datos: : Sistema de Información Ambiental de Colombia - SIAC**
+## SIAC Datos Abiertos
+**Fuente de Datos: : Sistema de Información Ambiental de Colombia - SIAC**
 
 [SIAC Datos Abiertos](https://siac-datosabiertos-mads.hub.arcgis.com/)
 
@@ -1850,9 +1764,7 @@ No hay actualización.
   
 
 ## ANLA
-# Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
 
-# Respuesta basada en datos de la **ANLA** (Autoridad Nacional de Licencias Ambientales)
 
 ## 1. Disponibilidad y Acceso
 - **¿Tiene información de lluvias (precipitación), fuertes lluvias?**  
@@ -1975,9 +1887,9 @@ No hay actualización.
   A través de la página de datos abiertos.
 
 
-# INMET
+## INMET
 
-### **Análisis de Datos Climáticos - INMET (Instituto Nacional de Meteorología, Brasil)**
+**Análisis de Datos Climáticos - INMET (Instituto Nacional de Meteorología, Brasil)**
 
 ---
 
@@ -2055,7 +1967,7 @@ No hay actualización.
 [INMET](https://portal.inmet.gov.br/).
 
 
-# Power NASA
+## Power NASA
 
 ## **1. Disponibilidad y Acceso**
 
@@ -2277,19 +2189,6 @@ No hay actualización.
 ---
 
 [Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
-
-
-## HUMBOldt
-[Visor I2D](http://i2d.humboldt.org.co/visor-I2D/)
-
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?**  
-  Sí, proporciona datos de temperatura máxima, mínima, promedio y registros horarios.
-
-- **¿Tiene acceso libre?**  
-  Si.
-  
-- **¿Desde cuándo hay datos?**  
-  Desde 1981 hasta 2010.
 
 
 ______________________________________
