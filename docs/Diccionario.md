@@ -1,4 +1,6 @@
+
 # Índice
+- [Resumen de Fuentes de Datos](#resumen-de-fuentes-de-datos)
 - [IDEAM](#ideam)
 - [IGAC](#igac)
 - [WorldClim](#worldclim)
@@ -19,6 +21,33 @@
 - [ANLA](#anla)
 - [INMET](#inmet)
 - [UNGRD](#ungrd)
+
+# Resumen de Fuentes de Datos
+
+| Fuente                  | Información disponible                                                                                  |
+|-------------------------|---------------------------------------------------------------------------------------------------------|
+| **IDEAM**              | Sí hay información. La mayoría es reciente y puntual de estaciones.                                     |
+| **IGAC**               | No tienen información relevante para este estudio.                                                     |
+| **WorldClim**          | Sí tienen información desde 1970.                                                                      |
+| **GFS**                | Sí tienen información desde 2015.                                                                      |
+| **Meteoblue**          | Sí tienen información, pero requiere pago.                                                             |
+| **Google Earth Engine**| Sí tienen información, con un límite de cuota. Considerado como paso futuro. Consultan BD como ERA5.    |
+| **NASA**               | Tiene datos desde 2015.                                                                                |
+| **Humboldt**           | Tienen estudios de diferentes zonas.                                                                   |
+| **Invemar**            | Poseen información del nivel del mar. Hay otras fuentes y hemos hecho requerimientos adicionales.       |
+| **Corporaciones**      | Principalmente estudios para diferentes regiones.                                                      |
+| **IRI**                | Sí tienen información desde 2015.                                                                      |
+| **CHIRPS**             | Sí tienen información de lluvias desde 1981.                                                           |
+| **CAR**                | Es una fuente de estudios, pero no tienen información directa.                                         |
+| **CPTEC**              | Tienen información, pero solo desde 1981.                                                              |
+| **ECMWF**              | Sí tienen información de precipitación desde 1950.                                                     |
+| **DNP**                | Poseen información de lluvias.                                                                         |
+| **SIAC**               | Poseen información de lluvias.                                                                         |
+| **ANLA**               | Poseen información de lluvias.                                                                         |
+| **InMet**              | Poseen información desde 1960, pero solo en Brasil, no en Colombia.                                    |
+| **Power NASA**         | Sí tienen información. Tienen un máximo de 365 datos por solicitud.                                    |
+| **UNGRD**              | No tienen información.                                                                                 |
+
 
 ## IDEAM
 ### **Fuente de Datos:  [Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)]**
