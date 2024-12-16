@@ -62,8 +62,8 @@ request = {
     ],
     "data_format": "grib",
     "download_format": "unarchived",
-    #"area": [5.94, -74.99, 3.65, -72.78]
-    "area": [13.77, -82.04, -5.68, -66.68]
+    "area": [5.94, -74.99, 3.65, -72.78]
+    #"area": [13.77, -82.04, -5.68, -66.68]
 }
 
 # Create the CDS API client and download the data
