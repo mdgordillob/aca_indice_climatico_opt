@@ -1,22 +1,24 @@
 # Índice
-- [DNP](#dnp)
-- [SIAC](#siac)
-- [UNGRD](#ungrd)
+- [IDEAM](#ideam)
+- [IGAC](#igac)
+- [WorldClim](#worldclim)
+- [GFS](#gfs)
+- [Meteoblue](#meteoblue)
+- [Google Earth Engine](#google-earth-engine)
+- [Power NASA](#power-nasa)
 - [HUMBOLDT](#humboldt)
-- [UPRA](#upra)
-- [ANLA](#anla)
-- [CAR](#car)
 - [Invemar](#invemar)
 - [Corporaciones autónomas](#corporaciones-autónomas)
-- [GFS](#gfs)
-- [ECMWF](#ecmwf)
-- [SIAC Datos Abiertos](#datos-abiertos)
-- [Meteoblue](#meteoblue)
-- [CHIRPS](#chirps)
 - [IRI](#iri)
+- [CHIRPS](#chirps)
+- [CAR](#car)
+- [CPTEC](#cptec)
+- [ECMWF](#ecmwf)
+- [DNP](#dnp)
+- [SIAC](#siac)
+- [ANLA](#anla)
 - [INMET](#inmet)
-- [Google Earth Engine](#google-earth-engine)
-
+- [UNGRD](#ungrd)
 
 ## IDEAM
 ### **Fuente de Datos:  [Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)]**
@@ -119,9 +121,7 @@ Temperatura, precipitación, radiación, variables relacionadas con el viento et
 - **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**  
   Python, R, entre otros.
 
----
-
-## **6. Contexto y la Institución**
+--6. Contexto y la Institución**
 
 - **¿Quién es la entidad responsable de los datos?**  
   IDEAM.
@@ -1012,58 +1012,9 @@ Python
 
 ## Corporaciones Autónomas
 **Fuente de Datos: Corporaciones Autónomas Regionales**
-Sobre este, para entrar a estudiar su acceso hay que pedir requerimientos escritos a dicha asosiación. De igual manera algunas compañias que hacen parte de este, tienen bases de datos abiertas, muy textuales.
-
-### **1. Disponibilidad y Acceso**
-
-- **¿Tiene información de lluvias (precipitación), fuertes lluvias?** 
-- **¿Tiene información de vientos, velocidad del viento, rafagas de viento?**
-- **¿Tiene información de temperaturas máximas, mínimas, promedio, datos de temperatura horaria?** 
-- **¿Tiene acceso libre?** 
-- **¿Desde cuándo hay datos?** 
-- **¿Necesitamos un permiso especial?** 
-- **¿Cómo se puede acceder a los datos?** 
-- **¿Podemos crear una automatización para la descarga de los datos?** 
-- **¿Cuál es la frecuencia de actualización de los datos?** 
-- **¿En qué formato están disponibles los datos?** 
-- **¿Existen restricciones geográficas en el acceso?**
-
-### **2. Calidad y Estandarización**
-- **¿Qué nivel de resolución espacial tienen los datos?** 
-- **¿Qué nivel de resolución temporal tienen los datos?** 
-- **¿Los datos han sido sometidos a algún proceso de limpieza o validación?** 
-- **¿Incluyen metadatos detallados y consistentes?**
-
-### **3. Contenido de los Datos**
-- **¿Qué variables están disponibles (temperatura, precipitación, viento, etc.)?** 
-- **¿Los datos incluyen mediciones históricas, simulaciones o ambos?** 
-- **¿Existen variables derivadas (índices climáticos, anomalías, etc.)?**
-
-### **4. Uso y Licencia**
-- **¿Qué tipo de licencia tienen los datos (libre, restringida, comercial)?** 
-- **¿Existe un límite en la cantidad de datos que se pueden descargar?** 
-- **¿Se requiere atribuir la fuente en caso de uso?** 
-- **¿Es posible redistribuir los datos o integrarlos en nuevos productos?**
-
-### **5. Automatización y Escalabilidad**
-- **¿Los datos están disponibles a través de APIs?** 
-- **¿Existen restricciones en la velocidad o volumen de solicitudes para la descarga automatizada?** 
-- **¿Qué herramientas o lenguajes son compatibles con el acceso a los datos (Python, R, etc.)?**
-
-### **6. Contexto y la Institución**
-- **¿Quién es la entidad responsable de los datos?** 
-- **¿Cuál es la reputación de la fuente en términos de calidad y fiabilidad?** 
-- **¿Hay documentación técnica detallada para entender los datos?**
-
-### **7. Usabilidad**
-- **¿Es necesario transformar los datos para adaptarlos a los objetivos del proyecto?** 
-- **¿Qué tan fácil es integrar los datos con otras fuentes?** 
-- **¿Qué soporte técnico está disponible para resolver problemas?**
+Sobre este, para entrar a estudiar su acceso hay que pedir requerimientos escritos a dicha asosiación. De igual manera algunas compañias que hacen parte de este, tienen bases de datos abiertas, muy textuales. Son estudios locales donde los datos son de la región y la mayoría de la información es compartida en formato PDF.
 
 ---
-## Power NASA  
-**[https://power.larc.nasa.gov/](https://power.larc.nasa.gov/)**
-
 
 ## IRI
 **Fuente de Datos: International Research Institute for Climate and Society: IRI**
@@ -1349,7 +1300,8 @@ NA
 NA
 ________________________________________
 __________________________
-## **Fuente de Datos:  [Climate data library: INPE CPTEC latam]**
+## CPTEC
+**Fuente de Datos:  [Climate data library: INPE CPTEC latam]**
 
 ### **1. Disponibilidad y Acceso**
 - **¿Tiene información de lluvias (precipitación), fuertes lluvias?**
@@ -1653,10 +1605,10 @@ Latitude (latitude)	grid: /Y (degree_north) ordered (5S) to (15N) by 0.1 N= 201 
   La biblioteca de datos cuenta con una sección de Ayuda y Recursos que incluye tutoriales básicos y estadísticos, la documentación de las funciones, y otros recursos que permiten explotar la Biblioteca de Datos.
 
 
-## SIAC Datos Abiertos
+## SIAC
 **Fuente de Datos: : Sistema de Información Ambiental de Colombia - SIAC**
 
-[SIAC Datos Abiertos](https://siac-datosabiertos-mads.hub.arcgis.com/)
+[SIAC - Link Datos Abiertos](https://siac-datosabiertos-mads.hub.arcgis.com/)
 
 ## **1. Disponibilidad y Acceso**
 
@@ -2081,6 +2033,7 @@ No hay actualización.
 - **¿Los datos incluyen mediciones históricas, simulaciones o ambos?**  
   No.
 
+---
 
 ## UNGRD
 

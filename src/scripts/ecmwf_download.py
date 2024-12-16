@@ -6,7 +6,7 @@ import pdb
 
 # Specify the target folder and filename
 target_folder = "../../data/raw/era5/"  # Replace with your desired folder path
-target_filename = "era5_2m_temperature_1961_1971.grib"  # Change the filename if needed
+target_filename = "era5_2m_temperature_1971_1980_cundinamarca.grib"  # Change the filename if needed
 target_path = os.path.join(target_folder, target_filename)
 
 # Ensure the folder exists
@@ -18,10 +18,18 @@ request = {
     "product_type": ["reanalysis"],
     "variable": ["2m_temperature"],
     "year": [
-        "1961", "1962", "1963",
-        "1964", "1965", "1966",
-        "1967", "1968", "1969",
-        "1970", "1971"
+        #"1961", "1962", "1963",
+        #"1964", "1965", "1966",
+        #"1967", "1968", "1969",
+        #"1970", "1971", "1972",
+        "1971", "1972",
+        "1973", "1974", "1975",
+        "1976", "1977", "1978",
+        "1979", "1980"
+        #, "1981",
+        #"1982", "1983", "1984",
+        #"1985", "1986", "1987",
+        #"1988", "1989", "1990"
     ],
     "month": [
         "01", "02", "03",
@@ -54,7 +62,8 @@ request = {
     ],
     "data_format": "grib",
     "download_format": "unarchived",
-    "area": [13.77, -82.04, -5.68, -66.68]
+    "area": [5.94, -74.99, 3.65, -72.78]
+    #"area": [13.77, -82.04, -5.68, -66.68]
 }
 
 # Create the CDS API client and download the data
