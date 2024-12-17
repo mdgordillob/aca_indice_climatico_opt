@@ -2172,6 +2172,40 @@ No hay actualización.
 
 [Geoportal SGC](https://www2.sgc.gov.co/sgc/mapas/Paginas/geoportal.aspx)
 
+---
+
+## **[UNESCO]**
+
+[SEA LEVEL STATION MONITORING FACILITY](https://www.ioc-sealevelmonitoring.org/list.php?showall=a&output=performance&order=country&dir=asc)
+
+### **1. Disponibilidad y Acceso**
+
+Esta base de datos contiene información del nivel del mar. Está por niveles relativos y niveles absolutos. La base es de acceso libre sin restricción geográfica. La actualización de estos dependen de la estación (zona donde se tome la estación). La información temporal depende de la estación: la más antigua contiene datos del 2010 (pacífico colombiano). No hay restricciones geográficas para acceder a la base de datos. No se ve una forma de descargar los datos en un formato especial, pero se podrían extraer a través del código fuente.
+
+### **2. Calidad y Estandarización**
+
+Para Colombia, hay un total de 19 estaciones distribuidas en zonas costeras del país: Buenaventura, San Andrés, Tumaco, Cartagena, Coveñas, Turbo, Malpelo, entre otras. Los datos se pueden descargar por minuto. Si se hacen validaciones.
+
+
+### **3. Contenido de los Datos**
+
+Esta disponible la información a nivel del mar. No hay simulaciones, ni mediciones históricas, ni tampoco variables derivadas.
+
+
+### **4. Uso y Licencia**
+Es de uso libre, no hay limite para la descarga de datos, se requiere citarlos, y es posible integrarlos a nuevos productos.
+
+### **5. Automatización y Escalabilidad**
+Es posible descargar y automatizar la descarga o consulta de estos datos. Las velocidades o volumen dependen del equipo. Se podría automatizar la extracción de información en Python.
+
+### **6. Contexto y la Institución**
+La entidad es la UNESCO junto con la Intergovernmental Oceanographic Commission. Los datos son confiables, pues son datos proporcionados por distintos institudos gubernamentales del mundo. No hay mucha documentación técnica para entender los datos.
+
+
+### **7. Usabilidad**
+Si sería necesario adaptarlos, y sería fácil integrarlos con otras fuentes, dependiendo de como se desarrolle el proyecto. Para resolver problemas técnicos, por correo a la entidad.
+
+
 
 ______________________________________
 ## **Fuente de Datos:  [Nombre de la Fuente]**
