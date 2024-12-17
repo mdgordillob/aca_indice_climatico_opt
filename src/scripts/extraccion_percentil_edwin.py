@@ -4,7 +4,8 @@ import pdb
 
 # Path to the GRIB file
 path = '../../data/raw/era5/temperatura/'
-file = 'era5_2m_temperature_1961_1970.grib'
+file = 'era5_2m_temperature_81_82.grib'
+
 
 # Open the GRIB file using xarray and cfgrib
 ds = xr.open_dataset(f'{path}{file}', engine='cfgrib')
