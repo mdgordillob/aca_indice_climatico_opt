@@ -6,3 +6,12 @@ data/zones/*
 
 # Ignorar los archivos de ambiente de python
 myenv/*
+
+# Ignorar las llaves de la API
+src/scripts/keys.py
+
+# Ignorar los archivos de configuración
+src/config.py
+
+# Ignorar los archivos del cahce de python
+src/scripts/__pycache__/
