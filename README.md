@@ -9,6 +9,12 @@ Contiene los Jupyter notebooks para explorar datos y documentar el flujo de trab
 ### `src/`
 Código fuente organizado en scripts y utilidades reutilizables.
 
+#### Descargar datos
+Para descargar los datos, se debe ejecutar el script `ecmwf_descarga.py` ubicado en la carpeta `src/scripts`. Este script descarga los datos de la página web del ECMWF y los almacena en la carpeta `data/raw/era5`.
+
+#### Unir los datos
+Para unir los datos descargados, se debe ejecutar el script `unir_archivos.py` ubicado en la carpeta `src/scripts`. Este script une los datos descargados y los almacena en la carpeta `data/processed`.
+
 ### `docs/`
 Documentación importante del proyecto, como metodología y resultados.
 
