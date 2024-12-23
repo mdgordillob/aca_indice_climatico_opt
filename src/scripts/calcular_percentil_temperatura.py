@@ -45,26 +45,34 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         ## output_path = "max_min.csv"
         ## df.to_csv(output_path, index=False)
         
-        # Calculate percentiles for each cell
-        percentiles = daily_data.groupby("time.month").map(
+        # Calculate percentiles, mean, and standard deviation for each variable
+        percentiles_max = daily_data['daily_max'].groupby("time.month").map(
             lambda x: x.quantile([0.1, 0.9], dim="time")
         )
-        mean = daily_data.groupby("time.month").mean(dim="time")
-        std_dev = daily_data.groupby("time.month").std(dim="time")
-
+        percentiles_min = daily_data['daily_min'].groupby("time.month").map(
+            lambda x: x.quantile([0.1, 0.9], dim="time")
+        )
+        mean_max = daily_data['daily_max'].groupby("time.month").mean(dim="time")
+        mean_min = daily_data['daily_min'].groupby("time.month").mean(dim="time")
+        std_dev_max = daily_data['daily_max'].groupby("time.month").std(dim="time")
+        std_dev_min = daily_data['daily_min'].groupby("time.month").std(dim="time")
+        
         # Combine all statistics into a single dataset
         estadisticas = xr.Dataset({
-            'percentiles': percentiles,
-            'mean': mean,
-            'std_dev': std_dev
+            'percentiles_max': percentiles_max,
+            'percentiles_min': percentiles_min,
+            'mean_max': mean_max,
+            'mean_min': mean_min,
+            'std_dev_max': std_dev_max,
+            'std_dev_min': std_dev_min
         })
         
         estadisticas.to_netcdf(archivo_salida)
 
-        ## subset =  percentiles.sel(latitude=4, longitude=-73)[['month', 'daily_max', 'daily_min']]
-        ## df = subset.to_dataframe().reset_index()
-        ## output_path = "percentiles.csv"
-        ## df.to_csv(output_path, index=False)
+        subset =  estadisticas.sel(latitude=4, longitude=-73)[['month', 'percentiles_max', 'percentiles_min', 'mean_max', 'mean_min', 'std_dev_max', 'std_dev_min']]
+        df = subset.to_dataframe().reset_index()
+        output_path = "../../data/raw/processed/percentiles.csv"
+        df.to_csv(output_path, index=False)
         
         return archivo_salida
     except Exception as e:
