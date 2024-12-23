@@ -23,17 +23,28 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         # Resample to daily frequency and calculate daily max and min
         daily_max = dataset.resample(time='1D').max()
         daily_min = dataset.resample(time='1D').min()
+        pdb.set_trace()
+
+        #  Extraction of the values
+        ### subset = dataset.sel(latitude=4, longitude=-73)[['time', 't2m']]
+        ### df = subset.to_dataframe().reset_index()
+        ### output_path = "output.csv"
+        ### df.to_csv(output_path, index=False)
         
         # Convert temperature from Kelvin to Celsius
         daily_max = daily_max - 273.15
         daily_min = daily_min - 273.15
         
         # Combine daily max and min into a single dataset
-        pdb.set_trace()
         daily_data = xr.Dataset({
             'daily_max': daily_max['t2m'],  # Replace 't2m' with the actual variable name
             'daily_min': daily_min['t2m']   # Replace 't2m' with the actual variable name
         })
+
+        ## subset =  daily_data.sel(latitude=4, longitude=-73)[['time', 'daily_max', 'daily_min']]
+        ## df = subset.to_dataframe().reset_index()
+        ## output_path = "max_min.csv"
+        ## df.to_csv(output_path, index=False)
         
         # Calculate percentiles for each cell
         percentiles = daily_data.groupby("time.month").map(
@@ -41,6 +52,11 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         )
         
         percentiles.to_netcdf(archivo_salida)
+
+        ## subset =  percentiles.sel(latitude=4, longitude=-73)[['month', 'daily_max', 'daily_min']]
+        ## df = subset.to_dataframe().reset_index()
+        ## output_path = "percentiles.csv"
+        ## df.to_csv(output_path, index=False)
         
         return archivo_salida
     except Exception as e:
