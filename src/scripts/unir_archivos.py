@@ -18,7 +18,7 @@ def unir_archivos_grib(lista_archivos, salida="era5_2m_temperature_union.nc"):
 
     try:
         datasets = [xr.open_dataset(archivo, engine="cfgrib") for archivo in lista_archivos]
-        dataset_union = xr.concat(datasets, dim="time")
+        dataset_union = xr.merge(datasets)
         dataset_union.to_netcdf(salida) 
         return salida
  
