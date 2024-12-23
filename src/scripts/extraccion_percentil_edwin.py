@@ -1,18 +1,18 @@
-# Función para extraer el percentil de la temperatura de la base de datos de ERA5
-import xarray as xr
+from unir_archivos import unir_archivos_grib
+import os
 import pdb
 
-# Path to the GRIB file
-path = '../../data/raw/era5/temperatura/'
-file = 'era5_2m_temperature_81_82.grib'
+ruta_datos = "../../data/raw/era5"
+ruta_datos_salida = "../../data/raw/processed"
+files = os.listdir(ruta_datos)
 
+# Filter files that start with era5_2m_temperature
+files = [file for file in files if file.startswith("era5_2m_temperature_8")]
 
-# Open the GRIB file using xarray and cfgrib
-ds = xr.open_dataset(f'{path}{file}', engine='cfgrib')
-pdb.set_trace()
+# Files that ends with .grib
+files = [file for file in files if file.endswith(".grib")]
 
-# Calculate the 90th percentile
-percentile_90 = ds.quantile(0.9, dim='time')
+# Create a list with the full path of the files
+archivos = [os.path.join(ruta_datos, file) for file in files]
 
-# Print the result
-print(percentile_90)
+archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_2m_temperature_union.nc"))
