@@ -1,4 +1,4 @@
-from unir_archivos_jj import unir_archivos_grib
+from unir_archivos import unir_archivos_grib
 import os
 import pdb
 

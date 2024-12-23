@@ -3,6 +3,7 @@ cdsapi==0.7.5
 certifi==2024.8.30
 cffi==1.17.1
 cfgrib==0.9.14.1
+cftime==1.6.4.post1
 charset-normalizer==3.4.0
 click==8.1.7
 datapi==0.1.1
@@ -10,6 +11,7 @@ eccodes==2.39.1
 findlibs==0.0.5
 idna==3.10
 multiurl==0.3.3
+netCDF4==1.7.2
 numpy==2.2.0
 packaging==24.2
 pandas==2.2.3
