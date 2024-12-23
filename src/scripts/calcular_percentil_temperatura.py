@@ -23,7 +23,6 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         # Resample to daily frequency and calculate daily max and min
         daily_max = dataset.resample(time='1D').max()
         daily_min = dataset.resample(time='1D').min()
-        pdb.set_trace()
 
         #  Extraction of the values
         ### subset = dataset.sel(latitude=4, longitude=-73)[['time', 't2m']]
