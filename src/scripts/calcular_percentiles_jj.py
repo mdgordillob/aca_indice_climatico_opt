@@ -14,11 +14,11 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         str: Ruta del archivo con los percentiles calculados.
     """
     try:
-        pdb.set_trace()
         dataset = xr.open_dataset(archivo_entrada)
-        percentiles = dataset.groupby("time.month").apply(
-            lambda x: xr.concat([x.quantile(0.1), x.quantile(0.9)], dim="percentile")
+        percentiles = dataset.groupby("time.month").map(
+            lambda x: x.quantile([0.1, 0.9], dim="time")
         )
+        pdb.set_trace()
         percentiles.to_netcdf(archivo_salida)
         return archivo_salida
     except Exception as e:
@@ -30,7 +30,7 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
 if __name__ == "__main__":
 
     ruta_datos = "../../data/raw/processed"
-    file = 'era5_all_var_union.nc'
+    file = 'era5_2m_temperature_union.nc'
 
     archivo_union = os.path.join(ruta_datos, file)
 
