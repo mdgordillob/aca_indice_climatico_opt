@@ -49,8 +49,17 @@ def calcular_percentiles(archivo_entrada, archivo_salida="era5_2m_temperature_pe
         percentiles = daily_data.groupby("time.month").map(
             lambda x: x.quantile([0.1, 0.9], dim="time")
         )
+        mean = daily_data.groupby("time.month").mean(dim="time")
+        std_dev = daily_data.groupby("time.month").std(dim="time")
+
+        # Combine all statistics into a single dataset
+        estadisticas = xr.Dataset({
+            'percentiles': percentiles,
+            'mean': mean,
+            'std_dev': std_dev
+        })
         
-        percentiles.to_netcdf(archivo_salida)
+        estadisticas.to_netcdf(archivo_salida)
 
         ## subset =  percentiles.sel(latitude=4, longitude=-73)[['month', 'daily_max', 'daily_min']]
         ## df = subset.to_dataframe().reset_index()
