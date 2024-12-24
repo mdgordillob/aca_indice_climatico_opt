@@ -1,7 +1,7 @@
 import os
 import cdsapi
 
-def download_era5_temperature(years, target_folder="../../data/raw/era5/", target_filename="era5_2m_temperature.grib"):
+def download_era5_rain(years, target_folder="../../data/raw/era5/", target_filename="era5_2m_temperature.grib"):
     """
     Download ERA5 2m temperature data for specified years.
 
@@ -15,52 +15,10 @@ def download_era5_temperature(years, target_folder="../../data/raw/era5/", targe
 
     # Define the dataset and request
     dataset = "reanalysis-era5-single-levels"
-    #request = {
-    #    "product_type": ["reanalysis"],
-    #    "variable": ["2m_temperature"],
-    #    "year": years,
-    #    "month": [
-    #        "01", "02", "03",
-    #        "04", "05", "06",
-    #        "07", "08", "09",
-    #        "10", "11", "12"
-    #    ],
-    #    "day": [
-    #        "01", "02", "03",
-    #        "04", "05", "06",
-    #        "07", "08", "09",
-    #        "10", "11", "12",
-    #        "13", "14", "15",
-    #        "16", "17", "18",
-    #        "19", "20", "21",
-    #        "22", "23", "24",
-    #        "25", "26", "27",
-    #        "28", "29", "30",
-    #        "31"
-    #    ],
-    #    "time": [
-    #        "00:00", "01:00", "02:00",
-    #        "03:00", "04:00", "05:00",
-    #        "06:00", "07:00", "08:00",
-    #        "09:00", "10:00", "11:00",
-    #        "12:00", "13:00", "14:00",
-    #        "15:00", "16:00", "17:00",
-    #        "18:00", "19:00", "20:00",
-    #        "21:00", "22:00", "23:00"
-    #    ],
-    #    "data_format": "grib",
-    #    "download_format": "unarchived",
-    #    "area": [4.0, -73.0, 3.0, -72.0]
-    #}
-
     request = {
         "product_type": ["reanalysis"],
         "variable": [
-            "10m_u_component_of_wind",
-            "10m_v_component_of_wind",
             "total_precipitation",
-            "maximum_2m_temperature_since_previous_post_processing",
-            "minimum_2m_temperature_since_previous_post_processing"
         ],
         "year": years,
         "month": [
@@ -95,6 +53,7 @@ def download_era5_temperature(years, target_folder="../../data/raw/era5/", targe
         "data_format": "grib",
         "download_format": "unarchived",
         "area": [4.0, -73.0, 3.0, -72.0]
+        #"area": [5.94, -74.99, 3.65, -72.78] # Colombia
     }
 
     # Create the CDS API client and download the data
@@ -104,9 +63,10 @@ def download_era5_temperature(years, target_folder="../../data/raw/era5/", targe
 
     print(f"Data downloaded to {target_path}")
 
-# Example usage
-years = ["1981", "1982"]
-download_era5_temperature(years, target_filename="era5_all_var_81_82.grib")
+if __name__ == "__main__":
+    years = ["1981", "1982"]
+    download_era5_rain(years, target_filename="era5_all_var_81_82.grib")
 
-years = ["1983", "1984"]
-download_era5_temperature(years, target_filename="era5_all_var_83_84.grib")
+    years = ["1983", "1984"]
+    download_era5_rain(years, target_filename="era5_all_var_83_84.grib") 
+
