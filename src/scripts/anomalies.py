@@ -1,80 +1,95 @@
 import os
 import xarray as xr
-import pdb
 
-# File setup
-ruta_datos_grib = "../../data/raw/era5/"
-file = 'era5_2m_temperature_81_82.grib'
-archivo_comparar = os.path.join(ruta_datos_grib, file)
+def load_grid_data(file_path, year, month, variable):
+    """Load grid data for a specific year, month, and variable."""
+    grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
+    if variable == 't2m':  # Convert temperature to Celsius
+        grid_data -= 273.15
+    return grid_data
 
-# Year, month, and variable configuration
-year = 1981
-month = 1
-variable = 't2m'
+def resample_to_daily(grid_data):
+    """Resample hourly data to daily max and min."""
+    daily_max = grid_data.resample(time='1D').max(dim='time')
+    daily_min = grid_data.resample(time='1D').min(dim='time')
+    return daily_max, daily_min
 
-# Load grid data for the specific year and month
-grid_data = xr.open_dataset(archivo_comparar, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
+def load_percentiles(percentile_file, month):
+    """Load precomputed percentiles for a specific month."""
+    percentiles_data = xr.open_dataset(percentile_file)
+    return percentiles_data.sel(month=month)
 
-# Convert temperature to Celsius if necessary
-if variable == 't2m':
-    grid_data -= 273.15
+def compute_occurrences(daily_data, percentile_10, percentile_90):
+    """Compute occurrences of values above the 90th percentile and below the 10th percentile."""
+    count_above_90 = (daily_data > percentile_90).sum(dim='time')
+    count_below_10 = (daily_data < percentile_10).sum(dim='time')
+    return count_above_90, count_below_10
 
-# Resample to daily frequency and calculate max and min for each day
-daily_max = grid_data.resample(time='1D').max(dim='time')
-daily_min = grid_data.resample(time='1D').min(dim='time')
+def calculate_anomalies(count_data, mean, std_dev):
+    """Calculate normalized anomalies."""
+    return (count_data - mean) / std_dev
 
-# Load precomputed percentiles
-ruta_datos_percentiles = "../../data/processed"
-datos_percentiles_archivo = "era5_temperatura_percentil.nc"
-archivo_percentiles = os.path.join(ruta_datos_percentiles, datos_percentiles_archivo)
-percentiles_data = xr.open_dataset(archivo_percentiles)
+def drop_unnecessary_coords(data_arrays, coord_name):
+    """Drop an unnecessary coordinate from a list of DataArrays."""
+    return [data_array.drop(coord_name) for data_array in data_arrays]
 
-# Filter percentiles for the specific month
-month_percentiles = percentiles_data.sel(month=month)
+def create_anomalies_dataset(variables, attrs):
+    """Create an xarray.Dataset for anomalies."""
+    return xr.Dataset(variables, attrs=attrs)
 
-# Extract 10th and 90th percentiles for max and min temperatures
-percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
-percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
-percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
-percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
+def main():
+    # File paths and configuration
+    ruta_datos_grib = "../../data/raw/era5/"
+    file = 'era5_2m_temperature_81_82.grib'
+    archivo_comparar = os.path.join(ruta_datos_grib, file)
+    ruta_datos_percentiles = "../../data/processed"
+    datos_percentiles_archivo = "era5_temperatura_percentil.nc"
+    archivo_percentiles = os.path.join(ruta_datos_percentiles, datos_percentiles_archivo)
+    year, month, variable = 1981, 1, 't2m'
 
-# Count occurrences for max temperature
-count_above_90_max = (daily_max > percentile_90_max).sum(dim='time')
-count_below_10_max = (daily_max < percentile_10_max).sum(dim='time')
+    # Load and preprocess grid data
+    grid_data = load_grid_data(archivo_comparar, year, month, variable)
+    daily_max, daily_min = resample_to_daily(grid_data)
 
-# Count occurrences for min temperature
-count_above_90_min = (daily_min > percentile_90_min).sum(dim='time')
-count_below_10_min = (daily_min < percentile_10_min).sum(dim='time')
+    # Load percentiles
+    month_percentiles = load_percentiles(archivo_percentiles, month)
+    percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
+    percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
+    percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
+    percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
-# Calculate the normalized anomalies
-anomalies_above_max = (count_above_90_max - month_percentiles['mean_max']) / month_percentiles['std_dev_max']
-anomalies_below_max = (count_below_10_max - month_percentiles['mean_max']) / month_percentiles['std_dev_max']
-anomalies_above_min = (count_above_90_min - month_percentiles['mean_min']) / month_percentiles['std_dev_min']
-anomalies_below_min = (count_below_10_min - month_percentiles['mean_min']) / month_percentiles['std_dev_min']
+    # Compute occurrences
+    count_above_90_max, count_below_10_max = compute_occurrences(daily_max, percentile_10_max, percentile_90_max)
+    count_above_90_min, count_below_10_min = compute_occurrences(daily_min, percentile_10_min, percentile_90_min)
 
-# Drop the 'quantile' coordinate from each DataArray
-count_above_90_max = count_above_90_max.drop('quantile')
-count_below_10_max = count_below_10_max.drop('quantile')
-count_above_90_min = count_above_90_min.drop('quantile')
-count_below_10_min = count_below_10_min.drop('quantile')
-anomalies_above_max = anomalies_above_max.drop('quantile')
-anomalies_below_max = anomalies_below_max.drop('quantile')
-anomalies_above_min = anomalies_above_min.drop('quantile')
-anomalies_below_min = anomalies_below_min.drop('quantile')
+    # Calculate anomalies
+    anomalies_above_max = calculate_anomalies(count_above_90_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_below_max = calculate_anomalies(count_below_10_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_above_min = calculate_anomalies(count_above_90_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
+    anomalies_below_min = calculate_anomalies(count_below_10_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
 
+    # Drop unnecessary coordinates
+    variables_to_drop = [count_above_90_max, count_below_10_max, count_above_90_min, count_below_10_min,
+                         anomalies_above_max, anomalies_below_max, anomalies_above_min, anomalies_below_min]
+    variables_dropped = drop_unnecessary_coords(variables_to_drop, 'quantile')
 
-# Create a dataset for anomalies
-pdb.set_trace()
-anomalies = xr.Dataset({
-    'count_above_90_max': count_above_90_max,
-    'count_below_10_max': count_below_10_max,
-    'count_above_90_min': count_above_90_min,
-    'count_below_10_min': count_below_10_min,
-    'anomalies_above_max': anomalies_above_max,
-    'anomalies_below_max': anomalies_below_max,
-    'anomalies_above_min': anomalies_above_min,
-    'anomalies_below_min': anomalies_below_min
-}, attrs={'description': 'Anomalies and counts of temperature extremes'})
+    # Create anomalies dataset
+    anomalies = create_anomalies_dataset({
+        'count_above_90_max': variables_dropped[0],
+        'count_below_10_max': variables_dropped[1],
+        'count_above_90_min': variables_dropped[2],
+        'count_below_10_min': variables_dropped[3],
+        'anomalies_above_max': variables_dropped[4],
+        'anomalies_below_max': variables_dropped[5],
+        'anomalies_above_min': variables_dropped[6],
+        'anomalies_below_min': variables_dropped[7]
+    }, attrs={'description': 'Anomalies and counts of temperature extremes'})
 
-# Save the anomalies dataset to a NetCDF file
-anomalies.to_netcdf("../../data/processed/era5_temperatura_anomalias2.nc")
+    # Save the dataset
+    anomalies.to_netcdf("../../data/processed/era5_temperatura_anomalias2.nc")
+
+    # Output results
+    print(anomalies)
+
+if __name__ == "__main__":
+    main()
