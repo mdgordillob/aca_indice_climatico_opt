@@ -3,7 +3,7 @@ import pandas as pd
 import os
 import pdb
 
-def calcular_percentiles(archivo_entrada):
+def calcular_percentiles(archivo_entrada, variable='t2m'):
     """
     Calcula los percentiles 10 y 90 de un archivo NetCDF por mes.
 
@@ -22,14 +22,15 @@ def calcular_percentiles(archivo_entrada):
     daily_max = dataset.resample(time='1D').max()
     daily_min = dataset.resample(time='1D').min()
 
-    # Convert temperature from Kelvin to Celsius
-    daily_max = daily_max - 273.15
-    daily_min = daily_min - 273.15
+    # If the variable is temperature, convert from Kelvin to Celsius
+    if variable == 't2m':
+        daily_max -= 273.15
+        daily_min -= 273.15
     
     # Combine daily max and min into a single dataset
     daily_data = xr.Dataset({
-        'daily_max': daily_max['t2m'],  # Replace 't2m' with the actual variable name
-        'daily_min': daily_min['t2m']   # Replace 't2m' with the actual variable name
+        'daily_max': daily_max[variable],  # Replace 't2m' with the actual variable name
+        'daily_min': daily_min[variable]   # Replace 't2m' with the actual variable name
     })
     
     # Calculate percentiles, mean, and standard deviation for each variable
