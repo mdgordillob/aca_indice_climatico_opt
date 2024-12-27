@@ -1,6 +1,7 @@
 import xarray as xr
 import pandas as pd
 import os
+import pdb
 
 def calcular_percentiles(archivo_entrada):
     """
@@ -38,10 +39,25 @@ def calcular_percentiles(archivo_entrada):
     percentiles_min = daily_data['daily_min'].groupby("time.month").map(
         lambda x: x.quantile([0.1, 0.9], dim="time")
     )
-    mean_max = daily_data['daily_max'].groupby("time.month").mean(dim="time")
-    mean_min = daily_data['daily_min'].groupby("time.month").mean(dim="time")
-    std_dev_max = daily_data['daily_max'].groupby("time.month").std(dim="time")
-    std_dev_min = daily_data['daily_min'].groupby("time.month").std(dim="time")
+    # Calculate the number of days per month where daily_max > 90th percentile
+    days_above_90_max = daily_data['daily_max'].groupby("time.month").map(
+        lambda x: (x > x.quantile(0.9)).sum(dim="time")
+    )
+    
+    # Calculate the number of days per month where daily_min < 10th percentile
+    days_below_10_min = daily_data['daily_min'].groupby("time.month").map(
+        lambda x: (x < x.quantile(0.1)).sum(dim="time")
+    )
+    
+    # Calculate mean and standard deviation of the number of days per month
+    mean_max =   days_above_90_max.mean(dim="month")
+    std_dev_max = days_above_90_max.std(dim="month")
+    mean_min =   days_below_10_min.mean(dim="month")
+    std_dev_min = days_below_10_min.std(dim="month")    
+    # mean_max = daily_data['daily_max'].groupby("time.month").mean(dim="time")
+    # mean_min = daily_data['daily_min'].groupby("time.month").mean(dim="time")
+    # std_dev_max = daily_data['daily_max'].groupby("time.month").std(dim="time")
+    # std_dev_min = daily_data['daily_min'].groupby("time.month").std(dim="time")
     
     # Combine all statistics into a single dataset
     estadisticas = xr.Dataset({
@@ -67,14 +83,14 @@ def guardar_percentiles(estadisticas, archivo_salida):
     
     subset = estadisticas.sel(latitude=4, longitude=-73)[['month', 'percentiles_max', 'percentiles_min', 'mean_max', 'mean_min', 'std_dev_max', 'std_dev_min']]
     df = subset.to_dataframe().reset_index()
-    output_path = "../../data/raw/processed/percentiles.csv"
+    output_path = "../../data/processed/percentiles.csv"
     df.to_csv(output_path, index=False)
 
 def main():
-    ruta_datos = "../../data/raw/processed"
+    ruta_datos = "../../data/processed"
     file = 'era5_2m_temperature_union.nc'
     archivo_union = os.path.join(ruta_datos, file)
-    archivo_salida = os.path.join(ruta_datos, "era5_temperatura_percentil2.nc")
+    archivo_salida = os.path.join(ruta_datos, "era5_temperatura_percentil.nc")
 
     try:
         estadisticas = calcular_percentiles(archivo_union)

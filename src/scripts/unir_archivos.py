@@ -31,7 +31,7 @@ def unir_archivos_grib(lista_archivos, salida="era5_2m_temperature_union.nc"):
 
 if __name__ == "__main__":
     ruta_datos = "../../data/raw/era5"
-    ruta_datos_salida = "../../data/raw/processed"
+    ruta_datos_salida = "../../data/processed"
     files = os.listdir(ruta_datos)
 
     # Filter files that start with era5_2m_temperature
