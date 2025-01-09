@@ -51,7 +51,7 @@ if __name__ == "__main__":
     
     ########################## rain
     ruta_datos = "../../data/raw/era5"
-    ruta_datos_salida = "../../data/raw/processed"
+    ruta_datos_salida = "../../data/processed"
     files = os.listdir(ruta_datos)
 
     # Filter files that start with era5_2m_temperature
