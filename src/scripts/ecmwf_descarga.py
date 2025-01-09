@@ -6,7 +6,7 @@ class ERA5Downloader:
     Class to download ERA5 data from the CDS API
     # Siguiendo la guía https://cds.climate.copernicus.eu/how-to-api 
     '''
-    def __init__(self, target_folder="../../data/raw/era5/", area=[5.94, -74.99, 3.65, -72.78]):
+    def __init__(self, target_folder="../../data/raw/era5/", area=[13.0, -83.0, -4.6, -66.1]):
         self.target_folder = target_folder
         self.area = area
         self.client = cdsapi.Client()
@@ -40,7 +40,7 @@ class ERA5Downloader:
 # Example usage
 if __name__ == "__main__":
     downloader = ERA5Downloader()
-    years = ["2020", "2021"]
-    downloader.download_temperature(years, "era5_2m_temperature.grib")
-    downloader.download_precipitation(years, "era5_total_precipitation.grib")
-    downloader.download_wind(years, "era5_wind.grib")
+    for year in range(1961, 2025):
+        downloader.download_temperature([str(year)], f"era5_tmp_{year}.grib")
+        downloader.download_precipitation([str(year)], f"era5_rain_{year}.grib")
+        downloader.download_wind([str(year)], f"era5_wind_{year}.grib")
