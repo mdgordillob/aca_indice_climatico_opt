@@ -38,7 +38,7 @@ def create_anomalies_dataset(variables, attrs):
     """Create an xarray.Dataset for anomalies."""
     return xr.Dataset(variables, attrs=attrs)
 
-def calcular_amomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias):
+def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias = "../../data/processed/anomalies.nc"):
     # File paths and configuration
     variable = 't2m'
 
@@ -93,15 +93,73 @@ def calcular_amomalias(archivo_percentiles, archivo_comparar, year, month, salid
     # Update Description
     averages.attrs['description'] = 'Averages of cleaned anomalies and counts of temperature extremes'
 
-    pdb.set_trace()
-    print(averages)
-
-    # Return the average anomalies
-    return 
+    return(averages)
 
 if __name__ == "__main__":
     archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
-    archivo_comparar = "../../data/raw/era5/era_small/era5_tmp_1961_1962.grib"
-    month = 1
-    year = 1961
-    calcular_amomalias(archivo_percentiles = archivo_percentiles, archivo_comparar = archivo_comparar, year = year, month = month, salida_anomalias = "../../data/processed/anomalies.nc")
+    archivo_comparar_location = "../../data/raw/era5/era_small/"
+    output_csv_path = "../../data/processed/anomalies_combined.csv"
+    
+    # List all files in the directory
+    files = os.listdir(archivo_comparar_location)
+
+    # Initialize an empty list to store monthly datasets
+    all_anomalies = []
+
+    # Loop through each year and month
+    for year in range(1961, 2025):
+        # Create a list of files
+        print(f"Processing year {year}...")
+
+        # Find all the files that contain the year
+        archivo_comparar = [file for file in files if str(year) in file]
+        
+        # Check if the file is a GRIB file
+        try:
+            archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
+        except:
+            print(f"Error processing year {year}: No GRIB files found")
+            continue
+
+        # Check if the file is a temperature file
+        try:
+            archivo_comparar = [file for file in archivo_comparar if "tmp" in file]
+        except:
+            print(f"Error processing year {year}: No temperature files found")
+            continue
+
+        if len(archivo_comparar) != 1:
+            print(f"Error processing year {year}: More than one temperature file found")
+            continue
+        else:
+            archivo_comparar = archivo_comparar[0]
+
+        archivo_comparar = os.path.join(archivo_comparar_location, archivo_comparar)
+
+        for month in range(1, 13):
+            try:
+                print(f"Processing year {year}, month {month}...")
+                ds_month = calcular_anomalias(
+                    archivo_percentiles=archivo_percentiles,
+                    archivo_comparar=archivo_comparar,
+                    year=year,
+                    month=month,
+                    salida_anomalias=f"../../data/processed/anomalies_{year}_{month}.nc"
+                )
+                # Append the yearly dataset to the list
+                ds_month = ds_month.assign_coords(year=year)
+
+                all_anomalies.append(ds_month)
+            except Exception as e:
+                print(f"Error processing year {year}, month {month}: {e}")
+                continue
+
+    # Combine all monthly datasets into one
+    combined_anomalies = xr.concat(all_anomalies, dim='time')
+
+    # Convert the xarray.Dataset to a pandas.DataFrame
+    anomalies_df = combined_anomalies.to_dataframe().reset_index()
+
+    # Save the DataFrame to a CSV file
+    anomalies_df.to_csv(output_csv_path, index=False)
+    print(f"Anomalies saved to {output_csv_path}")
