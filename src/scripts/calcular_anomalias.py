@@ -1,5 +1,6 @@
 import os
 import xarray as xr
+import pdb
 
 
     
@@ -39,15 +40,9 @@ def create_anomalies_dataset(variables, attrs):
     """Create an xarray.Dataset for anomalies."""
     return xr.Dataset(variables, attrs=attrs)
 
-def main():
+def calcular_amomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias):
     # File paths and configuration
-    ruta_datos_grib = "../../data/raw/era5/"
-    file = 'era5_2m_temperature_81_82.grib'
-    archivo_comparar = os.path.join(ruta_datos_grib, file)
-    ruta_datos_percentiles = "../../data/processed"
-    datos_percentiles_archivo = "era5_temperatura_percentil.nc"
-    archivo_percentiles = os.path.join(ruta_datos_percentiles, datos_percentiles_archivo)
-    year, month, variable = 1981, 1, 't2m'
+    variable = 't2m'
 
     # Load and preprocess grid data
     grid_data = load_grid_data(archivo_comparar, year, month, variable)
@@ -88,10 +83,27 @@ def main():
     }, attrs={'description': 'Anomalies and counts of temperature extremes'})
 
     # Save the dataset
-    anomalies.to_netcdf("../../data/processed/era5_temperatura_anomalias2.nc")
+    anomalies.to_netcdf(salida_anomalias)
 
-    # Output results
-    print(anomalies)
+    # Clean the Dataset
+    anomalies_cleaned = anomalies.where(~xr.ufuncs.isinf(anomalies), drop=False)  # Mask infinite values
+    anomalies_cleaned = anomalies_cleaned.fillna(0)  # Replace NaNs with 0 (or use an alternative value)
+
+    # Compute the Mean Again
+    averages = anomalies_cleaned.mean(dim=['latitude', 'longitude'], keep_attrs=True)
+
+    # Update Description
+    averages.attrs['description'] = 'Averages of cleaned anomalies and counts of temperature extremes'
+
+    pdb.set_trace()
+    print(averages)
+
+    # Return the average anomalies
+    return 
 
 if __name__ == "__main__":
-    main()
+    archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
+    archivo_comparar = "../../data/raw/era5/era_small/era5_tmp_1961_1962.grib"
+    month = 1
+    year = 1961
+    calcular_amomalias(archivo_percentiles = archivo_percentiles, archivo_comparar = archivo_comparar, year = year, month = month, salida_anomalias = "../../data/processed/anomalies.nc")
