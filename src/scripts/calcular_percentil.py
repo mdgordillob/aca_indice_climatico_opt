@@ -3,14 +3,14 @@ import pandas as pd
 import os
 import pdb
 
+
 # Function to count days where daily_max > 90th percentile
 def count_days_above_90th(x):
     quantile_90 = x.quantile(0.9)
     print(f"Quantile (90th): {quantile_90.values}")  # Debug
     return (x > quantile_90).sum(dim="time")
 
-
-def calcular_percentiles(archivo_entrada, variable='t2m'):
+def calcular_percentiles(archivo_entrada, variable):#antes -> (archivo_entrada, variable="t2m"):  este cambio se hizo para ser llamada para cualquier "ocasion"
     """
     Calcula los percentiles 10 y 90 de un archivo NetCDF por mes.
 
@@ -39,8 +39,8 @@ def calcular_percentiles(archivo_entrada, variable='t2m'):
     
     # Combine daily max and min into a single dataset
     daily_data = xr.Dataset({
-        'daily_max': daily_max[variable],  # Replace 't2m' with the actual variable name
-        'daily_min': daily_min[variable]   # Replace 't2m' with the actual variable name
+        'daily_max': daily_max[variable],  
+        'daily_min': daily_min[variable]   
     })
     
     # Calculate percentiles, mean, and standard deviation for each variable
