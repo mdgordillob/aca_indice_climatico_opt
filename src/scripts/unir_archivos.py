@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Create a list with the full path of the files
     archivos = [os.path.join(ruta_datos, file) for file in files]
 
-    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_tmp_union.nc"))
+    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_tmp_union_col.nc"))
     
     ########################## rain
     ruta_datos = "../../data/raw/era5"
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # Create a list with the full path of the files
     archivos = [os.path.join(ruta_datos, file) for file in files]
 
-    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_rain_union.nc"))
+    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_rain_union_col.nc"))
 
     ########################## wind
     ruta_datos = "../../data/raw/era5"
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     # Create a list with the full path of the files
     archivos = [os.path.join(ruta_datos, file) for file in files]
 
-    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_wind_union.nc"))
+    archivo_union = unir_archivos_grib(archivos, salida= os.path.join(ruta_datos_salida, "era5_wind_union_col.nc"))
     
     # Print output
     print('Proceso finalizado')
