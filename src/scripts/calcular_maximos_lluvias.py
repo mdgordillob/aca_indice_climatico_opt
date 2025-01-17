@@ -31,7 +31,6 @@ def calcular_maximos(archivo_entrada, periodo_referencia, variable):
 
     #acumulado de de 5 días
     tp_5_day_sum = tp_daily.rolling(floor=5, min_periods=1).sum()
-    pdb.set_trace()
 
     #validar que esten en el mismo mes
     tp_5_day_sum['month'] = tp_daily['floor'].dt.month #agregar mes
