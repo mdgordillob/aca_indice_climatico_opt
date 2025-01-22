@@ -18,7 +18,7 @@ def load_percentiles(percentile_file_path):
 
 def load_grid_data(file_path, year, month, variable):
     """Load grid data for a specific year, month, and variable."""
-    grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
+    grid_data = xr.open_dataset(file_path)[variable].sel(time=f"{year}-{month:02}")
 
     return grid_data
 
@@ -27,7 +27,7 @@ def calculos_componente_viento(ds_path,year,month):
     try:
         variable="wind_speed"
         ds = load_grid_data(ds_path,year,month,variable)
-
+        print("varialbles:", ds)
     except Exception as e:
         print(f"Error al abri archivo: {e}")
 
@@ -37,7 +37,7 @@ def calculos_componente_viento(ds_path,year,month):
     ds = ds.assign_coords(year=ds["time"].dt.year, month=ds["time"].dt.month)
     
     p= 1.23  #constante de la densidad del aire (kg/m3)
-    ds["wind_power"]= (p* (ds["wind_speed"]**3))/2 
+    ds["wind_power"]= (p* (ds**3))/2 
         
         
         
