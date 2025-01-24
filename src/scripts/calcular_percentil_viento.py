@@ -12,10 +12,10 @@ def calcular_percentiles_viento(archivo_entrada):
     *WP_90_JK: promedio mensual de días que superan dicho percentil, tasa de mensual
     """
     ds = xr.open_dataset(archivo_entrada)
-    ds=resample_to_daily_wind(ds)
-    print(ds["time"])
+    #ds=resample_to_daily_wind(ds)
+    grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
     ds = ds.sel(time=slice('1961', '1990'))
-    ds = ds.assign_coords(month=ds["time"].dt.month)
+    ds = ds.assign_coords(month=ds["time"].dt.month) 
     p= 1.23  #constante de la densidad del aire (kg/m3)
     ds["wind_power"]= (p* (ds["wind_speed"]**3))/2 
     
@@ -58,7 +58,7 @@ def guardar_percentiles_viento(estadisticas, archivo_salida, guardar_csv=False):
 
 def main():
     ruta_datos = "../../data/processed"
-    file = '../../data/raw/era5/era5_all_var_81_82.grib'
+    file = '../../data/raw/era5/era5_daily_combined_wind.nc'
     archivo_union = os.path.join(ruta_datos, file)
     archivo_salida = os.path.join(ruta_datos, "era5_wind_percentil.nc")
 
