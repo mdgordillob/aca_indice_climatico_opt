@@ -13,7 +13,7 @@ def calcular_percentiles_viento(archivo_entrada):
     """
     ds = xr.open_dataset(archivo_entrada)
     #ds=resample_to_daily_wind(ds)
-    print(ds["time"])
+    grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
     ds = ds.sel(time=slice('1961', '1990'))
     ds = ds.assign_coords(month=ds["time"].dt.month) 
     p= 1.23  #constante de la densidad del aire (kg/m3)

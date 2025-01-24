@@ -19,7 +19,7 @@ def load_percentiles(percentile_file_path):
 def load_grid_data(file_path, year, month, variable):
     """Load grid data for a specific year, month, and variable."""
     grid_data = xr.open_dataset(file_path)[variable].sel(time=f"{year}-{month:02}")
-
+    grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
     return grid_data
 
 
