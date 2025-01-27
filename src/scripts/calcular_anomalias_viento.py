@@ -2,10 +2,7 @@
 import xarray as xr
 import numpy as np
 import pandas as pd
-from calcular_percentil import calcular_percentiles, guardar_percentiles
-
 import os
-from unir_archivos import resample_to_daily_wind
 import pdb
 
 
