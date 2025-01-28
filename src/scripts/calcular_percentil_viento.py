@@ -2,7 +2,7 @@ import os
 import numpy as np
 import xarray as xr
 import pandas as pd
-from unir_archivos import resample_to_daily_wind 
+
 
 def calcular_percentiles_viento(archivo_entrada): 
     """
@@ -59,7 +59,7 @@ def guardar_percentiles_viento(estadisticas, archivo_salida, guardar_csv=False):
 
 def main():
     ruta_datos = "../../data/processed"
-    file = '../../data/raw/era5/era5_daily_combined_wind.nc'
+    file = '../../data/processed/era5_daily_combined_wind.nc'
     archivo_union = os.path.join(ruta_datos, file)
     archivo_salida = os.path.join(ruta_datos, "era5_wind_percentil.nc")
 

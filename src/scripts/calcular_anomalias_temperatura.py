@@ -1,6 +1,7 @@
 import os
 import xarray as xr
 import pdb
+import pandas as pd
 
 
     
@@ -9,6 +10,9 @@ def load_grid_data(file_path, year, month, variable):
     grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
     if variable == 't2m':  # Convert temperature to Celsius
         grid_data -= 273.15
+        
+        # For Colombia we have to convert the time from UTC to UTC-5
+        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
     return grid_data
 
 def resample_to_daily(grid_data):
@@ -24,8 +28,8 @@ def load_percentiles(percentile_file, month):
 
 def compute_occurrences(daily_data, percentile_10, percentile_90):
     """Compute occurrences of values above the 90th percentile and below the 10th percentile."""
-    count_above_90 = (daily_data > percentile_90).sum(dim='time')
-    count_below_10 = (daily_data < percentile_10).sum(dim='time')
+    count_above_90 = (daily_data > percentile_90).mean(dim='time')
+    count_below_10 = (daily_data < percentile_10).mean(dim='time')
     return count_above_90, count_below_10
 
 def calculate_anomalies(count_data, mean, std_dev):
@@ -99,7 +103,7 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
 
 if __name__ == "__main__":
     archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
-    archivo_comparar_location = "../../data/raw/era5/era_small/"
+    archivo_comparar_location = "../../data/raw/era5/"
     output_csv_path = "../../data/processed/anomalies_combined.csv"
     
     # List all files in the directory
