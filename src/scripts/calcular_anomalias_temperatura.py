@@ -2,17 +2,28 @@ import os
 import xarray as xr
 import pdb
 import pandas as pd
+import rioxarray as rxr
+import geopandas as gpd
 
-
-    
-def load_grid_data(file_path, year, month, variable):
-    """Load grid data for a specific year, month, and variable."""
+def load_grid_data(file_path, year, month, variable, shapefile_path=None):
+    """Load grid data for a specific year, month, and variable, optionally clipping it with a shapefile."""
     grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
-    if variable == 't2m':  # Convert temperature to Celsius
+    
+    # Convert temperature to Celsius if needed
+    if variable == 't2m':
         grid_data -= 273.15
-        
-        # For Colombia we have to convert the time from UTC to UTC-5
-        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
+        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)  # Convert to UTC-5
+
+    if shapefile_path:
+        # Read the shapefile
+        shape = gpd.read_file(shapefile_path)
+
+        # Ensure dataset has spatial dimensions
+        grid_data = grid_data.rio.write_crs("EPSG:4326", inplace=True)
+
+        # Clip using the shapefile
+        grid_data = grid_data.rio.clip(shape.geometry, shape.crs, drop=True)
+    
     return grid_data
 
 def resample_to_daily(grid_data):
@@ -21,10 +32,21 @@ def resample_to_daily(grid_data):
     daily_min = grid_data.resample(time='1D').min(dim='time')
     return daily_max, daily_min
 
-def load_percentiles(percentile_file, month):
-    """Load precomputed percentiles for a specific month."""
-    percentiles_data = xr.open_dataset(percentile_file)
-    return percentiles_data.sel(month=month)
+def load_percentiles(percentile_file, month, shapefile_path=None):
+    """Load and optionally clip precomputed percentiles for a specific month."""
+    percentiles_data = xr.open_dataset(percentile_file).sel(month=month)
+    
+    if shapefile_path:
+        shape = gpd.read_file(shapefile_path)
+
+        # Ensure the dataset has spatial dimensions
+        percentiles_data = percentiles_data.rio.write_crs("EPSG:4326", inplace=True)
+
+        # Clip the percentile dataset
+        percentiles_data = percentiles_data.rio.clip(shape.geometry, shape.crs, drop=True)
+
+    return percentiles_data
+
 
 def compute_occurrences(daily_data, percentile_10, percentile_90):
     """Compute occurrences of values above the 90th percentile and below the 10th percentile."""
@@ -44,16 +66,16 @@ def create_anomalies_dataset(variables, attrs):
     """Create an xarray.Dataset for anomalies."""
     return xr.Dataset(variables, attrs=attrs)
 
-def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias = "../../data/processed/anomalies.nc"):
-    # File paths and configuration
+def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
     variable = 't2m'
 
-    # Load and preprocess grid data
-    grid_data = load_grid_data(archivo_comparar, year, month, variable)
+    # Load and preprocess grid data with clipping
+    grid_data = load_grid_data(archivo_comparar, year, month, variable, shapefile_path)
     daily_max, daily_min = resample_to_daily(grid_data)
 
-    # Load percentiles
-    month_percentiles = load_percentiles(archivo_percentiles, month)
+    # Load percentiles and clip them
+    month_percentiles = load_percentiles(archivo_percentiles, month, shapefile_path)
+    
     percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
     percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
     percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
@@ -89,22 +111,107 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
     # Save the dataset
     anomalies.to_netcdf(salida_anomalias)
 
-    # Clean the Dataset
-    anomalies_cleaned = anomalies.where(~xr.ufuncs.isinf(anomalies), drop=False)  # Mask infinite values
-    anomalies_cleaned = anomalies_cleaned.fillna(0)  # Replace NaNs with 0 (or use an alternative value)
+    return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
+def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
+    variable = 't2m'
 
-    # Compute the Mean Again
-    averages = anomalies_cleaned.mean(dim=['latitude', 'longitude'], keep_attrs=True)
+    # Load and preprocess grid data with clipping
+    grid_data = load_grid_data(archivo_comparar, year, month, variable, shapefile_path)
+    daily_max, daily_min = resample_to_daily(grid_data)
 
-    # Update Description
-    averages.attrs['description'] = 'Averages of cleaned anomalies and counts of temperature extremes'
+    # Load percentiles and clip them
+    month_percentiles = load_percentiles(archivo_percentiles, month, shapefile_path)
+    
+    percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
+    percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
+    percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
+    percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
-    return(averages)
+    # Compute occurrences
+    count_above_90_max, count_below_10_max = compute_occurrences(daily_max, percentile_10_max, percentile_90_max)
+    count_above_90_min, count_below_10_min = compute_occurrences(daily_min, percentile_10_min, percentile_90_min)
+
+    # Calculate anomalies
+    anomalies_above_max = calculate_anomalies(count_above_90_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_below_max = calculate_anomalies(count_below_10_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_above_min = calculate_anomalies(count_above_90_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
+    anomalies_below_min = calculate_anomalies(count_below_10_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
+
+    # Drop unnecessary coordinates
+    variables_to_drop = [count_above_90_max, count_below_10_max, count_above_90_min, count_below_10_min,
+                         anomalies_above_max, anomalies_below_max, anomalies_above_min, anomalies_below_min]
+    variables_dropped = drop_unnecessary_coords(variables_to_drop, 'quantile')
+
+    # Create anomalies dataset
+    anomalies = create_anomalies_dataset({
+        'count_above_90_max': variables_dropped[0],
+        'count_below_10_max': variables_dropped[1],
+        'count_above_90_min': variables_dropped[2],
+        'count_below_10_min': variables_dropped[3],
+        'anomalies_above_max': variables_dropped[4],
+        'anomalies_below_max': variables_dropped[5],
+        'anomalies_above_min': variables_dropped[6],
+        'anomalies_below_min': variables_dropped[7]
+    }, attrs={'description': 'Anomalies and counts of temperature extremes'})
+
+    # Save the dataset
+    anomalies.to_netcdf(salida_anomalias)
+
+    return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
+
+def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
+    variable = 't2m'
+
+    # Load and preprocess grid data with clipping
+    grid_data = load_grid_data(archivo_comparar, year, month, variable, shapefile_path)
+    daily_max, daily_min = resample_to_daily(grid_data)
+
+    # Load percentiles and clip them
+    month_percentiles = load_percentiles(archivo_percentiles, month, shapefile_path)
+    
+    percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
+    percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
+    percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
+    percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
+
+    # Compute occurrences
+    count_above_90_max, count_below_10_max = compute_occurrences(daily_max, percentile_10_max, percentile_90_max)
+    count_above_90_min, count_below_10_min = compute_occurrences(daily_min, percentile_10_min, percentile_90_min)
+
+    # Calculate anomalies
+    anomalies_above_max = calculate_anomalies(count_above_90_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_below_max = calculate_anomalies(count_below_10_max, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
+    anomalies_above_min = calculate_anomalies(count_above_90_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
+    anomalies_below_min = calculate_anomalies(count_below_10_min, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
+
+    # Drop unnecessary coordinates
+    variables_to_drop = [count_above_90_max, count_below_10_max, count_above_90_min, count_below_10_min,
+                         anomalies_above_max, anomalies_below_max, anomalies_above_min, anomalies_below_min]
+    variables_dropped = drop_unnecessary_coords(variables_to_drop, 'quantile')
+
+    # Create anomalies dataset
+    anomalies = create_anomalies_dataset({
+        'count_above_90_max': variables_dropped[0],
+        'count_below_10_max': variables_dropped[1],
+        'count_above_90_min': variables_dropped[2],
+        'count_below_10_min': variables_dropped[3],
+        'anomalies_above_max': variables_dropped[4],
+        'anomalies_below_max': variables_dropped[5],
+        'anomalies_above_min': variables_dropped[6],
+        'anomalies_below_min': variables_dropped[7]
+    }, attrs={'description': 'Anomalies and counts of temperature extremes'})
+
+    # Save the dataset
+    anomalies.to_netcdf(salida_anomalias)
+
+    return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
+
 
 if __name__ == "__main__":
     archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
     archivo_comparar_location = "../../data/raw/era5/"
     output_csv_path = "../../data/processed/anomalies_combined.csv"
+    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
     
     # List all files in the directory
     files = os.listdir(archivo_comparar_location)
@@ -150,7 +257,8 @@ if __name__ == "__main__":
                     archivo_comparar=archivo_comparar,
                     year=year,
                     month=month,
-                    salida_anomalias=f"../../data/processed/anomalies_{year}_{month}.nc"
+                    salida_anomalias=f"../../data/processed/anomalies_{year}_{month}.nc",
+                    shapefile_path=shapefile_path
                 )
                 # Append the yearly dataset to the list
                 ds_month = ds_month.assign_coords(year=year)
