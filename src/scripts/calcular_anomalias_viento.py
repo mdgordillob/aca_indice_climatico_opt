@@ -13,7 +13,7 @@ def compute_occurrences(daily_data, percentile):
     count_above = (daily_data > percentile).mean(dim='time')
     return count_above
 
-def calculos_componente_viento(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
+def calculos_componente_viento(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None, save_netcdf=False):
     try:
         variable="wind_speed"
         ds = load_grid_data(archivo_comparar, year,month,variable, shapefile_path)
@@ -34,7 +34,10 @@ def calculos_componente_viento(archivo_percentiles, archivo_comparar, year, mont
         'count_above': count_above,
         'anomalies_above': anomalies
     }, attrs={'description': 'Anomalies of wind speed component'})
-    anomalies.to_netcdf(f"../../data/processed/anomalies_wind_{year}_{month}.nc")
+    
+    # Guardar el Dataset en un archivo NetCDF
+    if save_netcdf:
+        anomalies.to_netcdf(f"../../data/processed/anomalies_wind_{year}_{month}.nc")
     return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
    
 
@@ -58,7 +61,7 @@ def procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, ou
             print(f"Error processing year {year}: No GRIB files found")
             continue
         
-        # Check if the file is a wind file
+        # Check if the file is a wind Hola a file
         archivo_comparar = [file for file in archivo_comparar if "wind" in file]
         if not archivo_comparar:
             print(f"Error processing year {year}: No wind files found")
@@ -106,19 +109,3 @@ if __name__ == "__main__":
     shapefile_path = "../../data/shapefiles/colombia_4326.shp"
 
     procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path)
-
-#if __name__=="__main__":
-#    archivo_percentiles ="../../data/processed/era5_wind_percentil.nc"
-#    archivo_comparar = "../../data/raw/era5/era5_wind_1976.grib"
-#    year=1976
-#    month=1  
-#    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
-#    salida_anomalias = "../../data/processed/anomalies_wind.nc"
-#    ds=calculos_componente_viento(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path)
-
-
-
-    
-    
-
-    

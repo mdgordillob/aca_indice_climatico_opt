@@ -173,7 +173,7 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
 
     return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
 
-def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
+def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None, save_netcdf=False):
     variable = 't2m'
 
     # Load and preprocess grid data with clipping
@@ -216,7 +216,8 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
     }, attrs={'description': 'Anomalies and counts of temperature extremes'})
 
     # Save the dataset
-    anomalies.to_netcdf(salida_anomalias)
+    if save_netcdf:
+        anomalies.to_netcdf(salida_anomalias)
 
     return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
 
@@ -283,7 +284,7 @@ def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_locatio
     print(f"Anomalies saved to {output_csv_path}")
 
 if __name__ == "__main__":
-    archivo_percentiles = "../../data/processed/era5_temperature_percentil.nc"
+    archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
     archivo_comparar_location = "../../data/raw/era5/"
     output_csv_path = "../../data/processed/anomalies_temperature_combined.csv"
     shapefile_path = "../../data/shapefiles/colombia_4326.shp"
