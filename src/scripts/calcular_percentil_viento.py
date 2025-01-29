@@ -2,6 +2,7 @@ import os
 import numpy as np
 import xarray as xr
 import pandas as pd
+import pdb
 
 
 def calcular_percentiles_viento(archivo_entrada): 
@@ -13,28 +14,27 @@ def calcular_percentiles_viento(archivo_entrada):
     *WP_90_JK: promedio mensual de días que superan dicho percentil, tasa de mensual
     """
     ds = xr.open_dataset(archivo_entrada)
-    #ds=resample_to_daily_wind(ds)
     ds['time'] = ds.indexes['time'] - pd.Timedelta(hours=5)
     ds = ds.sel(time=slice('1961', '1990'))
     ds = ds.assign_coords(month=ds["time"].dt.month) 
     p= 1.23  #constante de la densidad del aire (kg/m3)
     ds["wind_power"]= (p* (ds["wind_speed"]**3))/2 
     
-    WP_90 = ds['wind_power'].groupby('month').reduce(np.percentile, q=90)
-    
-    exceeding_values = ds['wind_power'].where(ds['wind_power'] > WP_90)
-    
+    percentiles_max = ds['wind_power'].groupby("time.month").quantile(0.9, dim="time")
+    exceeding_values = ds['wind_power'].groupby("time.month") > percentiles_max
 
     # Calcular la media y la desviación estándar por mes de los valores que exceden el umbral de 90 
-    mean_exceeding = exceeding_values.groupby('month').mean('time')
-    std_exceeding = exceeding_values.groupby('month').std('time')
+    exceed_90_max_y_m = exceeding_values.groupby(["time.year", "time.month"]).mean(dim="time")
+    mean_exceeding = exceed_90_max_y_m.groupby("month").mean(dim="year")
+    std_exceeding = exceed_90_max_y_m.groupby("month").std(dim="year")
 
     estadisticas = xr.Dataset({
-        'percentil_90': WP_90,
+        'percentil_90': percentiles_max,
         'mean_exceeding': mean_exceeding,
         'std_exceeding': std_exceeding,
     })
     
+    pdb.set_trace()
     return estadisticas
      
 

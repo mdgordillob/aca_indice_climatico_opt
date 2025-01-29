@@ -4,96 +4,117 @@ import numpy as np
 import pandas as pd
 import os
 import pdb
+import geopandas as gpd
+from calcular_anomalias_temperatura import load_percentiles, load_grid_data, calculate_anomalies
 
 
-def load_percentiles(percentile_file_path):
-    percentiles_data = xr.open_dataset(percentile_file_path)
-    return percentiles_data#.sel(month=month)
+def compute_occurrences(daily_data, percentile):
+    # Calcular la cantidad de días que superan el percentil
+    count_above = (daily_data > percentile).mean(dim='time')
+    return count_above
 
-
-def load_grid_data(file_path, year, month, variable):
-    """Load grid data for a specific year, month, and variable."""
-    grid_data = xr.open_dataset(file_path)[variable].sel(time=f"{year}-{month:02}")
-    grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
-    return grid_data
-
-
-def calculos_componente_viento(ds_path,year,month):
+def calculos_componente_viento(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
     try:
         variable="wind_speed"
-        ds = load_grid_data(ds_path,year,month,variable)
-        print("varialbles:", ds)
+        ds = load_grid_data(archivo_comparar, year,month,variable, shapefile_path)
     except Exception as e:
         print(f"Error al abri archivo: {e}")
 
-
-    #Calculamos el wind power (WP)
-    #pdb.set_trace() 
-    ds = ds.assign_coords(year=ds["time"].dt.year, month=ds["time"].dt.month)
-    
     p= 1.23  #constante de la densidad del aire (kg/m3)
-    ds["wind_power"]= (p* (ds**3))/2 
+    ds["wind_power"] = (p* (ds["wind_speed"]**3))/2 
         
-        
-        
-    wp_mean_monthly =  ds["wind_power"].groupby(['year', 'month']).mean()
-    wp_std_monthly = ds["wind_power"].groupby(['year', 'month']).std()
-         
-    # Umbral WPu(i, j) = media + 1.28 * sigma
-    wpu = wp_mean_monthly + 1.28 * wp_std_monthly # el cuantil 90 calcula el límite superior
+    percentiles=load_percentiles(archivo_percentiles, month, shapefile_path)
+    count_above = compute_occurrences(ds['wind_power'], percentiles['percentil_90'])
 
-    
-    #ds.dims
-    #ds.coords 
-    percentiles=load_percentiles("../../data/processed/era5_wind_percentil.nc")
+    # Calcular anomalias
+    anomalies = calculate_anomalies(count_above, percentiles['mean_exceeding'], percentiles['std_exceeding'])
 
-    percentil_90_by_month = percentiles['percentil_90'].sel(month=ds['month'])#se toma el percentil correspondiente al mes en `ds`
-
-    exceedance = (ds['wind_power'] > percentil_90_by_month)
-    WP_90_JK = exceedance.sum('time').astype(int) / ds['wind_power'].groupby(['year', 'month']).count('time')# ecuación 9
-    
-    # Promedio y desviación estándar para la referencia
-    mean_ref = WP_90_JK.groupby(['year', 'month']).mean()
-    std_ref = WP_90_JK.groupby(['year', 'month']).std()
-    
-    # Estandarizar WP90 para calcular la componente del viento (WC)
-    wind_component = (WP_90_JK - mean_ref) / std_ref
-
-    #pdb.set_trace() 
     # Crear un nuevo Dataset con los resultados
-    nuevo_ds = xr.Dataset({
-        'wind_power':ds["wind_power"],
-        'rate_of_excedance': WP_90_JK,
-        'wp_mean_monthly': WP_90_JK,
-        'mean_of_excedanteis': mean_ref,
-        'std_of_excedanteis': std_ref,
-        'wind_speed_component': wind_component
-    })
-    nuevo_ds.to_netcdf(f"../../data/processed/wind_analysis_{year}_{month}.nc", encoding={'wind_power': {'zlib': True, 'complevel': 5}})
-    return  ds
+    anomalies = xr.Dataset({
+        'count_above': count_above,
+        'anomalies_above': anomalies
+    }, attrs={'description': 'Anomalies of wind speed component'})
+    anomalies.to_netcdf(f"../../data/processed/anomalies_wind_{year}_{month}.nc")
+    return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
    
-#calcular viento 
-    
-    
 
-def manage_problemas(ds, variable, valor_nulo): # valor_nulo= Nan, 0 ...
-    """
-    Reemplaza valores nulos en una variable del dataset.
-    """
-    ds[variable] = ds[variable].fillna(valor_nulo) 
-    return ds
+def procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path):
+    # List all files in the directory
+    files = os.listdir(archivo_comparar_location)
 
+    # Initialize an empty list to store monthly datasets
+    all_anomalies = []
 
+    # Loop through each year and month
+    for year in range(1961, 2025):
+        print(f"Processing year {year}...")
+        
+        # Find all files containing the year
+        archivo_comparar = [file for file in files if str(year) in file]
+        
+        # Filter for GRIB files
+        archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
+        if not archivo_comparar:
+            print(f"Error processing year {year}: No GRIB files found")
+            continue
+        
+        # Check if the file is a wind file
+        archivo_comparar = [file for file in archivo_comparar if "wind" in file]
+        if not archivo_comparar:
+            print(f"Error processing year {year}: No wind files found")
+            continue
+        
+        if len(archivo_comparar) != 1:
+            print(f"Error processing year {year}: More than one wind file found")
+            continue
+        else:
+            archivo_comparar = archivo_comparar[0]
 
+        archivo_comparar = os.path.join(archivo_comparar_location, archivo_comparar)
 
+        for month in range(1, 13):
+            try:
+                print(f"Processing year {year}, month {month}...")
+                ds_month = calculos_componente_viento(
+                    archivo_percentiles=archivo_percentiles,
+                    archivo_comparar=archivo_comparar,
+                    year=year,
+                    month=month,
+                    salida_anomalias=f"../../data/processed/anomalies_wind_{year}_{month}.nc",
+                    shapefile_path=shapefile_path
+                )
+                ds_month = ds_month.assign_coords(year=year)
+                all_anomalies.append(ds_month)
+            except Exception as e:
+                print(f"Error processing year {year}, month {month}: {e}")
+                continue
 
-if __name__=="__main__":
-    print("Oi")
-    file_path="../../data/raw/era5/era5_daily_combined_wind.nc"
-    year=1984
-    month=1    
-    ds=calculos_componente_viento(file_path,year,month)
-    #aca_indice_climatico\data\raw\era5\era5_daily_combined_wind.nc
+    # Combine all monthly datasets into one
+    combined_anomalies = xr.concat(all_anomalies, dim='time')
+
+    # Convert the xarray.Dataset to a pandas.DataFrame
+    anomalies_df = combined_anomalies.to_dataframe().reset_index()
+
+    # Save the DataFrame to a CSV file
+    anomalies_df.to_csv(output_csv_path, index=False)
+    print(f"Anomalies saved to {output_csv_path}")
+
+if __name__ == "__main__":
+    archivo_percentiles = "../../data/processed/era5_wind_percentil.nc"
+    archivo_comparar_location = "../../data/raw/era5/"
+    output_csv_path = "../../data/processed/anomalies_wind_combined.csv"
+    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
+
+    procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path)
+
+#if __name__=="__main__":
+#    archivo_percentiles ="../../data/processed/era5_wind_percentil.nc"
+#    archivo_comparar = "../../data/raw/era5/era5_wind_1976.grib"
+#    year=1976
+#    month=1  
+#    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
+#    salida_anomalias = "../../data/processed/anomalies_wind.nc"
+#    ds=calculos_componente_viento(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path)
 
 
 

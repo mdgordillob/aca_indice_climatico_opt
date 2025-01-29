@@ -7,12 +7,26 @@ import geopandas as gpd
 
 def load_grid_data(file_path, year, month, variable, shapefile_path=None):
     """Load grid data for a specific year, month, and variable, optionally clipping it with a shapefile."""
-    grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
     
     # Convert temperature to Celsius if needed
     if variable == 't2m':
+        grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
         grid_data -= 273.15
         grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)  # Convert to UTC-5
+    
+    if variable == 'wind_speed':
+        grid_data = xr.open_dataset(file_path, engine='cfgrib')[['u10', 'v10']].sel(time=f"{year}-{month:02}")
+    
+        # For Colombia we have to convert the time from UTC to UTC-5
+        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
+
+        grid_data = grid_data.resample(time="1D").mean(dim="time")
+    
+        # Calculate the wind speed from the U and V components
+        grid_data["wind_speed"] = (grid_data["u10"]**2 + grid_data["v10"]**2)**0.5
+
+        # Return only the wind speed
+        grid_data = grid_data.drop_vars(["u10", "v10"])
 
     if shapefile_path:
         # Read the shapefile
@@ -207,12 +221,7 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
     return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
 
 
-if __name__ == "__main__":
-    archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
-    archivo_comparar_location = "../../data/raw/era5/"
-    output_csv_path = "../../data/processed/anomalies_combined.csv"
-    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
-    
+def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path):
     # List all files in the directory
     files = os.listdir(archivo_comparar_location)
 
@@ -221,26 +230,23 @@ if __name__ == "__main__":
 
     # Loop through each year and month
     for year in range(1961, 2025):
-        # Create a list of files
         print(f"Processing year {year}...")
-
-        # Find all the files that contain the year
+        
+        # Find all files containing the year
         archivo_comparar = [file for file in files if str(year) in file]
         
-        # Check if the file is a GRIB file
-        try:
-            archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
-        except:
+        # Filter for GRIB files
+        archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
+        if not archivo_comparar:
             print(f"Error processing year {year}: No GRIB files found")
             continue
-
+        
         # Check if the file is a temperature file
-        try:
-            archivo_comparar = [file for file in archivo_comparar if "tmp" in file]
-        except:
+        archivo_comparar = [file for file in archivo_comparar if "tmp" in file]
+        if not archivo_comparar:
             print(f"Error processing year {year}: No temperature files found")
             continue
-
+        
         if len(archivo_comparar) != 1:
             print(f"Error processing year {year}: More than one temperature file found")
             continue
@@ -257,12 +263,10 @@ if __name__ == "__main__":
                     archivo_comparar=archivo_comparar,
                     year=year,
                     month=month,
-                    salida_anomalias=f"../../data/processed/anomalies_{year}_{month}.nc",
+                    salida_anomalias=f"../../data/processed/anomalies_temperature_{year}_{month}.nc",
                     shapefile_path=shapefile_path
                 )
-                # Append the yearly dataset to the list
                 ds_month = ds_month.assign_coords(year=year)
-
                 all_anomalies.append(ds_month)
             except Exception as e:
                 print(f"Error processing year {year}, month {month}: {e}")
@@ -277,3 +281,11 @@ if __name__ == "__main__":
     # Save the DataFrame to a CSV file
     anomalies_df.to_csv(output_csv_path, index=False)
     print(f"Anomalies saved to {output_csv_path}")
+
+if __name__ == "__main__":
+    archivo_percentiles = "../../data/processed/era5_temperature_percentil.nc"
+    archivo_comparar_location = "../../data/raw/era5/"
+    output_csv_path = "../../data/processed/anomalies_temperature_combined.csv"
+    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
+
+    procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path)
