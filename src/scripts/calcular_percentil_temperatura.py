@@ -60,26 +60,15 @@ def calcular_percentiles(archivo_entrada, variable = 't2m'):
     ## Temperatures below the 10th percentile (These are from our interest)
     below_10_min = daily_data['daily_min'].groupby("time.month") < percentiles_min.sel(quantile=0.1)
 
-    ################### hasta ac[a fucniona]
-    # Calculate mean and standard deviation for days exceeding/below percentiles
+    exceed_90_max_y_m = exceed_90_max.groupby(["time.year", "time.month"]).mean(dim="time")
+    mean_max = exceed_90_max_y_m.groupby("month").mean(dim="year")
+    std_dev_max = exceed_90_max_y_m.groupby("month").std(dim="year")
 
-    mean_above_90_max = exceed_90_max.groupby("time.month").mean(dim="time")
-    std_above_90_max = exceed_90_max.groupby("time.month").std(dim="time")
-    
-    mean_below_10_max = below_10_max.groupby("time.month").mean(dim="time")
-    std_below_10_max = below_10_max.groupby("time.month").std(dim="time")
+    below_10_min_y_m = below_10_min.groupby(["time.year", "time.month"]).mean(dim="time")
+    mean_min = below_10_min_y_m.groupby("month").mean(dim="year")
+    std_dev_min = below_10_min_y_m.groupby("month").std(dim="year")
 
-    mean_above_90_min = exceed_90_min.groupby("time.month").mean(dim="time")
-    std_above_90_min = exceed_90_min.groupby("time.month").std(dim="time")
 
-    mean_below_10_min = below_10_min.groupby("time.month").mean(dim="time")
-    std_below_10_min = below_10_min.groupby("time.month").std(dim="time")
-
-    # Calculate mean and standard deviation of the number of days per month
-    mean_max =   mean_above_90_max
-    std_dev_max = std_above_90_max
-    mean_min =   mean_below_10_min
-    std_dev_min = std_below_10_min
     
     # Combine all statistics into a single dataset
     estadisticas = xr.Dataset({
