@@ -4,63 +4,78 @@ import pdb
 import pandas as pd
 import rioxarray as rxr
 import geopandas as gpd
+from functools import lru_cache
+from multiprocessing import Pool, cpu_count
+import warnings
+warnings.filterwarnings('ignore')
+
+# Global cache for shapefile
+_shapefile_cache = {}
+_percentiles_cache = {}
+
+def get_cached_shapefile(shapefile_path):
+    """Load shapefile once and cache it."""
+    if shapefile_path not in _shapefile_cache:
+        _shapefile_cache[shapefile_path] = gpd.read_file(shapefile_path)
+    return _shapefile_cache[shapefile_path]
+
+def get_cached_percentiles(percentile_file, month):
+    """Load and cache percentiles for a specific month."""
+    cache_key = (percentile_file, month)
+    if cache_key not in _percentiles_cache:
+        percentiles_data = xr.open_dataset(percentile_file).sel(month=month)
+        _percentiles_cache[cache_key] = percentiles_data
+    return _percentiles_cache[cache_key]
+
+def load_percentiles(percentile_file, month, shapefile_path=None):
+    """Load and optionally clip percentiles for a specific month. Exportable function for other modules."""
+    percentiles_data = get_cached_percentiles(percentile_file, month)
+    
+    if shapefile_path:
+        shape = get_cached_shapefile(shapefile_path)
+        percentiles_data = percentiles_data.rio.write_crs("EPSG:4326", inplace=True)
+        percentiles_data = percentiles_data.rio.clip(shape.geometry, shape.crs, drop=True)
+    
+    return percentiles_data
 
 def load_grid_data(file_path, year, month, variable, shapefile_path=None):
-    """Load grid data for a specific year, month, and variable, optionally clipping it with a shapefile."""
+    """Load and return monthly grid data. Exportable function for other modules."""
+    annual_grid_data = load_annual_grid_data(file_path, year, variable, shapefile_path)
+    monthly_data = get_monthly_data(annual_grid_data, year, month, variable)
+    return monthly_data
+
+def load_annual_grid_data(file_path, year, variable, shapefile_path=None):
+    """Load entire year of grid data at once, then extract monthly subsets."""
     
-    # Convert temperature to Celsius if needed
     if variable == 't2m':
-        grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}-{month:02}")
+        grid_data = xr.open_dataset(file_path, engine='cfgrib')[variable].sel(time=f"{year}")
         grid_data -= 273.15
-        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)  # Convert to UTC-5
-    
-    if variable == 'wind_speed':
-        grid_data = xr.open_dataset(file_path, engine='cfgrib')[['u10', 'v10']].sel(time=f"{year}-{month:02}")
-    
-        # For Colombia we have to convert the time from UTC to UTC-5
         grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
-
-        grid_data = grid_data.resample(time="1D").mean(dim="time")
     
-        # Calculate the wind speed from the U and V components
+    elif variable == 'wind_speed':
+        grid_data = xr.open_dataset(file_path, engine='cfgrib')[['u10', 'v10']].sel(time=f"{year}")
+        grid_data['time'] = grid_data.indexes['time'] - pd.Timedelta(hours=5)
+        grid_data = grid_data.resample(time="1D").mean(dim="time")
         grid_data["wind_speed"] = (grid_data["u10"]**2 + grid_data["v10"]**2)**0.5
-
-        # Return only the wind speed
         grid_data = grid_data.drop_vars(["u10", "v10"])
-
+    
     if shapefile_path:
-        # Read the shapefile
-        shape = gpd.read_file(shapefile_path)
-
-        # Ensure dataset has spatial dimensions
+        shape = get_cached_shapefile(shapefile_path)
         grid_data = grid_data.rio.write_crs("EPSG:4326", inplace=True)
-
-        # Clip using the shapefile
         grid_data = grid_data.rio.clip(shape.geometry, shape.crs, drop=True)
     
     return grid_data
+
+def get_monthly_data(annual_grid_data, year, month, variable):
+    """Extract monthly data from annual dataset."""
+    month_data = annual_grid_data.sel(time=f"{year}-{month:02}")
+    return month_data
 
 def resample_to_daily(grid_data):
     """Resample hourly data to daily max and min."""
     daily_max = grid_data.resample(time='1D').max(dim='time')
     daily_min = grid_data.resample(time='1D').min(dim='time')
     return daily_max, daily_min
-
-def load_percentiles(percentile_file, month, shapefile_path=None):
-    """Load and optionally clip precomputed percentiles for a specific month."""
-    percentiles_data = xr.open_dataset(percentile_file).sel(month=month)
-    
-    if shapefile_path:
-        shape = gpd.read_file(shapefile_path)
-
-        # Ensure the dataset has spatial dimensions
-        percentiles_data = percentiles_data.rio.write_crs("EPSG:4326", inplace=True)
-
-        # Clip the percentile dataset
-        percentiles_data = percentiles_data.rio.clip(shape.geometry, shape.crs, drop=True)
-
-    return percentiles_data
-
 
 def compute_occurrences(daily_data, percentile_10, percentile_90):
     """Compute occurrences of values above the 90th percentile and below the 10th percentile."""
@@ -69,61 +84,60 @@ def compute_occurrences(daily_data, percentile_10, percentile_90):
     return count_above_90, count_below_10
 
 def calculate_anomalies(count_data, mean, std_dev):
-    """Calculate normalized anomalies."""
+    """Calculate normalized anomalies. Exportable function for other modules."""
     return (count_data - mean) / std_dev
 
 def drop_unnecessary_coords(data_arrays, coord_name):
     """Drop an unnecessary coordinate from a list of DataArrays."""
-    return [data_array.drop(coord_name) for data_array in data_arrays]
+    return [data_array.drop(coord_name) if coord_name in data_array.coords else data_array for data_array in data_arrays]
 
 def create_anomalies_dataset(variables, attrs):
     """Create an xarray.Dataset for anomalies."""
     return xr.Dataset(variables, attrs=attrs)
 
-def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salida_anomalias, shapefile_path=None):
+def calcular_anomalias(archivo_percentiles, grid_data_monthly, year, month, salida_anomalias, shapefile_path=None):
+    """Calculate anomalies for a specific month using pre-loaded grid data."""
     variable = 't2m'
 
-    # Load and preprocess grid data with clipping
-    grid_data = load_grid_data(archivo_comparar, year, month, variable, shapefile_path)
-    daily_max, daily_min = resample_to_daily(grid_data)
+    # Use pre-loaded monthly data
+    daily_max, daily_min = resample_to_daily(grid_data_monthly)
 
-    # Load percentiles and clip them
-    month_percentiles = load_percentiles(archivo_percentiles, month, shapefile_path)
+    # Load percentiles from cache
+    month_percentiles = get_cached_percentiles(archivo_percentiles, month)
     
     percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
     percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
     percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
     percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
-    # Compute occurrences
-    count_above_90_max, count_below_10_max = compute_occurrences(daily_max, percentile_10_max, percentile_90_max)
-    count_above_90_min, count_below_10_min = compute_occurrences(daily_min, percentile_10_min, percentile_90_min)
+    # Clip percentiles if shapefile provided
+    if shapefile_path:
+        shape = get_cached_shapefile(shapefile_path)
+        month_percentiles = month_percentiles.rio.write_crs("EPSG:4326", inplace=True)
+        month_percentiles = month_percentiles.rio.clip(shape.geometry, shape.crs, drop=True)
+        percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
+        percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
+        percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
+        percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
-    # Maximum temperature
-    ## Temperatures above the 90th percentile (These are from our interest)
+    # Temperature comparisons (only calculate once)
     count_above_90_max = (daily_max > percentile_90_max).astype(int)
-    ## Temperatures below the 10th percentile
     count_below_10_max = (daily_max < percentile_10_max).astype(int)
-
-    # Minimum temperature
-    ## Temperatures above the 90th percentile
     count_above_90_min = (daily_min > percentile_90_min).astype(int)
-    ## Temperatures below the 10th percentile (These are from our interest)
     count_below_10_min = (daily_min < percentile_10_min).astype(int)
 
-    # Promedio de ocurrencias de los valores máximos y mínimos
-    valores_max = (count_above_90_max + count_above_90_min)/2
-    valores_min = (count_below_10_max + count_below_10_min)/2
+    # Promedio de ocurrencias
+    valores_max = (count_above_90_max + count_above_90_min) / 2
+    valores_min = (count_below_10_max + count_below_10_min) / 2
 
-    # Promedio de los valores máximos y mínimos mensuales
-    valores_max_mensuales = valores_max.groupby(["time.month"]).mean(dim="time").sel(month = month)
-    valores_min_mensuales = valores_min.groupby(["time.month"]).mean(dim="time").sel(month = month)
+    # Monthly averages
+    valores_max_mensuales = valores_max.groupby(["time.month"]).mean(dim="time").sel(month=month)
+    valores_min_mensuales = valores_min.groupby(["time.month"]).mean(dim="time").sel(month=month)
 
     # Calculate anomalies
     anomalies_above_max = calculate_anomalies(valores_max_mensuales, month_percentiles['mean_max'], month_percentiles['std_dev_max'])
     anomalies_below_min = calculate_anomalies(valores_min_mensuales, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
 
-    ### Calcular los porcentajes
     # Drop unnecessary coordinates
     variables_to_drop = [anomalies_above_max, anomalies_below_min]
     variables_dropped = drop_unnecessary_coords(variables_to_drop, 'quantile')
@@ -139,57 +153,113 @@ def calcular_anomalias(archivo_percentiles, archivo_comparar, year, month, salid
 
     return anomalies.mean(dim=['latitude', 'longitude'], keep_attrs=True)
 
-def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path, output_netcdf):
-    # List all files in the directory
-    files = os.listdir(archivo_comparar_location)
-
-    # Initialize an empty list to store monthly datasets
-    all_anomalies = []
-
-    # Loop through each year and month
-    for year in range(1961, 2025):
-        print(f"Processing year {year}...")
+def process_year(args):
+    """Process a single year - designed for multiprocessing."""
+    year, archivo_percentiles, archivo_comparar_location, shapefile_path, output_netcdf, files = args
+    
+    year_anomalies = []
+    
+    # Find all files containing the year
+    archivo_comparar = [file for file in files if str(year) in file]
+    archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
+    if not archivo_comparar:
+        print(f"  ⚠️  No GRIB files found for {year}")
+        return year_anomalies
+    
+    archivo_comparar = [file for file in archivo_comparar if "tmp" in file]
+    if not archivo_comparar:
+        print(f"  ⚠️  No temperature files found for {year}")
+        return year_anomalies
+    
+    if len(archivo_comparar) != 1:
+        print(f"  ⚠️  Expected 1 temperature file for {year}, found {len(archivo_comparar)}")
+        return year_anomalies
+    
+    archivo_comparar = archivo_comparar[0]
+    archivo_comparar_full = os.path.join(archivo_comparar_location, archivo_comparar)
+    
+    print(f"Processing year {year} with file: {archivo_comparar}")
+    
+    try:
+        # Load the entire year once
+        annual_grid_data = load_annual_grid_data(archivo_comparar_full, year, 't2m', shapefile_path)
         
-        # Find all files containing the year
-        archivo_comparar = [file for file in files if str(year) in file]
-        
-        # Filter for GRIB files
-        archivo_comparar = [file for file in archivo_comparar if file.endswith(".grib")]
-        if not archivo_comparar:
-            print(f"Error processing year {year}: No GRIB files found")
-            continue
-        
-        # Check if the file is a temperature file
-        archivo_comparar = [file for file in archivo_comparar if "tmp" in file]
-        if not archivo_comparar:
-            print(f"Error processing year {year}: No temperature files found")
-            continue
-        
-        if len(archivo_comparar) != 1:
-            print(f"Error processing year {year}: More than one temperature file found")
-            continue
-        else:
-            archivo_comparar = archivo_comparar[0]
-
-        archivo_comparar = os.path.join(archivo_comparar_location, archivo_comparar)
-
+        # Process all months for this year
         for month in range(1, 13):
             try:
-                print(f"Processing year {year}, month {month}...")
+                # Extract monthly data from already-loaded annual data
+                grid_data_monthly = get_monthly_data(annual_grid_data, year, month, 't2m')
+                
                 ds_month = calcular_anomalias(
                     archivo_percentiles=archivo_percentiles,
-                    archivo_comparar=archivo_comparar,
+                    grid_data_monthly=grid_data_monthly,
                     year=year,
                     month=month,
-                    salida_anomalias= os.path.join(output_netcdf, f"anomalies_temperature_{year}_{month}.nc"),
+                    salida_anomalias=os.path.join(output_netcdf, f"anomalies_temperature_{year}_{month}.nc"),
                     shapefile_path=shapefile_path
                 )
                 ds_month = ds_month.assign_coords(year=year)
-                all_anomalies.append(ds_month)
+                year_anomalies.append(ds_month)
             except Exception as e:
-                print(f"Error processing year {year}, month {month}: {e}")
+                print(f"  Error processing year {year}, month {month}: {e}")
                 continue
+    except Exception as e:
+        print(f"  Error loading year {year}: {e}")
+    
+    return year_anomalies
 
+def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path, output_netcdf, use_multiprocessing=True, num_workers=None):
+    print(f"Looking for files in: {archivo_comparar_location}")
+    
+    if not os.path.exists(archivo_comparar_location):
+        raise FileNotFoundError(f"Directory not found: {archivo_comparar_location}")
+    
+    # List all files in the directory
+    files = os.listdir(archivo_comparar_location)
+    
+    if not files:
+        print(f"⚠️  No files found in {archivo_comparar_location}")
+        return
+    
+    print(f"Found {len(files)} files in directory")
+
+    # Create output directory if it doesn't exist
+    os.makedirs(output_netcdf, exist_ok=True)
+
+    # Prepare list of years to process
+    years_to_process = list(range(1961, 2025))
+    
+    if use_multiprocessing and len(years_to_process) > 1:
+        # Use multiprocessing for year-level parallelization
+        if num_workers is None:
+            num_workers = max(1, cpu_count() - 1)
+        
+        print(f"Using multiprocessing with {num_workers} workers")
+        
+        # Prepare arguments for each year
+        process_args = [
+            (year, archivo_percentiles, archivo_comparar_location, shapefile_path, output_netcdf, files)
+            for year in years_to_process
+        ]
+        
+        # Process years in parallel
+        with Pool(num_workers) as pool:
+            results = pool.map(process_year, process_args)
+        
+        # Flatten results
+        all_anomalies = [anomaly for year_result in results for anomaly in year_result]
+    else:
+        # Sequential processing
+        all_anomalies = []
+        for year in years_to_process:
+            print(f"\nProcessing year {year}...")
+            year_anomalies = process_year((year, archivo_percentiles, archivo_comparar_location, shapefile_path, output_netcdf, files))
+            all_anomalies.extend(year_anomalies)
+
+    if not all_anomalies:
+        print("⚠️  No anomalies calculated!")
+        return
+    
     # Combine all monthly datasets into one
     combined_anomalies = xr.concat(all_anomalies, dim='time')
 
@@ -198,13 +268,33 @@ def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_locatio
 
     # Save the DataFrame to a CSV file
     anomalies_df.to_csv(output_csv_path, index=False)
-    print(f"Anomalies saved to {output_csv_path}")
+    print(f"\n✓ Anomalies saved to {output_csv_path}")
 
 if __name__ == "__main__":
-    archivo_percentiles = "../../data/processed/era5_temperatura_percentil.nc"
-    archivo_comparar_location = "../../data/raw/era5/"
-    output_csv_path = "../../data/processed/anomalias_colombia/anomalies_temperature_combined.csv"
-    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
-    output_netcdf = "../../data/processed/anomalias_colombia"
+    # Get the script's directory and navigate to project root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    
+    archivo_percentiles = os.path.join(project_root, "data", "processed", "era5_temperatura_percentil.nc")
+    archivo_comparar_location = os.path.join(project_root, "data", "raw", "era5")
+    output_csv_path = os.path.join(project_root, "data", "processed", "anomalias_colombia", "anomalies_temperature_combined.csv")
+    shapefile_path = os.path.join(project_root, "data", "shapefiles", "colombia_4326.shp")
+    output_netcdf = os.path.join(project_root, "data", "processed", "anomalias_colombia")
+    
+    print("=" * 60)
+    print("CALCULATING TEMPERATURE ANOMALIES")
+    print("=" * 60)
+    print(f"Project root: {project_root}")
+    print(f"Data directory: {archivo_comparar_location}")
+    print("=" * 60)
 
-    procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_location, output_csv_path, shapefile_path, output_netcdf)
+    # Run with multiprocessing enabled (set to False for single-threaded debugging)
+    procesar_anomalias_temperatura(
+        archivo_percentiles, 
+        archivo_comparar_location, 
+        output_csv_path, 
+        shapefile_path, 
+        output_netcdf,
+        use_multiprocessing=True,
+        num_workers=None  # None = auto-detect available cores
+    )

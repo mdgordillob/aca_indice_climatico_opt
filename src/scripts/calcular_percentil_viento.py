@@ -13,6 +13,11 @@ def calcular_percentiles_viento(archivo_entrada):
     *WP_90: el percentil 90
     *WP_90_JK: promedio mensual de días que superan dicho percentil, tasa de mensual
     """
+    print(f"Loading wind data from: {archivo_entrada}")
+    
+    if not os.path.exists(archivo_entrada):
+        raise FileNotFoundError(f"Input file not found: {archivo_entrada}")
+    
     ds = xr.open_dataset(archivo_entrada)
     ds = ds.sel(time=slice('1961', '1990'))
     ds = ds.assign_coords(month=ds["time"].dt.month) 
@@ -45,37 +50,55 @@ def calcular_percentiles_viento(archivo_entrada):
     return estadisticas
      
 
-
-
-def guardar_percentiles_viento(estadisticas, archivo_salida, guardar_csv=False):
+def guardar_percentiles_viento(estadisticas, archivo_salida, data_dir, guardar_csv=False):
     """
     Guarda los percentiles calculados en un archivo NetCDF y CSV.
 
     Parámetros:
         estadisticas (xr.Dataset): Dataset con los percentiles calculados.
         archivo_salida (str): Ruta del archivo NetCDF de salida.
+        data_dir (str): Ruta del directorio de datos.
+        guardar_csv (bool): Si guardar también en formato CSV.
     """
+    print(f"Saving wind percentiles to: {archivo_salida}")
     estadisticas.to_netcdf(archivo_salida)
     
     if guardar_csv:
-        subset = estadisticas.sel(latitude=5.9, longitude=-72.99, method = 'nearest')[['month', 'percentil_90', 'mean_exceeding', 'std_exceeding']]
-        df = subset.to_dataframe().reset_index()
-        output_path = "../../data/processed/viento_percentiles.csv"
-        df.to_csv(output_path, index=False)
+        try:
+            subset = estadisticas.sel(latitude=5.9, longitude=-72.99, method='nearest')[['percentil_90', 'mean_exceeding', 'std_exceeding']]
+            df = subset.to_dataframe().reset_index()
+            output_path = os.path.join(data_dir, "viento_percentiles.csv")
+            df.to_csv(output_path, index=False)
+            print(f"CSV saved to: {output_path}")
+        except Exception as e:
+            print(f"Warning: Could not save CSV: {e}")
 
 
 def main():
-    ruta_datos = "../../data/processed"
-    file = '../../data/processed/era5_daily_combined_wind.nc'
-    archivo_union = os.path.join(ruta_datos, file)
-    archivo_salida = os.path.join(ruta_datos, "era5_wind_percentil.nc")
+    # Get the script's directory and navigate to project root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    data_dir = os.path.join(project_root, 'data', 'processed')
+    
+    file = 'era5_daily_combined_wind.nc'
+    archivo_union = os.path.join(data_dir, file)
+    archivo_salida = os.path.join(data_dir, "era5_wind_percentil.nc")
 
     try:
+        print("=" * 60)
+        print("CALCULATING WIND PERCENTILES")
+        print("=" * 60)
+        print(f"Project root: {project_root}")
+        print(f"Data directory: {data_dir}")
+        
         estadisticas = calcular_percentiles_viento(archivo_union)
-        guardar_percentiles_viento(estadisticas, archivo_salida, guardar_csv=True)
-        print(f"Archivo de percentiles creado en: {archivo_salida}")
+        guardar_percentiles_viento(estadisticas, archivo_salida, data_dir, guardar_csv=True)
+        print(f"✓ Archivo de percentiles creado en: {archivo_salida}")
+        print("=" * 60)
     except Exception as e:
         print(f"Error al calcular percentiles: {e}")
+        import traceback
+        traceback.print_exc()
 
 if __name__ == "__main__":
     main()

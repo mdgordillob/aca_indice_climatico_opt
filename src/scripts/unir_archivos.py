@@ -1,4 +1,4 @@
-import xarray as xr
+﻿import xarray as xr
 import pdb
 import os
 import pandas as pd
@@ -127,9 +127,24 @@ def merge_yearly_files(output_dir, merged_file, variable):
     :param merged_file: Path for the final merged NetCDF file.
     :param variable: The variable name (e.g., "t2m").
     """
+    print(f"Merging files from: {output_dir}")
+    
+    # Check if directory exists and has files
+    if not os.path.exists(output_dir):
+        print(f"⚠️  Directory does not exist: {output_dir}")
+        print(f"No files to merge. Skipping...")
+        return
+    
     # Get all yearly files in the directory
-    yearly_files = sorted([os.path.join(output_dir, file) for file in os.listdir(output_dir)
-                           if file.endswith(".nc")])
+    nc_files = [f for f in os.listdir(output_dir) if f.endswith(".nc")]
+    
+    if not nc_files:
+        print(f"⚠️  No .nc files found in {output_dir}")
+        return
+    
+    print(f"Found {len(nc_files)} files to merge")
+    
+    yearly_files = sorted([os.path.join(output_dir, file) for file in nc_files])
 
     # Open all files into a list of datasets
     datasets = [xr.open_dataset(file) for file in yearly_files]
@@ -139,15 +154,18 @@ def merge_yearly_files(output_dir, merged_file, variable):
 
     # Save the merged dataset to a single NetCDF file
     merged_dataset.to_netcdf(merged_file)
-    print(f"Merged dataset saved to: {merged_file}")
+    print(f"✓ Merged dataset saved to: {merged_file}")
 
 # Example Usage
 if __name__ == "__main__":
+    # Get the script's directory and navigate to project root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
     
     ##### temperature
-    ##input_dir_tmp = "../../data/raw/era5"
-    ##output_dir_tmp = "../../data/processed/daily_by_year_tmp"
-    ##merged_file = "../../data/processed/era5_daily_combined_tmp.nc"
+    ##input_dir_tmp = os.path.join(project_root, "data", "raw", "era5")
+    ##output_dir_tmp = os.path.join(project_root, "data", "processed", "daily_by_year_tmp")
+    ##merged_file_tmp = os.path.join(project_root, "data", "processed", "era5_daily_combined_tmp.nc")
     ##variable_tmp = "t2m"
 
     ### Process each year
@@ -157,27 +175,35 @@ if __name__ == "__main__":
     ##        process_yearly_data_tmp(file_path, year, variable_tmp, output_dir_tmp)
     
     ### Merge all yearly files into one
-    ##merge_yearly_files(output_dir_tmp, merged_file, variable_tmp)
+    ##merge_yearly_files(output_dir_tmp, merged_file_tmp, variable_tmp)
 
     ### rain
-    input_dir_rain = "../../data/raw/era5"
-    output_dir_rain = "../../data/processed/daily_by_year_rain"
-    merged_file_rain = "../../data/processed/era5_daily_combined_rain.nc"
+    input_dir_rain = os.path.join(project_root, "data", "raw", "era5")
+    output_dir_rain = os.path.join(project_root, "data", "processed", "daily_by_year_rain")
+    merged_file_rain = os.path.join(project_root, "data", "processed", "era5_daily_combined_rain.nc")
     variable_rain = "tp"
 
+    print("=" * 60)
+    print("PROCESSING RAINFALL DATA")
+    print("=" * 60)
+    
     # Process each year
     for year in range(1960, 1991):  # Adjust year range as needed
         file_path = os.path.join(input_dir_rain, f"era5_rain_{year}.grib")
         if os.path.exists(file_path):
+            print(f"Processing {year}...")
             process_yearly_precipitation_data(file_path, year, variable_rain, output_dir_rain)
+        else:
+            print(f"⚠️  File not found: {file_path}")
 
     # Merge all yearly files into one
+    print("\nMerging rainfall files...")
     merge_yearly_files(output_dir_rain, merged_file_rain, variable_rain)
     
     ####### wind
-    ##input_dir_wind = "../../data/raw/era5"
-    ##output_dir_wind = "../../data/processed/daily_by_year_wind"
-    ##merged_file_wind = "../../data/processed/era5_daily_combined_wind.nc"
+    ##input_dir_wind = os.path.join(project_root, "data", "raw", "era5")
+    ##output_dir_wind = os.path.join(project_root, "data", "processed", "daily_by_year_wind")
+    ##merged_file_wind = os.path.join(project_root, "data", "processed", "era5_daily_combined_wind.nc")
     ##variable_wind = ['u10', 'v10']
 
     #### Process each year
@@ -188,3 +214,7 @@ if __name__ == "__main__":
 
     #### Merge all yearly files into one
     ##merge_yearly_files(output_dir_wind, merged_file_wind, variable_wind)
+    
+    print("\n" + "=" * 60)
+    print("✓ All processing complete!")
+    print("=" * 60)

@@ -31,28 +31,6 @@ def guardar_estadisticas(data, archivo_salida, validador = None):
     - archivo_salida (str): Nombre del archivo de salida.
 
     """
-    # Check if file exists and delete it
-    if os.path.exists(archivo_salida):
-        os.remove(archivo_salida)
-
-    #guardar en formato NetCDF
-    data.to_netcdf(archivo_salida)
-
-    if validador:
-        #convertir los datos de NetCDF a DataFrame y guardar como CSV
-        subset = data[['mean_tp','std_tp']].to_dataframe().reset_index()
-        output_path = archivo_salida.replace('.nc', '.csv')  # Cambiar la extensión de .nc a .csv
-        subset.to_csv(output_path, index=False)
-
-def guardar_estadisticas(data, archivo_salida, validador = None):
-    """
-    Guarda los datos en un archivo NetCDF y, si es posible, en un archivo CSV.
-
-    Parámetros:
-    - data (xarray.Dataset): Datos a guardar.
-    - archivo_salida (str): Nombre del archivo de salida.
-
-    """
     #guardar en formato NetCDF
     data.to_netcdf(archivo_salida)
 
@@ -218,28 +196,49 @@ def calcular_sequia(data):
     return d
 
 def calcular_percentiles():
-    ruta = "../../data/processed"
+    # Get the script's directory and navigate to project root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    data_dir = os.path.join(project_root, 'data', 'processed')
+    
     file = 'era5_daily_combined_rain.nc'
-    archivo_union = os.path.join(ruta, file)
-    archivo_salida_lluvia = os.path.join(ruta, "era5_lluvias_percentil.nc")
-    archivo_salida_sequia = os.path.join(ruta, "era5_sequia_percentil.nc")
+    archivo_union = os.path.join(data_dir, file)
+    archivo_salida_lluvia = os.path.join(data_dir, "era5_lluvia_percentil.nc")
+    archivo_salida_sequia = os.path.join(data_dir, "era5_sequia_percentil.nc")
 
+    print(f"Looking for file: {archivo_union}")
+    if not os.path.exists(archivo_union):
+        raise FileNotFoundError(f"Input file not found: {archivo_union}")
+
+    print(f"Loading rainfall data...")
     #calcular la lluvia
     tp_daily = xr.open_dataset(archivo_union)
 
+    print(f"Sorting dataset...")
     #ordenar_dataset
     tp_daily = tp_daily.sortby('time')
 
+    print(f"Filtering data for reference period 1961-1990...")
     #filtrar para calcular las estadisticas
     tp_filtered = tp_daily.sel(time=slice(f"1961-01-01", f"1990-12-31"))
 
+    print(f"Calculating rainfall statistics...")
     #calcular media y desviacion de referencias
     p = calcular_lluvia(tp_filtered) #lluvia
+    
+    print(f"Calculating drought statistics...")
     d = calcular_sequia(tp_filtered) #sequia
 
+    print(f"Saving rainfall percentiles...")
     #guardar estadisticas - ACTUALIZAR
     guardar_estadisticas(p, archivo_salida_lluvia)
+    
+    print(f"Saving drought percentiles...")
     guardar_estadisticas(d, archivo_salida_sequia)
+    
+    print(f"✓ Completed successfully!")
+    print(f"  - Saved: {archivo_salida_lluvia}")
+    print(f"  - Saved: {archivo_salida_sequia}")
 
 if __name__ == "__main__":
     calcular_percentiles()

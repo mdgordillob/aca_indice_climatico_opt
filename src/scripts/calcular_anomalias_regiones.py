@@ -25,33 +25,47 @@ def procesar_anomalias_region(region_name, shapefile_path, archivo_comparar_loca
     procesar_anomalias_temperatura(archivo_percentiles_temperatura, archivo_comparar_location, output_csv_path_temperatura, shapefile_path, output_netcdf)
     procesar_anomalias_viento(archivo_percentiles_wind, archivo_comparar_location, output_csv_path_viento, shapefile_path, output_netcdf)
     df1, df2 = procesar_anomalias_lluvia(shapefile_path, archivo_percentiles_lluvia, archivo_comparar_location, output_netcdf, salida_lluvia, salida_sequia)
-    print(f'Proceso finalizado para {region_name}')
+    print(f'✓ Proceso finalizado para {region_name}')
 
 if __name__ == "__main__":
-    archivo_comparar_location = "../../data/raw/era5/"
-    archivo_percentiles_temperatura = "../../data/processed/era5_temperatura_percentil.nc"
-    archivo_percentiles_wind = "../../data/processed/era5_wind_percentil.nc"
-    archivo_percentiles_lluvia = "../../data/processed"
-    output_base_path = "../../data/processed"
+    # Obtener el directorio del script y navegar a la raíz del proyecto
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    
+    # Resolver todas las rutas desde la raíz del proyecto
+    archivo_comparar_location = os.path.join(project_root, "data", "raw", "era5")
+    archivo_percentiles_temperatura = os.path.join(project_root, "data", "processed", "era5_temperatura_percentil.nc")
+    archivo_percentiles_wind = os.path.join(project_root, "data", "processed", "era5_wind_percentil.nc")
+    archivo_percentiles_lluvia = os.path.join(project_root, "data", "processed")
+    output_base_path = os.path.join(project_root, "data", "processed")
 
     regiones = [
-        {"name": "anomalias_colombia", "shapefile": "../../data/shapefiles/colombia_4326.shp"},
-        {"name": "anomalias_cundinamarca_bogota", "shapefile": "../../data/shapefiles/Cundinamarca_Bogota_4326.shp"},
-        {"name": "anomalias_antioquia", "shapefile": "../../data/shapefiles/antioquia_4326.shp"},
-        {"name": "anomalias_valle_cauca", "shapefile": "../../data/shapefiles/valle_cauca_4326.shp"},
-        {"name": "anomalias_san_andres_providencia", "shapefile": "../../data/shapefiles/san_andres_providencia.shp"},
-        {"name": "anomalias_medellin", "shapefile": "../../data/shapefiles/medellin_4326.shp"},
-        {"name": "anomalias_cali", "shapefile": "../../data/shapefiles/cali_4326.shp"},
-        {"name": "anomalias_bogota", "shapefile": "../../data/shapefiles/bogota.shp"}
+        {"name": "anomalias_colombia", "shapefile": os.path.join(project_root, "data", "shapefiles", "colombia_4326.shp")},
+        {"name": "anomalias_cundinamarca_bogota", "shapefile": os.path.join(project_root, "data", "shapefiles", "Cundinamarca_Bogota_4326.shp")},
+        {"name": "anomalias_antioquia", "shapefile": os.path.join(project_root, "data", "shapefiles", "antioquia_4326.shp")},
+        {"name": "anomalias_valle_cauca", "shapefile": os.path.join(project_root, "data", "shapefiles", "valle_cauca_4326.shp")},
+        {"name": "anomalias_san_andres_providencia", "shapefile": os.path.join(project_root, "data", "shapefiles", "san_andres_providencia.shp")},
+        {"name": "anomalias_medellin", "shapefile": os.path.join(project_root, "data", "shapefiles", "medellin_4326.shp")},
+        {"name": "anomalias_cali", "shapefile": os.path.join(project_root, "data", "shapefiles", "cali_4326.shp")},
+        {"name": "anomalias_bogota", "shapefile": os.path.join(project_root, "data", "shapefiles", "bogota.shp")}
     ]
+
+    print("=" * 60)
+    print("CALCULANDO ANOMALÍAS REGIONALIZADAS")
+    print("=" * 60)
+    print(f"Raíz del proyecto: {project_root}")
+    print(f"Directorio de datos: {archivo_comparar_location}")
+    print("=" * 60)
 
     for region in regiones:
         try:
-            os.makedirs(os.path.join(output_base_path, region["name"]))
-        except FileExistsError:
-            pass
+            os.makedirs(os.path.join(output_base_path, region["name"]), exist_ok=True)
+        except Exception as e:
+            print(f"⚠️  No se pudo crear el directorio para {region['name']}: {e}")
+            continue
 
         try:
+            print(f"\nProcesando región: {region['name']}")
             procesar_anomalias_region(
                 region_name=region["name"],
                 shapefile_path=region["shapefile"],
@@ -62,7 +76,9 @@ if __name__ == "__main__":
                 output_base_path=output_base_path
             )
         except Exception as e:
-
-            print(f'Error en el proceso para {region["name"]}: {e}')
+            print(f'❌ Error en el proceso para {region["name"]}: {e}')
             continue
-    print("Proceso finalizado")
+    
+    print("=" * 60)
+    print("✓ Proceso finalizado")
+    print("=" * 60)

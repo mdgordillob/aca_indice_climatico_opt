@@ -4,219 +4,227 @@ import os
 import numpy as np
 import rioxarray as rio
 import geopandas as gpd
-import pdb
+import warnings
+from multiprocessing import Pool, cpu_count
+
+warnings.filterwarnings('ignore')
+
+# Global cache for shapefiles and statistics
+_shapefile_cache = {}
+_estadisticas_cache = {}
+
+def get_cached_shapefile(shapefile_path):
+    """Load shapefile once and cache it."""
+    if shapefile_path not in _shapefile_cache:
+        _shapefile_cache[shapefile_path] = gpd.read_file(shapefile_path)
+    return _shapefile_cache[shapefile_path]
+
+def get_cached_estadisticas(estadisticas_file, shapefile_path):
+    """Load and cache statistics for a specific file."""
+    cache_key = (estadisticas_file, shapefile_path)
+    if cache_key not in _estadisticas_cache:
+        estadisticas_data = xr.open_dataset(estadisticas_file)
+        estadisticas_data = estadisticas_data.rio.set_spatial_dims(x_dim='longitude', y_dim='latitude')
+        estadisticas_data = estadisticas_data.rio.write_crs("EPSG:4326")
+        
+        # Clip to shapefile
+        shapefile = get_cached_shapefile(shapefile_path)
+        estadisticas_data = estadisticas_data.rio.clip(shapefile.geometry, shapefile.crs)
+        _estadisticas_cache[cache_key] = estadisticas_data
+    
+    return _estadisticas_cache[cache_key]
 
 def load_grid_data(file_path, variable, shapefile):
     """
-    Carga datos nuevas para una variable específica desde un archivo GRIB.
-    Si se proporciona un shapefile, recorta los datos a la región especificada.
+    Load grid data for a specific variable from a GRIB file.
+    If a shapefile is provided, clips the data to the specified region.
     
-    Parámetros:
-    - file_path (str): Ruta del archivo GRIB que contiene los datos.
-    - variable (str): Nombre de la variable a extraer del archivo.
-    - shapefile_path (str, opcional): Ruta del shapefile que define la región a recortar.
+    Parameters:
+    - file_path (str): Path to the GRIB file containing the data.
+    - variable (str): Name of the variable to extract from the file.
+    - shapefile (GeoDataFrame): Shapefile that defines the region to clip.
 
-    Retorna:
-    - grid_data (xarray.DataArray): Datos de la variable seleccionada, recortados si se proporciona un shapefile.
+    Returns:
+    - grid_data (xarray.DataArray): Selected variable data, clipped if shapefile provided.
     """
-    #cargar el archivo GRIB y extraer la variable específica
     grid_data = xr.open_dataset(file_path, engine="cfgrib")[variable]
     grid_data = grid_data.rio.write_crs("EPSG:4326")
-
-    #recortar usando la geometría del shapefile
     grid_data = grid_data.rio.clip(shapefile.geometry, shapefile.crs, drop=True)
-
+    
     return grid_data
 
 def resample_to_daily_precipitation(grid_data):
     """
-    Convierte datos de precipitación horaria en sumas diarias.
+    Convert hourly precipitation data to daily sums.
 
-    Parámetros:
-    - grid_data (xarray.DataArray): Datos de precipitación con resolución horaria.
+    Parameters:
+    - grid_data (xarray.DataArray): Precipitation data with hourly resolution.
 
-    Retorna:
-    - daily_sum (xarray.DataArray): Datos de precipitación sumados a nivel diario.
+    Returns:
+    - daily_sum (xarray.DataArray): Precipitation data summed to daily level.
     """
-    #ajustar a UTC-5 (hora de Colombia)
+    # Adjust to UTC-5 (Colombia timezone)
     grid_data['valid_time'] = grid_data['valid_time'] - pd.Timedelta(hours=5)
 
-    #aplanar la estructura de datos combinando las dimensiones 'time' y 'step'
+    # Flatten the data structure by combining 'time' and 'step' dimensions
     grid_data_plain = grid_data.stack(valid_time_dim=("time", "step")).reset_index("valid_time_dim")
 
-    #agrupar por día y sumar los valores de precipitación diaria
+    # Group by day and sum daily precipitation values
     daily_sum = grid_data_plain.groupby(grid_data_plain["valid_time"].dt.floor("D")).sum(dim='valid_time_dim')
 
-    #renombrar la dimensión de tiempo
+    # Rename time dimension
     daily_sum = daily_sum.rename({"floor": "time"})
 
     return daily_sum
 
 def alinear_data(data1, data2, op):
+    """Align precipitation data with reference statistics."""
     meses = data1["time"].dt.month
 
     mean_tp_aligned = data2["mean_tp"].sel(month=meses).drop_vars("month")
     std_tp_aligned = data2["std_tp"].sel(month=meses).drop_vars("month")
 
-    #convertir en un Dataset si es un DataArray
+    # Convert to Dataset if DataArray
     if isinstance(data1, xr.DataArray):
         data1 = data1.to_dataset(name="tp_daily_sum")
 
     data1 = data1.assign(mean_tp=mean_tp_aligned, std_tp=std_tp_aligned)
         
     if op == 1:
-        return data1.drop_vars("month", errors="ignore")  # Evita errores si "month" no existe
-
+        return data1.drop_vars("month", errors="ignore")
     else:
         return data1
 
 def anomalias(data):
     """
-    Calcula las anomalías de precipitación.
+    Calculate precipitation anomalies.
 
-    Parámetros:
-    - data (xarray.Dataset): Datos con la precipitación diaria y sus estadísticas.
+    Parameters:
+    - data (xarray.Dataset): Data with daily precipitation and statistics.
 
-    Retorna:
-    - data (xarray.Dataset): Datos con una nueva variable "anomalias".
+    Returns:
+    - data (xarray.Dataset): Data with new "anomalias" variable.
     """
     return data.assign(anomalias=(data["tp_daily_sum"] - data["mean_tp"]) / data["std_tp"])
 
-# codigos para procesar el indicador de lluvias
-
 def calcular_5_dias_maximo(data):
     """
-    Calcula el máximo acumulado de precipitación en un periodo de 5 días consecutivos dentro de cada mes.
+    Calculate maximum accumulated precipitation over 5 consecutive days within each month.
 
-    Parámetros:
-    - data (xarray.DataArray): Datos de precipitación diaria.
+    Parameters:
+    - data (xarray.DataArray): Daily precipitation data.
 
-    Retorna:
-    - Rx5day (xarray.DataArray): Máximo acumulado de precipitación en 5 días consecutivos por mes.
+    Returns:
+    - Rx5day (xarray.DataArray): Maximum accumulated precipitation over 5 consecutive days per month.
     """
-    # Sumar la precipitación en ventanas móviles de 5 días
+    # Sum precipitation over 5-day rolling windows
     data_5_day_sum = data.rolling(time=5, min_periods=1).sum()
 
-    # Agregar la columna de mes para verificar que los 5 días pertenezcan al mismo mes
+    # Add month column to verify 5 days belong to same month
     data_5_day_sum['month'] = data_5_day_sum['time'].dt.month
 
-    # Calcular la diferencia de mes entre el primer y último día de la ventana de 5 días
+    # Calculate month difference between first and last day of 5-day window
     month_diff = data_5_day_sum['month'] - data_5_day_sum['month'].shift(time=4)
 
-    # Crear una máscara para filtrar solo los valores donde los 5 días están en el mismo mes
+    # Create mask to filter only values where all 5 days are in same month
     mask = (month_diff == 0)
 
-    # Aplicar la máscara para eliminar valores que cruzan de un mes a otro
+    # Apply mask to remove values that cross month boundaries
     data_5_day_sum = data_5_day_sum.where(mask, drop=True)
 
-    # Seleccionar el máximo acumulado de 5 días dentro de cada mes
+    # Select maximum accumulated 5-day precipitation per month
     Rx5day = data_5_day_sum.resample(time='1M').max()
 
     return Rx5day
 
-
 def calcular_anomalias_lluvia(data, p):
     """
-    Calcula las anomalías de precipitación basada en el máximo acumulado de 5 días.
+    Calculate precipitation anomalies based on maximum 5-day accumulated precipitation.
 
-    Parámetros:
-    - data (xarray.DataArray): Datos de precipitación diaria.
-    - p (xarray.Dataset): Dataset con la media y desviación estándar del acumulado máximo de 5 días.
+    Parameters:
+    - data (xarray.DataArray): Daily precipitation data.
+    - p (xarray.Dataset): Dataset with mean and standard deviation of maximum 5-day accumulated precipitation.
 
-    Retorna:
-    - anomalias_lluvia (xarray.Dataset): Anomalías de precipitación.
+    Returns:
+    - anomalias_lluvia (xarray.Dataset): Precipitation anomalies.
     """
-    # Aplicar la función para obtener el máximo acumulado en 5 días
     Rx5day = calcular_5_dias_maximo(data)
-
-    # Alinear los datos con las estadísticas mensuales de referencia
     Rx5day = alinear_data(Rx5day, p, 1)
-
-    # Calcular anomalías de precipitación
     anomalias_lluvia = anomalias(Rx5day)
-
+    
     return anomalias_lluvia
-
 
 def count_most_frequent_with_condition(data):
     """
-    Encuentra la frecuencia máxima de los valores en el array y ajusta según la condición:
-    - Si el valor `0` está presente en los datos, devuelve la frecuencia máxima.
-    - Si `0` no está presente, resta 1 a la frecuencia máxima.
+    Find maximum frequency of values in array and adjust based on condition:
+    - If value `0` is present, return maximum frequency.
+    - If `0` not present, subtract 1 from maximum frequency.
 
-    Parámetros:
-    - data (numpy array): Datos de entrada.
+    Parameters:
+    - data (numpy array): Input data.
 
-    Retorna:
-    - int: Frecuencia máxima ajustada.
+    Returns:
+    - int: Adjusted maximum frequency.
     """
     values, counts = np.unique(data, return_counts=True)
-
     return counts.max() - 1
-    
-    
+
 def calcular_interpolacion(data, aux_year, ruta_salida):
-    
+    """Calculate interpolated dry days for drought analysis."""
     ruta = ruta_salida
 
     data = data.where(data < 0.001, other=1)
     data = data.where(data >= 0.001, other=0)
 
-    # Calcular la suma acumulada de días secos dentro de cada año
-    data_cumsum = data.cumsum(dim='time')  # Asumiendo que data tiene un solo año
+    # Calculate cumulative sum of dry days within each year
+    data_cumsum = data.cumsum(dim='time')
     data_cumsum['time'] = data['time']
 
-    # Aplicar la función para contar la cantidad más frecuente de días secos consecutivos
+    # Apply function to count most frequent consecutive dry days
     count_most_frequent_da = xr.apply_ufunc(
         count_most_frequent_with_condition,
         data_cumsum.groupby('time.year'),
-        input_core_dims=[['time']],  # Dimensión sobre la que se aplica
-        output_core_dims=[[]],  # Resultado sin dimensiones adicionales
-        vectorize=True,  # Vectorizar para múltiples coordenadas y años
-        dask="allowed",  # Soporte para Dask si el dataset es grande
+        input_core_dims=[['time']],
+        output_core_dims=[[]],
+        vectorize=True,
+        dask="allowed",
     )
 
     count_most_frequent_da = count_most_frequent_da.squeeze("year")
 
     if aux_year == 1961:
-        
         count_most_frequent_da = count_most_frequent_da.expand_dims(month=np.arange(1, 13))
-        
         CDD = count_most_frequent_da * (count_most_frequent_da['month'] / 12)
-    
     else:
-        aux_year -= 1
+        aux_year_prev = aux_year - 1
         data1 = count_most_frequent_da
-        data2 = xr.open_dataarray(ruta + '/' +f'datos_maximos_{aux_year}.nc')
-        aux_year += 1
         
-        data_aligned = data2.sel(latitude=data1.latitude, longitude=data1.longitude, method="nearest")
-        
-        if isinstance(data1, xr.DataArray):
-            data1 = data1.to_dataset(name="tp")  
+        try:
+            data2 = xr.open_dataarray(os.path.join(ruta, f'datos_maximos_{aux_year_prev}.nc'))
+            data_aligned = data2.sel(latitude=data1.latitude, longitude=data1.longitude, method="nearest")
+            
+            if isinstance(data1, xr.DataArray):
+                data1 = data1.to_dataset(name="tp")
+            
+            data1 = data1.assign(tp_daily_sum=data_aligned)
+            data1 = data1.expand_dims(month=np.arange(1, 13))
+            
+            data1['new'] = xr.where(
+                data1['month'] != 12,
+                ((12 - data1['month']) / 12) * data1['tp_daily_sum'] + (data1['month'] / 12) * data1['tp'],
+                data1['tp']
+            )
+            
+            CDD = data1['new']
+        except FileNotFoundError:
+            # If previous year data doesn't exist, use current year data
+            count_most_frequent_da = count_most_frequent_da.expand_dims(month=np.arange(1, 13))
+            CDD = count_most_frequent_da * (count_most_frequent_da['month'] / 12)
 
-        data1 = data1.assign(tp_daily_sum = data_aligned)  
-
-        data1 = data1.expand_dims(month=np.arange(1, 13))
-        
-        data1['new'] = xr.where(
-            data1['month'] != 12,
-            ((12 - data1['month'])/12)*data1['tp_daily_sum'] + (data1['month']/12)*data1['tp'],  
-            data1['tp']
-        )
-
-
-        CDD = data1['new']
-
-
-    CDD.sel(month=12).to_netcdf(ruta+'/'+ f'datos_maximos_{aux_year}.nc')
+    CDD.sel(month=12).to_netcdf(os.path.join(ruta, f'datos_maximos_{aux_year}.nc'))
     
-    new_date = pd.to_datetime(
-    dict(year=aux_year, month=CDD['month'].values, day=1))
-
-    # Ahora asignamos la nueva coordenada "date" a lo largo de la dimensión "month"
+    new_date = pd.to_datetime(dict(year=aux_year, month=CDD['month'].values, day=1))
     CDD = CDD.assign_coords(date=("month", new_date))
-
     CDD = CDD.rename("tp_daily_sum")
     CDD = CDD.assign_coords(month=CDD.coords["date"].values)
     CDD = CDD.rename({"month": "time"})
@@ -225,107 +233,208 @@ def calcular_interpolacion(data, aux_year, ruta_salida):
 
 def calcular_anomalias_sequia(data, p, year, ruta_salida):
     """
-    Calcula las anomalías de sequía con base en la duración de días secos consecutivos.
+    Calculate drought anomalies based on duration of consecutive dry days.
 
-    Parámetros:
-    - data (xarray.Dataset): Datos de precipitación diaria.
-    - p (xarray.Dataset): Dataset con media y desviación estándar de los días secos consecutivos.
+    Parameters:
+    - data (xarray.Dataset): Daily precipitation data.
+    - p (xarray.Dataset): Dataset with mean and standard deviation of consecutive dry days.
+    - year (int): Year being processed.
+    - ruta_salida (str): Output directory path.
 
-    Retorna:
-    - anomalias_sequia (xarray.Dataset): Anomalías de sequía.
+    Returns:
+    - anomalias_sequia (xarray.Dataset): Drought anomalies.
     """
-    # Obtener la serie interpolada de días secos consecutivos
     CDD = calcular_interpolacion(data, year, ruta_salida)
-
-    # Alinear los datos con las estadísticas de referencia
     CDD = alinear_data(CDD, p, 0)
-
-    # Calcular anomalías
     anomalias_sequia = anomalias(CDD)
-
+    
     return anomalias_sequia
 
-def load_estadisticas(estadisticas_file, shapefile_path):
-    #calcular la lluvia
-    estadisticas_data = xr.open_dataset(estadisticas_file)
-
-    estadisticas_data = estadisticas_data.rio.set_spatial_dims(x_dim='longitude', y_dim='latitude')
-    estadisticas_data = estadisticas_data.rio.write_crs("EPSG:4326")
-    # Recortar el conjunto de datos
-    estadisticas_data = estadisticas_data.rio.clip(shapefile_path.geometry, shapefile_path.crs)
-
-    return estadisticas_data
-
 def procesar_anomalias(est1, est2, file, shapefile, year, ruta_salida):
+    """Process anomalies for a single year."""
+    try:
+        # Load grid data
+        archivo = load_grid_data(file, "tp", shapefile)
+
+        # Resample to daily
+        ds_resampled = resample_to_daily_precipitation(archivo)
+        ds_resampled = ds_resampled.sel(time=slice(f"{year}-01-01", f"{year}-12-31"))
+
+        # Calculate anomalies
+        anomalias_lluvia = calcular_anomalias_lluvia(ds_resampled, est1)
+        anomalias_sequia = calcular_anomalias_sequia(ds_resampled, est2, year, ruta_salida)
+
+        # Extract monthly means
+        anomalias_lluvias_resultado = anomalias_lluvia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
+        anomalias_sequia_resultado = anomalias_sequia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
+
+        return anomalias_lluvias_resultado, anomalias_sequia_resultado
     
-    estadisticas1 = load_estadisticas(est1, shapefile)
-    estadisticas2 = load_estadisticas(est2, shapefile)
-
-    archivo = load_grid_data(file, "tp", shapefile)
-
-    #aplicar resample
-    ds_resampled = resample_to_daily_precipitation(archivo)
-    
-    ds_resampled = ds_resampled.sel(time=slice(f"{year}-01-01", f"{year}-12-31"))
-
-    #calcular anomalias para esos años
-    anomalias_lluvia = calcular_anomalias_lluvia(ds_resampled, estadisticas1)
-    anomalias_sequia = calcular_anomalias_sequia(ds_resampled, estadisticas2, year, ruta_salida)
-
-    anomalias_lluvias_resultado = anomalias_lluvia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
-    anomalias_sequia_resultado = anomalias_sequia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
-
-    return anomalias_lluvias_resultado, anomalias_sequia_resultado
+    except Exception as e:
+        print(f"  Error processing year {year}: {e}")
+        return None, None
 
 def guardar_anomalias(df_lluvia, df_sequia, ruta_salida, salida_lluvia, salida_sequia):
+    """Save anomalies to CSV files."""
     df_lluvia = pd.DataFrame(df_lluvia)
     df_sequia = pd.DataFrame(df_sequia)
 
-    df_lluvia.to_csv(f"{ruta_salida}/{salida_lluvia}", index=False)
-    df_sequia.to_csv(f"{ruta_salida}/{salida_sequia}", index=False)
+    df_lluvia.to_csv(os.path.join(ruta_salida, salida_lluvia), index=False)
+    df_sequia.to_csv(os.path.join(ruta_salida, salida_sequia), index=False)
+    
+    print(f"✓ Precipitation anomalies saved to {os.path.join(ruta_salida, salida_lluvia)}")
+    print(f"✓ Drought anomalies saved to {os.path.join(ruta_salida, salida_sequia)}")
 
-def procesar_anomalias_lluvia(shapefile_path, ruta, ruta_grib, ruta_salida, salida_lluvia="anomalies_precipitation_combined.csv", salida_sequia="anomalies_drought_combined.csv"):
-    shapefile = gpd.read_file(shapefile_path)
+def process_year(args):
+    """Process a single year - designed for multiprocessing."""
+    year, ruta, ruta_grib, ruta_salida, shapefile_path, files = args
+    
+    year_anomalies_lluvia = []
+    year_anomalies_sequia = []
+    
+    # Find file for this year
+    archivo_lluvia = [file for file in files if str(year) in file and file.endswith(".grib")]
+    
+    if not archivo_lluvia:
+        print(f"  ⚠️  No GRIB files found for {year}")
+        return year_anomalies_lluvia, year_anomalies_sequia
+    
+    archivo_lluvia = archivo_lluvia[0]
+    archivo_lluvia_full = os.path.join(ruta_grib, archivo_lluvia)
+    
+    print(f"Processing year {year} with file: {archivo_lluvia}")
+    
+    try:
+        # Load statistics (cached)
+        shapefile = get_cached_shapefile(shapefile_path)
+        est1 = get_cached_estadisticas(os.path.join(ruta, "era5_lluvias_percentil.nc"), shapefile_path)
+        est2 = get_cached_estadisticas(os.path.join(ruta, "era5_sequia_percentil.nc"), shapefile_path)
+        
+        # Process anomalies for the year
+        anomalias_mensuales_lluvia, anomalias_mensuales_sequia = procesar_anomalias(
+            est1, est2, archivo_lluvia_full, shapefile, year, ruta_salida
+        )
+        
+        if anomalias_mensuales_lluvia is None:
+            return year_anomalies_lluvia, year_anomalies_sequia
+        
+        # Extract monthly values
+        for mes in range(1, 13):
+            try:
+                anomalia_lluvia_mes = anomalias_mensuales_lluvia.sel(
+                    time=anomalias_mensuales_lluvia.time.dt.month == mes, method="nearest"
+                ).item()
+                year_anomalies_lluvia.append({"Año": year, "Mes": mes, "Anomalia_Lluvia": anomalia_lluvia_mes})
+                
+                anomalia_sequia_mes = anomalias_mensuales_sequia.sel(
+                    time=anomalias_mensuales_sequia.time.dt.month == mes, method="nearest"
+                ).item()
+                year_anomalies_sequia.append({"Año": year, "Mes": mes, "Anomalia_Sequia": anomalia_sequia_mes})
+            
+            except (KeyError, ValueError) as e:
+                print(f"  Warning: Could not extract month {mes} for year {year}")
+                continue
+        
+        print(f"✓ Completed year {year}")
+    
+    except Exception as e:
+        print(f"  Error loading year {year}: {e}")
+    
+    return year_anomalies_lluvia, year_anomalies_sequia
+
+def procesar_anomalias_lluvia(
+    shapefile_path, ruta, ruta_grib, ruta_salida,
+    salida_lluvia="anomalies_precipitation_combined.csv",
+    salida_sequia="anomalies_drought_combined.csv",
+    use_multiprocessing=True, num_workers=None
+):
+    """Main function to process precipitation and drought anomalies."""
+    print(f"Looking for files in: {ruta_grib}")
+    
+    if not os.path.exists(ruta_grib):
+        raise FileNotFoundError(f"Directory not found: {ruta_grib}")
+    
+    # Create output directory if needed
+    os.makedirs(ruta_salida, exist_ok=True)
+    
+    # List all files
+    files = os.listdir(ruta_grib)
+    
+    if not files:
+        print(f"⚠️  No files found in {ruta_grib}")
+        return None, None
+    
+    print(f"Found {len(files)} files in directory")
+
+    # Prepare years to process
+    years_to_process = list(range(1961, 2025))
     
     df_lluvia = []
     df_sequia = []
+    
+    if use_multiprocessing and len(years_to_process) > 1:
+        # Use multiprocessing for year-level parallelization
+        if num_workers is None:
+            num_workers = max(1, cpu_count() - 1)
+        
+        print(f"Using multiprocessing with {num_workers} workers")
+        
+        # Prepare arguments for each year
+        process_args = [
+            (year, ruta, ruta_grib, ruta_salida, shapefile_path, files)
+            for year in years_to_process
+        ]
+        
+        # Process years in parallel
+        with Pool(num_workers) as pool:
+            results = pool.map(process_year, process_args)
+        
+        # Collect results
+        for year_lluvia, year_sequia in results:
+            df_lluvia.extend(year_lluvia)
+            df_sequia.extend(year_sequia)
+    
+    else:
+        # Sequential processing
+        for year in years_to_process:
+            print(f"\nProcessing year {year}...")
+            year_lluvia, year_sequia = process_year((year, ruta, ruta_grib, ruta_salida, shapefile_path, files))
+            df_lluvia.extend(year_lluvia)
+            df_sequia.extend(year_sequia)
 
-    for year in range(1961, 2025):
-        # Procesar anomalías
-        anomalias_mensuales_lluvia, anomalias_mensuales_sequia = procesar_anomalias(
-            f"{ruta}/era5_lluvias_percentil.nc",
-            f"{ruta}/era5_sequia_percentil.nc",
-            f"{ruta_grib}/era5_rain_{year}.grib",
-            shapefile,
-            year,
-            ruta_salida
-        )
-
-        for mes in range(1, 13):
-            try:
-                anomalia_lluvia_mes = anomalias_mensuales_lluvia.sel(time=anomalias_mensuales_lluvia.time.dt.month == mes, method="nearest").item()
-                df_lluvia.append({"Año": year, "Mes": mes, "Anomalia_Lluvia": anomalia_lluvia_mes})
-                
-                anomalia_sequia_mes = anomalias_mensuales_sequia.sel(time=anomalias_mensuales_sequia.time.dt.month == mes, method="nearest").item()
-                df_sequia.append({"Año": year, "Mes": mes, "Anomalia_Sequia": anomalia_sequia_mes})
-
-            except KeyError as e:
-                print(f"Error con el mes {mes} para el año {year}: {e}")
-        print(f'Procesado year {year}')
-
-    # Convertir a DataFrame y guardar en CSV
+    if not df_lluvia or not df_sequia:
+        print("⚠️  No anomalies calculated!")
+        return None, None
+    
+    # Save anomalies
     guardar_anomalias(df_lluvia, df_sequia, ruta_salida, salida_lluvia, salida_sequia)
 
     return df_lluvia, df_sequia
 
 
 if __name__ == "__main__":
-    shapefile_path = "../../data/shapefiles/colombia_4326.shp"
-    ruta = "../../data/processed"
-    ruta_grib = "../../data/raw/era5"
-    ruta_salida = "../../data/processed/anomalias_colombia"
+    # Get the script's directory and navigate to project root
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(script_dir))
+    
+    shapefile_path = os.path.join(project_root, "data", "shapefiles", "colombia_4326.shp")
+    ruta = os.path.join(project_root, "data", "processed")
+    ruta_grib = os.path.join(project_root, "data", "raw", "era5")
+    ruta_salida = os.path.join(project_root, "data", "processed", "anomalias_colombia")
     salida_lluvia = "anomalies_precipitation_combined.csv"
     salida_sequia = "anomalies_drought_combined.csv"
 
-    df1, df2 = procesar_anomalias_lluvia(shapefile_path, ruta, ruta_grib, ruta_salida, salida_lluvia, salida_sequia)
-    print('Proceso finalizado')
+    print("=" * 60)
+    print("CALCULATING PRECIPITATION AND DROUGHT ANOMALIES")
+    print("=" * 60)     
+    print(f"Project root: {project_root}")
+    print(f"Data directory: {ruta_grib}")
+    print("=" * 60)
+
+    df1, df2 = procesar_anomalias_lluvia(
+        shapefile_path, ruta, ruta_grib, ruta_salida,
+        salida_lluvia, salida_sequia,
+        use_multiprocessing=True,
+        num_workers=None  # None = auto-detect available cores
+    )
+    print('\n✓ Process completed')
