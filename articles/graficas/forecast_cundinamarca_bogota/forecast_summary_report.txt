@@ -1,0 +1,42 @@
+
+================================================================================
+CLIMATE ANOMALY FORECAST REPORT - CUNDINAMARCA_BOGOTA
+================================================================================
+
+FORECAST CONFIGURATION:
+  • Region: Cundinamarca Bogota
+  • Forecast Period: 12 months
+  • Forecast Date Range: 2025-01-01 to 2025-12-01
+  • Historical Data Range: 1961-01-01 to 2024-12-01
+
+MODEL INFORMATION:
+  • Best Model ID: b8813261d5394127449d3397c017c052
+  • Ensemble Strategy: simple, dist
+  • Number of Variables: 6
+  • Total Data Points (monthly): 768
+
+FORECAST VARIABLES:
+  • temperature_t_90
+  • temperature_t_10
+  • wind_anomalies_above
+  • precipitation_Anomalia_Lluvia
+  • drought_Anomalia_Sequia
+  • Climate_Index
+
+OUTPUT FILES GENERATED:
+  • forecast_cundinamarca_bogota_point.csv - Point forecasts
+  • forecast_cundinamarca_bogota_upper_90ci.csv - Upper confidence bounds
+  • forecast_cundinamarca_bogota_lower_90ci.csv - Lower confidence bounds
+  • forecast_cundinamarca_bogota_combined.csv - Historical + Forecast
+  • forecasts_all_variables.png - Visualization
+
+RECOMMENDATIONS:
+  1. Review confidence intervals for forecast uncertainty
+  2. Compare with seasonal climate patterns
+  3. Validate forecasts against actual observations as they become available
+  4. Update model quarterly with new data for improved accuracy
+  5. Use forecasts in conjunction with other climate indicators
+
+GENERATED: 2025-12-26 02:18:41
+================================================================================
+        
