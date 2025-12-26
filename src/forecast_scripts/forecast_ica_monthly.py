@@ -274,8 +274,10 @@ class MonthlyClimateForecaster:
     
     def calculate_climate_index(self, data):
         """
-        Calculate composite climate index from anomaly variables.
-        Uses equal weighting for temperature (T90, T10), precipitation, drought, and wind anomalies.
+        Calculate Actuarial Climate Index (ICA) from anomaly variables.
+        Formula: ICA = (T90 - T10 + W_std + P_std + D_std) / 5
+        
+        Based on the methodology in src/scripts/graficas.py plot_ICA function.
         
         Args:
             data (pd.DataFrame): DataFrame with anomaly columns
@@ -283,30 +285,50 @@ class MonthlyClimateForecaster:
         Returns:
             pd.Series: Climate index values
         """
-        index = pd.Series(0.0, index=data.index)
-        weights = {}
+        # Initialize ICA as zeros
+        ica = pd.Series(0.0, index=data.index)
+        component_count = 0
         
-        # Identify relevant columns and assign weights
+        # Temperature component: T90 - T10 (difference between 90th and 10th percentiles)
+        t90_col = None
+        t10_col = None
         for col in data.columns:
-            col_lower = col.lower()
-            if 't_90' in col_lower:
-                index += data[col] * 0.25
-                weights[col] = 0.25
-            elif 't_10' in col_lower:
-                index += data[col] * 0.25
-                weights[col] = 0.25
-            elif 'precip' in col_lower or 'lluvia' in col_lower:
-                index += data[col] * 0.25
-                weights[col] = 0.25
-            elif 'drought' in col_lower or 'sequia' in col_lower:
-                index += data[col] * 0.25
-                weights[col] = 0.25
-            elif 'wind' in col_lower or 'anomal' in col_lower:
-                # Wind anomalies get lower weight if other variables already weighted
-                if col not in weights:
-                    index += data[col] * 0.0  # Skip if not main variables
+            if 't_90' in col.lower():
+                t90_col = col
+            elif 't_10' in col.lower():
+                t10_col = col
         
-        return index
+        if t90_col is not None and t10_col is not None:
+            ica += data[t90_col] - data[t10_col]
+            component_count += 1
+        
+        # Wind anomalies
+        for col in data.columns:
+            if 'wind' in col.lower() or ('anomal' in col.lower() and 'above' in col.lower()):
+                ica += data[col]
+                component_count += 1
+                break
+        
+        # Precipitation anomalies
+        for col in data.columns:
+            if 'precip' in col.lower() or 'lluvia' in col.lower():
+                ica += data[col]
+                component_count += 1
+                break
+        
+        # Drought anomalies
+        for col in data.columns:
+            if 'drought' in col.lower() or 'sequia' in col.lower():
+                ica += data[col]
+                component_count += 1
+                break
+        
+        # Divide by number of components (typically 5 for full ICA)
+        # If all components present, divide by 5; otherwise by component_count
+        divisor = 5 if component_count >= 4 else component_count
+        ica = ica / divisor if divisor > 0 else ica
+        
+        return ica
     
     def generate_forecasts(self):
         """
