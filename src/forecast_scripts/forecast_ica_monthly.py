@@ -128,6 +128,36 @@ class MonthlyClimateForecaster:
         
         return datasets
     
+    def calculate_rolling_anomalies(self, df):
+        """
+        Recalculate anomalies using a 1-month rolling baseline instead of static reference period.
+        This makes anomalies more responsive to recent climate conditions.
+        
+        Args:
+            df (pd.DataFrame): DataFrame with raw anomaly values
+            
+        Returns:
+            pd.DataFrame: DataFrame with rolling anomalies
+        """
+        print("\n[Calculating rolling 1-month baseline anomalies...]")
+        
+        df_rolling = df.copy()
+        
+        for col in df.columns:
+            # Calculate 1-month rolling mean as the baseline
+            rolling_baseline = df[col].rolling(window=1, center=True, min_periods=1).mean()
+            
+            # Calculate anomaly relative to this rolling baseline
+            # We'll use a 12-month rolling window for the reference (more recent climate)
+            rolling_ref = df[col].rolling(window=12, center=True, min_periods=1).mean()
+            
+            # Updated anomaly: current value - rolling reference (12-month)
+            df_rolling[col] = df[col] - rolling_ref
+            
+            print(f"  [OK] {col}: Rolling anomalies calculated")
+        
+        return df_rolling
+    
     def extract_regional_series(self, datasets):
         """
         Extract spatial mean time series from datasets and combine into single DataFrame.
@@ -236,6 +266,12 @@ class MonthlyClimateForecaster:
             print(f"  Date range: {self.data_wide.index.min()} to {self.data_wide.index.max()}")
             print(f"  Index type: {type(self.data_wide.index)}")
             print(f"  Variables: {list(self.data_wide.columns)}")
+            
+            # Recalculate anomalies using rolling 12-month baseline
+            self.data_wide = self.calculate_rolling_anomalies(self.data_wide)
+            
+            print(f"\n[OK] Rolling anomalies calculated")
+            print(f"  Updated dataset shape: {self.data_wide.shape}")
             
             return self.data_wide
         else:
