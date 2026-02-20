@@ -1,0 +1,21 @@
+======================================================================
+DAILY SARIMAX+ENSO FORECAST — COLOMBIA
+======================================================================
+Forecast horizon:  180 days
+ENSO max lag:      6 months
+Models fitted:     4
+
+ENSO R² by variable:
+  temperature_daily_max                R²=0.1154  AIC=12487.2
+  temperature_daily_min                R²=0.0433  AIC=-8347.6
+  precipitation_daily                  R²=0.0072  AIC=-103246.1
+  wind_speed_daily                     R²=0.0139  AIC=-1741.0
+
+Residual normality (JB test):
+  temperature_daily_max                JB p=0.0000  ✗ Non-normal
+  temperature_daily_min                JB p=0.0000  ✗ Non-normal
+  precipitation_daily                  JB p=0.0000  ✗ Non-normal
+  wind_speed_daily                     JB p=0.0000  ✗ Non-normal
+
+Generated: 2026-02-12 17:09:49
+======================================================================
