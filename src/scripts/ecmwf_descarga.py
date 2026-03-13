@@ -6,14 +6,14 @@ class ERA5Downloader:
     Class to download ERA5 data from the CDS API
     # Siguiendo la guía https://cds.climate.copernicus.eu/how-to-api 
     '''
-    def __init__(self, target_folder="../../data/raw/era5/", area=[13.0, -83.0, -4.6, -66.1]):
+    def __init__(self, target_folder="../../data/raw/era5_land/", area=[13.0, -83.0, -4.6, -66.1]):
         self.target_folder = target_folder
         self.area = area
         self.client = cdsapi.Client()
         os.makedirs(self.target_folder, exist_ok=True)
 
     def download(self, years, variables, target_filename):
-        dataset = "reanalysis-era5-single-levels"
+        dataset = "reanalysis-era5-land"
         request = {
             "product_type": "reanalysis",
             "variable": variables,
