@@ -751,7 +751,7 @@ def main():
     print("To use with your ETS+ENSO models, add the following to your pipeline:")
     print("""
 # After fitting models, in your forecasting script:
-from error_diagnostics import ModelErrorDiagnostics
+from common.diagnostics import ModelErrorDiagnostics
 
 diagnostics = ModelErrorDiagnostics(output_path='./error_diagnostics')
 

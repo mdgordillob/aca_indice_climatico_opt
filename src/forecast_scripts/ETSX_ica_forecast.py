@@ -42,10 +42,13 @@ import requests
 
 warnings.filterwarnings('ignore')
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common.climate_index import calculate_climate_index
+from common.stationarity import adf_test, make_stationary
+
 # ETS and statistical models
 from statsmodels.tsa.statespace.exponential_smoothing import ExponentialSmoothing
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from statsmodels.tsa.stattools import adfuller
 from statsmodels.tsa.api import SimpleExpSmoothing, Holt
 from statsmodels.tsa.holtwinters import ExponentialSmoothing as ES
 from sklearn.linear_model import LassoCV, RidgeCV
@@ -409,43 +412,10 @@ class MonthlyClimateForecasterETSWithENSO:
         return self.enso_features
 
     def adf_test(self, series, variable_name):
-        result = adfuller(series.dropna(), autolag='AIC')
-        return {
-            'variable':        variable_name,
-            'adf_statistic':   result[0],
-            'p_value':         result[1],
-            'used_lag':        result[2],
-            'n_obs':           result[3],
-            'critical_values': result[4],
-            'is_stationary':   result[1] < 0.05
-        }
+        return adf_test(series, variable_name)
 
     def make_stationary(self, series, variable_name, max_diff=2):
-        print(f"\n Testing stationarity for {variable_name}...")
-        original_series = series.copy()
-        current_series  = series.copy()
-        diff_order = 0
-        adf_results = []
-
-        for d in range(max_diff + 1):
-            adf_result = self.adf_test(current_series, variable_name)
-            adf_results.append(adf_result)
-            print(f"  Diff order {d}: ADF={adf_result['adf_statistic']:.4f}, "
-                  f"p-value={adf_result['p_value']:.4f}, "
-                  f"Stationary={adf_result['is_stationary']}")
-            if adf_result['is_stationary']:
-                diff_order = d
-                break
-            if d < max_diff:
-                current_series = current_series.diff().dropna()
-
-        self.differencing_info[variable_name] = {
-            'diff_order':        diff_order,
-            'adf_results':       adf_results,
-            'original_series':   original_series,
-            'stationary_series': current_series
-        }
-        return current_series, diff_order, adf_results
+        return make_stationary(series, variable_name, max_diff, differencing_info=self.differencing_info)
 
     def load_monthly_data(self):
         print("\n[Loading raw daily ERA5 data...]")
@@ -899,29 +869,7 @@ class MonthlyClimateForecasterETSWithENSO:
     # ------------------------------------------------------------------
 
     def calculate_climate_index(self, data):
-        ica = pd.Series(0.0, index=data.index)
-        component_count = 0
-
-        t90_col = t10_col = None
-        for col in data.columns:
-            if 't_90' in col.lower():   t90_col = col
-            elif 't_10' in col.lower(): t10_col = col
-        if t90_col and t10_col:
-            ica += data[t90_col] - data[t10_col]
-            component_count += 1
-
-        for col in data.columns:
-            if 'wind' in col.lower():
-                ica += data[col]; component_count += 1; break
-        for col in data.columns:
-            if 'precip' in col.lower() or 'lluvia' in col.lower():
-                ica += data[col]; component_count += 1; break
-        for col in data.columns:
-            if 'drought' in col.lower() or 'sequia' in col.lower():
-                ica += data[col]; component_count += 1; break
-
-        divisor = 5 if component_count >= 4 else component_count
-        return ica / divisor if divisor > 0 else ica
+        return calculate_climate_index(data)
 
     def generate_forecasts(self):
         print("\n[Compiling forecasts...]")

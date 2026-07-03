@@ -192,9 +192,50 @@ currently needed.
   `get_auxiliary_data.py`. Both are stale renames — trust the actual
   filename/git path, not the in-file comment.
 - `graficas_altaresolucion.py` is a 4-line dead stub (imports only, no code).
-- `ETSX_seasonal_motif_forecast.py` is very likely the "broken two-stage
-  Lasso→ETS" approach that `ETSX_daily_ica_forecast.py`'s own docstring says
-  it fixed — i.e., one of these two is superseded, not a live alternative.
+- `ETSX_seasonal_motif_forecast.py` (the "broken two-stage Lasso→ETS"
+  approach `ETSX_daily_ica_forecast.py`'s own docstring says it fixed) has
+  been deleted — confirmed unused (no other file imported from it) before removal.
+- `example_grid_search_era5.py` imports `ONIDataHandler` from
+  `ETSX_ica_forecast.py` expecting `_fetch_oni_from_era5`/`_fetch_oni_from_noaa`/
+  `_visualize_era5_oni` methods that don't exist on the class — a pre-existing
+  break unrelated to the forecast_scripts modularization (§3a).
+
+## 3a. `src/forecast_scripts/common/` — shared forecasting modules
+
+Modularized out of the ETS/ETSX/AutoTS forecast scripts (see §1 code
+inventory) after finding the same logic duplicated 2-3x with only cosmetic
+differences:
+
+| Module | Extracted from | Used by |
+|---|---|---|
+| `data_loading.py` (`load_monthly_data`, `extract_regional_series`) | Byte-identical in `forecast_ica_monthly.py` and `ETS_ica_forecast.py` | Both of those (via thin same-named wrapper methods) |
+| `climate_index.py` (`calculate_climate_index`) | Near-identical in all three: `forecast_ica_monthly.py`, `ETS_ica_forecast.py`, `ETSX_ica_forecast.py` | All three |
+| `stationarity.py` (`adf_test`, `make_stationary`, `reconstruct_from_differences`) | Near-identical in `ETS_ica_forecast.py`/`ETSX_ica_forecast.py` (ETSX's copy was a cosmetic reformat) | Both |
+| `diagnostics.py` (`ModelErrorDiagnostics`) | Moved from the old top-level `error_diagnostics.py`, unchanged | Not currently called by anything (see below) |
+
+Each consuming class kept a same-named method that delegates to the shared
+function (e.g. `MonthlyClimateForecasterETS.calculate_climate_index` now
+just calls the shared `calculate_climate_index`), so external call sites
+didn't need to change. Verified behavior-preserving by running the shared
+loaders against real `data/processed/anomalias_colombia` data and asserting
+byte-identical output to the pre-refactor code path.
+
+**Deliberately not merged** (structurally parallel but not literal
+duplicates — forcing a merge would be a redesign, not a mechanical
+extraction): the `ONIDataHandler`/`ONIDataHandlerDaily` ENSO-fetching
+classes in `ETSX_ica_forecast.py`/`ETSX_daily_ica_forecast.py`; the
+SARIMAX+Lasso fitting methods in those same two files; the AutoTS setup in
+`forecast_ica_monthly.py`/`forecast_ica_daily.py` (same shape, different
+hyperparameters); and all `visualize_forecasts`-style plotting methods
+(4 separate implementations across the package, each with different
+overlays/annotations).
+
+`ModelErrorDiagnostics` (9-panel diagnostics, 5 normality tests) is the most
+complete residual-diagnostics implementation in the package, but
+`ETSX_ica_forecast.py` and `ETSX_daily_ica_forecast.py` each still carry
+their own inline 4-panel reimplementation rather than calling into it —
+wiring them up is a worthwhile follow-up but changes plot output, so it
+wasn't bundled into this pass.
 
 ## 6. Cleanup priorities (standing list)
 
@@ -233,10 +274,10 @@ on any of these — see `CLAUDE.md`'s "Git tracking gap" section first.
    module), `sealevel2.py` (not sea level), stale internal docstrings in
    `era5datasets.py`/`get_aux_data.py` (§5).
 8. **Decide the fate of superseded scripts**: `graficas_altaresolucion.py`
-   (dead stub), `ETSX_seasonal_motif_forecast.py` (likely superseded by
-   `ETSX_daily_ica_forecast.py`), `docs/data_dictionary.md` (superseded by
+   (dead stub), `docs/data_dictionary.md` (superseded by
    `docs/Diccionario.md`), root `articles/article1.tex` (superseded by
-   `articles/aci_co_submission/article1.tex`).
+   `articles/aci_co_submission/article1.tex`). (`ETSX_seasonal_motif_forecast.py`
+   was resolved — deleted, see §3a.)
 9. **Fill the empty doc stubs** (`docs/methodology.md`, `docs/results.md`,
    `docs/zones_description.md`) from `article1.tex`, or delete them if the
    paper is considered sufficient documentation going forward.

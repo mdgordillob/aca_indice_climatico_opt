@@ -20,6 +20,10 @@ from datetime import datetime, timedelta
 import warnings
 warnings.filterwarnings('ignore')
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common.data_loading import load_monthly_data, extract_regional_series
+from common.climate_index import calculate_climate_index
+
 # AutoTS and dependencies
 from autots import AutoTS
 import seaborn as sns
@@ -60,74 +64,12 @@ class MonthlyClimateForecaster:
     def load_monthly_data(self):
         """
         Load monthly NetCDF files (temperature, wind) and CSV files (precipitation, drought).
-        
+
         Returns:
             dict: Dictionary containing processed DataFrames
         """
-        print("\n[Loading monthly data...]")
-        
-        datasets = {}
-        
-        # Load temperature NetCDF files (monthly)
-        print("\n  Loading temperature files...")
-        temp_files = sorted(glob.glob(os.path.join(self.base_path, "anomalies_temperature_*.nc")))
-        if temp_files:
-            try:
-                temp_datasets = [xr.open_dataset(f) for f in temp_files]
-                ds_temp = xr.concat(temp_datasets, dim='time')
-                datasets['temperature'] = ds_temp
-                print(f"  [OK] Loaded {len(temp_files)} temperature files")
-            except Exception as e:
-                print(f"  [WARNING] Error loading temperature: {e}")
-        else:
-            print(f"  [WARNING] No temperature files found")
-        
-        # Load wind NetCDF files (monthly)
-        print("\n  Loading wind files...")
-        wind_files = sorted(glob.glob(os.path.join(self.base_path, "anomalies_wind_*.nc")))
-        if wind_files:
-            try:
-                wind_datasets = [xr.open_dataset(f) for f in wind_files]
-                ds_wind = xr.concat(wind_datasets, dim='time')
-                datasets['wind'] = ds_wind
-                print(f"  [OK] Loaded {len(wind_files)} wind files")
-            except Exception as e:
-                print(f"  [WARNING] Error loading wind: {e}")
-        else:
-            print(f"  [WARNING] No wind files found")
-        
-        # Load precipitation CSV
-        print("\n  Loading precipitation data...")
-        precip_file = os.path.join(self.base_path, "anomalies_precipitation_combined.csv")
-        if os.path.exists(precip_file):
-            try:
-                df_precip = pd.read_csv(precip_file)
-                if 'time' in df_precip.columns:
-                    df_precip['time'] = pd.to_datetime(df_precip['time'])
-                datasets['precipitation'] = df_precip
-                print(f"  [OK] Loaded precipitation CSV")
-            except Exception as e:
-                print(f"  [WARNING] Error loading precipitation: {e}")
-        else:
-            print(f"  [WARNING] Precipitation file not found")
-        
-        # Load drought CSV
-        print("\n  Loading drought data...")
-        drought_file = os.path.join(self.base_path, "anomalies_drought_combined.csv")
-        if os.path.exists(drought_file):
-            try:
-                df_drought = pd.read_csv(drought_file)
-                if 'time' in df_drought.columns:
-                    df_drought['time'] = pd.to_datetime(df_drought['time'])
-                datasets['drought'] = df_drought
-                print(f"  [OK] Loaded drought CSV")
-            except Exception as e:
-                print(f"  [WARNING] Error loading drought: {e}")
-        else:
-            print(f"  [WARNING] Drought file not found")
-        
-        return datasets
-    
+        return load_monthly_data(self.base_path)
+
     def calculate_rolling_anomalies(self, df):
         """
         Recalculate anomalies using a 1-month rolling baseline instead of static reference period.
@@ -162,122 +104,28 @@ class MonthlyClimateForecaster:
         """
         Extract spatial mean time series from datasets and combine into single DataFrame.
         Keep only anomaly variables: T90, T10, and anomaly columns from CSVs.
-        
+        Then recalculate anomalies using a rolling 12-month baseline (monthly-specific
+        post-processing step, not shared with ETS_ica_forecast.py's loader).
+
         Args:
             datasets (dict): Dictionary of xarray Datasets or DataFrames
-            
+
         Returns:
             pd.DataFrame: Time series with all variables
         """
-        print("\n[Extracting regional time series...]")
-        
-        series_dict = {}
-        time_index = None
-        
-        # Process NetCDF datasets (temperature, wind)
-        for var_name, ds in datasets.items():
-            if isinstance(ds, xr.Dataset):
-                try:
-                    # Get time index from the dataset
-                    if time_index is None:
-                        if 'time' in ds.indexes:
-                            time_index = ds.indexes['time'].to_index() if hasattr(ds.indexes['time'], 'to_index') else ds['time'].values
-                        elif 'time' in ds.coords:
-                            # Time coordinate exists but not as an index
-                            time_index = pd.date_range(start='1961-01-01', periods=len(ds['time']), freq='MS')
-                            print(f"  Using generated monthly index (time not found in data)")
-                        else:
-                            print(f"  Warning: No time coordinate found in {var_name}")
-                    
-                    # Calculate spatial mean across latitude and longitude
-                    for data_var in ds.data_vars:
-                        try:
-                            # Keep temperature anomalies (t_90, t_10) and wind anomalies
-                            if 't_90' in data_var.lower() or 't_10' in data_var.lower() or 'anomal' in data_var.lower():
-                                spatial_mean = ds[data_var].mean(dim=['latitude', 'longitude'], skipna=True)
-                                
-                                # Convert to DataFrame
-                                df_temp = spatial_mean.to_dataframe().reset_index()
-                                df_temp = df_temp[['time', data_var]]
-                                df_temp.columns = ['time', f'{var_name}_{data_var}']
-                                df_temp.set_index('time', inplace=True)
-                                
-                                series_dict[f'{var_name}_{data_var}'] = df_temp[f'{var_name}_{data_var}']
-                                print(f"  [OK] {var_name}_{data_var}: {len(df_temp)} observations")
-                        except Exception as e:
-                            print(f"  [WARNING] Could not process {var_name}_{data_var}: {e}")
-                except Exception as e:
-                    print(f"  [WARNING] Error processing {var_name} dataset: {e}")
-            
-            # Process CSV DataFrames (precipitation, drought)
-            elif isinstance(ds, pd.DataFrame):
-                try:
-                    df = ds.copy()
-                    
-                    # Handle time column - try to convert to datetime
-                    if 'time' in df.columns:
-                        df['time'] = pd.to_datetime(df['time'], errors='coerce')
-                        time_index = df['time']
-                        df.set_index('time', inplace=True)
-                    elif 'Año' in df.columns and 'Mes' in df.columns:
-                        # Construct datetime from year and month columns
-                        df['time'] = pd.to_datetime(df['Año'].astype(str) + '-' + df['Mes'].astype(str).str.zfill(2) + '-01', format='%Y-%m-%d')
-                        time_index = df['time']
-                        df.set_index('time', inplace=True)
-                    
-                    # Keep only anomaly columns, filter out Año and Mes
-                    anomaly_cols = [col for col in df.columns 
-                                  if 'Anomalia' in col or 'anomalies' in col]
-                    
-                    for col in anomaly_cols:
-                        col_name = f'{var_name}_{col}'
-                        series_dict[col_name] = df[col]
-                        print(f"  [OK] {col_name}: {len(df)} observations")
-                except Exception as e:
-                    print(f"  [WARNING] Error processing {var_name} DataFrame: {e}")
-        
-        # Combine all series
-        if series_dict:
-            # First, ensure all series have a proper DatetimeIndex
-            proper_index = pd.date_range(start='1961-01-01', periods=768, freq='MS')  # 768 months from Jan 1961
-            
-            for key in series_dict.keys():
-                series_dict[key].index = proper_index
-            
-            self.data_wide = pd.concat(series_dict, axis=1)
-            
-            # Ensure index is DatetimeIndex
-            if not isinstance(self.data_wide.index, pd.DatetimeIndex):
-                # Try to convert to datetime if it's numeric
-                if self.data_wide.index.dtype in [np.int64, np.int32, np.float64, np.float32]:
-                    # Create monthly index starting from Jan 1961
-                    self.data_wide.index = pd.date_range(start='1961-01-01', periods=len(self.data_wide), freq='MS')
-                else:
-                    self.data_wide.index = pd.to_datetime(self.data_wide.index, errors='coerce')
-            
-            # Sort by index and remove duplicates
-            self.data_wide = self.data_wide.sort_index()
-            self.data_wide = self.data_wide[~self.data_wide.index.duplicated(keep='first')]
-            
-            # Remove NaN rows
-            self.data_wide = self.data_wide.dropna()
-            
-            print(f"\n[OK] Combined dataset shape: {self.data_wide.shape}")
-            print(f"  Date range: {self.data_wide.index.min()} to {self.data_wide.index.max()}")
-            print(f"  Index type: {type(self.data_wide.index)}")
-            print(f"  Variables: {list(self.data_wide.columns)}")
-            
-            # Recalculate anomalies using rolling 12-month baseline
-            self.data_wide = self.calculate_rolling_anomalies(self.data_wide)
-            
-            print(f"\n[OK] Rolling anomalies calculated")
-            print(f"  Updated dataset shape: {self.data_wide.shape}")
-            
-            return self.data_wide
-        else:
-            print("[FAILED] No data could be extracted!")
+        self.data_wide = extract_regional_series(datasets)
+
+        if self.data_wide is None:
             return None
-    
+
+        # Recalculate anomalies using rolling 12-month baseline
+        self.data_wide = self.calculate_rolling_anomalies(self.data_wide)
+
+        print(f"\n[OK] Rolling anomalies calculated")
+        print(f"  Updated dataset shape: {self.data_wide.shape}")
+
+        return self.data_wide
+
     def fit_autots_model(self):
         """
         Train AutoTS ensemble model on the monthly data.
@@ -312,60 +160,17 @@ class MonthlyClimateForecaster:
         """
         Calculate Actuarial Climate Index (ICA) from anomaly variables.
         Formula: ICA = (T90 - T10 + W_std + P_std + D_std) / 5
-        
+
         Based on the methodology in src/scripts/graficas.py plot_ICA function.
-        
+
         Args:
             data (pd.DataFrame): DataFrame with anomaly columns
-            
+
         Returns:
             pd.Series: Climate index values
         """
-        # Initialize ICA as zeros
-        ica = pd.Series(0.0, index=data.index)
-        component_count = 0
-        
-        # Temperature component: T90 - T10 (difference between 90th and 10th percentiles)
-        t90_col = None
-        t10_col = None
-        for col in data.columns:
-            if 't_90' in col.lower():
-                t90_col = col
-            elif 't_10' in col.lower():
-                t10_col = col
-        
-        if t90_col is not None and t10_col is not None:
-            ica += data[t90_col] - data[t10_col]
-            component_count += 1
-        
-        # Wind anomalies
-        for col in data.columns:
-            if 'wind' in col.lower() or ('anomal' in col.lower() and 'above' in col.lower()):
-                ica += data[col]
-                component_count += 1
-                break
-        
-        # Precipitation anomalies
-        for col in data.columns:
-            if 'precip' in col.lower() or 'lluvia' in col.lower():
-                ica += data[col]
-                component_count += 1
-                break
-        
-        # Drought anomalies
-        for col in data.columns:
-            if 'drought' in col.lower() or 'sequia' in col.lower():
-                ica += data[col]
-                component_count += 1
-                break
-        
-        # Divide by number of components (typically 5 for full ICA)
-        # If all components present, divide by 5; otherwise by component_count
-        divisor = 5 if component_count >= 4 else component_count
-        ica = ica / divisor if divisor > 0 else ica
-        
-        return ica
-    
+        return calculate_climate_index(data)
+
     def generate_forecasts(self):
         """
         Generate forecasts using the trained model.

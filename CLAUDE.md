@@ -84,10 +84,36 @@ instead: `cdsapi.Client()` reads credentials from the user's local
 - Two independent forecasting families exist side by side and are **not**
   a superset/subset of each other: `forecast_ica_{monthly,daily}.py` (AutoTS
   ensembles) and the `ETS(X)_*` family (statsmodels SARIMAX/ETS + ENSO
-  exogenous regressor). `ETSX_seasonal_motif_forecast.py` is very likely the
-  "broken two-stage Lasso→ETS" approach that `ETSX_daily_ica_forecast.py`'s
-  own docstring says it replaced — treat it as superseded, not as an
-  alternative to maintain in parallel, unless the user says otherwise.
+  exogenous regressor). `ETSX_seasonal_motif_forecast.py` (the "broken
+  two-stage Lasso→ETS" approach `ETSX_daily_ica_forecast.py`'s own docstring
+  says it replaced) was deleted as superseded/unused.
+- `src/forecast_scripts/common/` holds logic that was byte-identical or
+  near-identical across the forecast scripts: `data_loading.py`
+  (`load_monthly_data`/`extract_regional_series`, shared by
+  `forecast_ica_monthly.py` and `ETS_ica_forecast.py`), `climate_index.py`
+  (the ICA composite formula, shared by those two plus `ETSX_ica_forecast.py`),
+  `stationarity.py` (`adf_test`/`make_stationary`/`reconstruct_from_differences`,
+  shared by `ETS_ica_forecast.py` and `ETSX_ica_forecast.py`), and
+  `diagnostics.py` (`ModelErrorDiagnostics`, moved from the old
+  `error_diagnostics.py` — still not wired into any pipeline, see below).
+  Each consuming class keeps a same-named method that thinly delegates to the
+  shared function, so the public API didn't change. What's genuinely
+  different per file (ONI/ENSO handling, SARIMAX vs. ETS fitting, daily vs.
+  monthly data shapes) was deliberately left alone — those are structurally
+  parallel, not copy-pasted, and merging them would be a real redesign, not a
+  mechanical extraction.
+- `ModelErrorDiagnostics` (`common/diagnostics.py`) is comprehensive (9-panel
+  residual diagnostics + 5 normality tests) but still isn't called by
+  `ETSX_ica_forecast.py`/`ETSX_daily_ica_forecast.py`, which each still carry
+  their own inline 4-panel reimplementation. Wiring those to use the shared
+  class instead would be a further improvement, but changes plot output
+  shape/content, so treat it as a separate, deliberate follow-up rather than
+  bundling it into an unrelated change.
+- `example_grid_search_era5.py` (repo root) imports `ONIDataHandler` from
+  `ETSX_ica_forecast.py` expecting `_fetch_oni_from_era5`/`_fetch_oni_from_noaa`/
+  `_visualize_era5_oni` methods that don't exist on the class today — this
+  predates the forecast_scripts modularization and is a pre-existing break,
+  not something introduced by it.
 - `articles/AnnualICAForecast_Report.tex` references
   `scripts/daily_forecast_to_annual.py` and `scripts/ar1_vs_ets_final.py` —
   neither exists anywhere in the repo. Treat that report's described
