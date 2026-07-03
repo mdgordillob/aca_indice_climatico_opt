@@ -1,27 +1,44 @@
-# Overwrite .gitignore with correct UTF-8 encoding
-@"
-# Ignorar los archivos descargados
-data/indices/*
-data/processed/*
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments / packaged env archives
+myenv/
+acaopt_env/
+acaopt_env.zip
+acaopt_env.7z
+
+# Local secrets / machine-specific config — never commit real values here
+src/scripts/keys.py
+src/config.py
+.cdsapirc
+
+# Downloaded/generated data — large and regenerable from src/scripts
 data/raw/era5/*
 !data/raw/era5/.gitkeep
 data/raw/processed/*
 !data/raw/processed/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/indices/*
+!data/indices/.gitkeep
 data/zones/*
-# Ignorar los archivos de ambiente de python
-myenv/*
-acaopt_env/*
-# Ignorar las llaves de la API
-src/scripts/keys.py
-# Ignorar los archivos de configuracion
-src/config.py
-# Ignorar los archivos del cache de python
-src/scripts/__pycache__/
-src/scripts/*/__pycache__/
-# Ignorar los archivos temporales de excel
-*.~*
-# Ignorar shapefiles y datos grandes
-data/shapefiles/*
-# Ignorar archivos NetCDF
+!data/zones/.gitkeep
 *.nc
-"@ | Out-File -FilePath .gitignore -Encoding utf8
+
+# LaTeX build artifacts (keep the .tex sources and compiled .pdf deliverables)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.out
+*.toc
+*.run.xml
+
+# IDE metadata
+.vs/
+
+# Excel temp files
+*.~*
