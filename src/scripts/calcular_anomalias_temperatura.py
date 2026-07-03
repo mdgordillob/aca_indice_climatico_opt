@@ -1,4 +1,6 @@
 import os
+import sys
+import re
 import xarray as xr
 import pdb
 import pandas as pd
@@ -9,15 +11,11 @@ from multiprocessing import Pool, cpu_count
 import warnings
 warnings.filterwarnings('ignore')
 
-# Global cache for shapefile
-_shapefile_cache = {}
-_percentiles_cache = {}
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils'))
+from helpers import get_available_years, get_cached_shapefile
 
-def get_cached_shapefile(shapefile_path):
-    """Load shapefile once and cache it."""
-    if shapefile_path not in _shapefile_cache:
-        _shapefile_cache[shapefile_path] = gpd.read_file(shapefile_path)
-    return _shapefile_cache[shapefile_path]
+# Global cache for percentiles
+_percentiles_cache = {}
 
 def get_cached_percentiles(percentile_file, month):
     """Load and cache percentiles for a specific month."""
@@ -139,13 +137,15 @@ def calcular_anomalias(archivo_percentiles, grid_data_monthly, year, month, sali
     anomalies_below_min = calculate_anomalies(valores_min_mensuales, month_percentiles['mean_min'], month_percentiles['std_dev_min'])
 
     # Drop unnecessary coordinates
-    variables_to_drop = [anomalies_above_max, anomalies_below_min]
+    variables_to_drop = [anomalies_above_max, anomalies_below_min, valores_max_mensuales, valores_min_mensuales]
     variables_dropped = drop_unnecessary_coords(variables_to_drop, 'quantile')
 
     # Create anomalies dataset
     anomalies = create_anomalies_dataset({
         't_90': variables_dropped[0],
-        't_10': variables_dropped[1]
+        't_10': variables_dropped[1],
+        'count_hot': variables_dropped[2],
+        'count_cold': variables_dropped[3]
     }, attrs={'description': 'Anomalies and counts of temperature extremes'})
 
     # Save the dataset
@@ -226,8 +226,8 @@ def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_locatio
     # Create output directory if it doesn't exist
     os.makedirs(output_netcdf, exist_ok=True)
 
-    # Prepare list of years to process
-    years_to_process = list(range(1961, 2025))
+    # Prepare list of years to process — derived from files present in directory
+    years_to_process = get_available_years(archivo_comparar_location, 'tmp')
     
     if use_multiprocessing and len(years_to_process) > 1:
         # Use multiprocessing for year-level parallelization
@@ -271,6 +271,9 @@ def procesar_anomalias_temperatura(archivo_percentiles, archivo_comparar_locatio
     print(f"\n✓ Anomalies saved to {output_csv_path}")
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+
     # Get the script's directory and navigate to project root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
@@ -288,13 +291,15 @@ if __name__ == "__main__":
     print(f"Data directory: {archivo_comparar_location}")
     print("=" * 60)
 
-    # Run with multiprocessing enabled (set to False for single-threaded debugging)
+    import sys
+    use_mp = sys.platform != 'win32'
+
     procesar_anomalias_temperatura(
-        archivo_percentiles, 
-        archivo_comparar_location, 
-        output_csv_path, 
-        shapefile_path, 
+        archivo_percentiles,
+        archivo_comparar_location,
+        output_csv_path,
+        shapefile_path,
         output_netcdf,
-        use_multiprocessing=True,
-        num_workers=None  # None = auto-detect available cores
+        use_multiprocessing=use_mp,
+        num_workers=None
     )

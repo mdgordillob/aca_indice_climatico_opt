@@ -1,6 +1,7 @@
 import xarray as xr
 import pandas as pd
 import os
+import sys
 import numpy as np
 import rioxarray as rio
 import geopandas as gpd
@@ -9,15 +10,11 @@ from multiprocessing import Pool, cpu_count
 
 warnings.filterwarnings('ignore')
 
-# Global cache for shapefiles and statistics
-_shapefile_cache = {}
-_estadisticas_cache = {}
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'utils'))
+from helpers import get_available_years, get_cached_shapefile
 
-def get_cached_shapefile(shapefile_path):
-    """Load shapefile once and cache it."""
-    if shapefile_path not in _shapefile_cache:
-        _shapefile_cache[shapefile_path] = gpd.read_file(shapefile_path)
-    return _shapefile_cache[shapefile_path]
+# Global cache for statistics
+_estadisticas_cache = {}
 
 def get_cached_estadisticas(estadisticas_file, shapefile_path):
     """Load and cache statistics for a specific file."""
@@ -155,17 +152,6 @@ def calcular_anomalias_lluvia(data, p):
     return anomalias_lluvia
 
 def count_most_frequent_with_condition(data):
-    """
-    Find maximum frequency of values in array and adjust based on condition:
-    - If value `0` is present, return maximum frequency.
-    - If `0` not present, subtract 1 from maximum frequency.
-
-    Parameters:
-    - data (numpy array): Input data.
-
-    Returns:
-    - int: Adjusted maximum frequency.
-    """
     values, counts = np.unique(data, return_counts=True)
     return counts.max() - 1
 
@@ -176,11 +162,9 @@ def calcular_interpolacion(data, aux_year, ruta_salida):
     data = data.where(data < 0.001, other=1)
     data = data.where(data >= 0.001, other=0)
 
-    # Calculate cumulative sum of dry days within each year
     data_cumsum = data.cumsum(dim='time')
     data_cumsum['time'] = data['time']
 
-    # Apply function to count most frequent consecutive dry days
     count_most_frequent_da = xr.apply_ufunc(
         count_most_frequent_with_condition,
         data_cumsum.groupby('time.year'),
@@ -198,31 +182,25 @@ def calcular_interpolacion(data, aux_year, ruta_salida):
     else:
         aux_year_prev = aux_year - 1
         data1 = count_most_frequent_da
-        
         try:
             data2 = xr.open_dataarray(os.path.join(ruta, f'datos_maximos_{aux_year_prev}.nc'))
             data_aligned = data2.sel(latitude=data1.latitude, longitude=data1.longitude, method="nearest")
-            
             if isinstance(data1, xr.DataArray):
                 data1 = data1.to_dataset(name="tp")
-            
             data1 = data1.assign(tp_daily_sum=data_aligned)
             data1 = data1.expand_dims(month=np.arange(1, 13))
-            
             data1['new'] = xr.where(
                 data1['month'] != 12,
                 ((12 - data1['month']) / 12) * data1['tp_daily_sum'] + (data1['month'] / 12) * data1['tp'],
                 data1['tp']
             )
-            
             CDD = data1['new']
         except FileNotFoundError:
-            # If previous year data doesn't exist, use current year data
             count_most_frequent_da = count_most_frequent_da.expand_dims(month=np.arange(1, 13))
             CDD = count_most_frequent_da * (count_most_frequent_da['month'] / 12)
 
     CDD.sel(month=12).to_netcdf(os.path.join(ruta, f'datos_maximos_{aux_year}.nc'))
-    
+
     new_date = pd.to_datetime(dict(year=aux_year, month=CDD['month'].values, day=1))
     CDD = CDD.assign_coords(date=("month", new_date))
     CDD = CDD.rename("tp_daily_sum")
@@ -267,12 +245,14 @@ def procesar_anomalias(est1, est2, file, shapefile, year, ruta_salida):
         # Extract monthly means
         anomalias_lluvias_resultado = anomalias_lluvia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
         anomalias_sequia_resultado = anomalias_sequia['anomalias'].groupby("time.month").mean(dim=["latitude", "longitude"])
+        lluvia_raw = anomalias_lluvia['tp_daily_sum'].groupby("time.month").mean(dim=["latitude", "longitude"])
+        sequia_raw = anomalias_sequia['tp_daily_sum'].groupby("time.month").mean(dim=["latitude", "longitude"])
 
-        return anomalias_lluvias_resultado, anomalias_sequia_resultado
-    
+        return anomalias_lluvias_resultado, anomalias_sequia_resultado, lluvia_raw, sequia_raw
+
     except Exception as e:
         print(f"  Error processing year {year}: {e}")
-        return None, None
+        return None, None, None, None
 
 def guardar_anomalias(df_lluvia, df_sequia, ruta_salida, salida_lluvia, salida_sequia):
     """Save anomalies to CSV files."""
@@ -311,25 +291,31 @@ def process_year(args):
         est2 = get_cached_estadisticas(os.path.join(ruta, "era5_sequia_percentil.nc"), shapefile_path)
         
         # Process anomalies for the year
-        anomalias_mensuales_lluvia, anomalias_mensuales_sequia = procesar_anomalias(
+        anomalias_mensuales_lluvia, anomalias_mensuales_sequia, lluvia_raw, sequia_raw = procesar_anomalias(
             est1, est2, archivo_lluvia_full, shapefile, year, ruta_salida
         )
-        
+
         if anomalias_mensuales_lluvia is None:
             return year_anomalies_lluvia, year_anomalies_sequia
-        
+
         # Extract monthly values
         for mes in range(1, 13):
             try:
                 anomalia_lluvia_mes = anomalias_mensuales_lluvia.sel(
                     time=anomalias_mensuales_lluvia.time.dt.month == mes, method="nearest"
                 ).item()
-                year_anomalies_lluvia.append({"Año": year, "Mes": mes, "Anomalia_Lluvia": anomalia_lluvia_mes})
-                
+                rx5day_mes = lluvia_raw.sel(
+                    time=lluvia_raw.time.dt.month == mes, method="nearest"
+                ).item()
+                year_anomalies_lluvia.append({"Año": year, "Mes": mes, "Anomalia_Lluvia": anomalia_lluvia_mes, "Rx5day": rx5day_mes})
+
                 anomalia_sequia_mes = anomalias_mensuales_sequia.sel(
                     time=anomalias_mensuales_sequia.time.dt.month == mes, method="nearest"
                 ).item()
-                year_anomalies_sequia.append({"Año": year, "Mes": mes, "Anomalia_Sequia": anomalia_sequia_mes})
+                cdd_mes = sequia_raw.sel(
+                    time=sequia_raw.time.dt.month == mes, method="nearest"
+                ).item()
+                year_anomalies_sequia.append({"Año": year, "Mes": mes, "Anomalia_Sequia": anomalia_sequia_mes, "CDD": cdd_mes})
             
             except (KeyError, ValueError) as e:
                 print(f"  Warning: Could not extract month {mes} for year {year}")
@@ -366,8 +352,8 @@ def procesar_anomalias_lluvia(
     
     print(f"Found {len(files)} files in directory")
 
-    # Prepare years to process
-    years_to_process = list(range(1961, 2025))
+    # Prepare years to process — derived from files present in ruta_grib
+    years_to_process = get_available_years(ruta_grib, 'rain')
     
     df_lluvia = []
     df_sequia = []
@@ -413,10 +399,13 @@ def procesar_anomalias_lluvia(
 
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+
     # Get the script's directory and navigate to project root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
-    
+
     shapefile_path = os.path.join(project_root, "data", "shapefiles", "colombia_4326.shp")
     ruta = os.path.join(project_root, "data", "processed")
     ruta_grib = os.path.join(project_root, "data", "raw", "era5")
@@ -426,15 +415,18 @@ if __name__ == "__main__":
 
     print("=" * 60)
     print("CALCULATING PRECIPITATION AND DROUGHT ANOMALIES")
-    print("=" * 60)     
+    print("=" * 60)
     print(f"Project root: {project_root}")
     print(f"Data directory: {ruta_grib}")
     print("=" * 60)
 
+    import sys
+    use_mp = sys.platform != 'win32'
+
     df1, df2 = procesar_anomalias_lluvia(
         shapefile_path, ruta, ruta_grib, ruta_salida,
         salida_lluvia, salida_sequia,
-        use_multiprocessing=True,
-        num_workers=None  # None = auto-detect available cores
+        use_multiprocessing=use_mp,
+        num_workers=None
     )
     print('\n✓ Process completed')

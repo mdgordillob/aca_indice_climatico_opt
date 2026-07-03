@@ -9,6 +9,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from calcular_anomalias_temperatura import (
+    get_available_years,
     get_cached_shapefile,
     get_cached_percentiles,
     load_percentiles,
@@ -204,8 +205,8 @@ def procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, ou
     # Create output directory if it doesn't exist
     os.makedirs(output_netcdf, exist_ok=True)
 
-    # Prepare list of years to process
-    years_to_process = list(range(1961, 2025))
+    # Prepare list of years to process — derived from files present in directory
+    years_to_process = get_available_years(archivo_comparar_location, 'wind')
     
     if use_multiprocessing and len(years_to_process) > 1:
         # Use multiprocessing for year-level parallelization
@@ -249,6 +250,9 @@ def procesar_anomalias_viento(archivo_percentiles, archivo_comparar_location, ou
     print(f"\n✓ Anomalies saved to {output_csv_path}")
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+
     # Get the script's directory and navigate to project root
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(script_dir))
@@ -266,13 +270,15 @@ if __name__ == "__main__":
     print(f"Data directory: {archivo_comparar_location}")
     print("=" * 60)
 
-    # Run with multiprocessing enabled (set to False for single-threaded debugging)
+    import sys
+    use_mp = sys.platform != 'win32'
+
     procesar_anomalias_viento(
-        archivo_percentiles, 
-        archivo_comparar_location, 
-        output_csv_path, 
-        shapefile_path, 
+        archivo_percentiles,
+        archivo_comparar_location,
+        output_csv_path,
+        shapefile_path,
         output_netcdf,
-        use_multiprocessing=True,
-        num_workers=None  # None = auto-detect available cores
+        use_multiprocessing=use_mp,
+        num_workers=None
     )
