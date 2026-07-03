@@ -1,0 +1,8 @@
+event_type,n_years,mean_annual,ols_r2,ols_coef,ols_p,ols_sig,best_lag_mo,pearson_rho,pearson_p
+Droughts,25,18.4,0.255,3.1318,0.0039,**,3,0.15,0.0098
+Floods & Flash Floods,25,655.0,0.246,-0.3549,0.4871,,4,-0.155,0.0074
+Frost,25,1.9,0.274,0.7842,0.3699,,4,0.08,0.1676
+Landslides & Mass Movement,25,366.6,0.663,-0.8665,0.1297,,2,-0.227,0.0001
+Storms,25,19.4,0.392,-0.5012,0.7609,,4,-0.05,0.391
+Vegetation Fires,25,661.0,0.517,0.7178,0.6018,,3,0.149,0.0099
+Windthrow (Vendaval),25,267.2,0.642,0.1772,0.7441,,2,-0.192,0.0008

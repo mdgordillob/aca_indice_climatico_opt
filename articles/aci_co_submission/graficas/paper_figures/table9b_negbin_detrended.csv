@@ -1,0 +1,36 @@
+event_type,component,IRR,p,sig,nag_r2
+Floods & Flash Floods,t90,0.7454,0.0,***,0.611
+Floods & Flash Floods,t10,0.7544,0.1123,,0.611
+Floods & Flash Floods,drought,0.8401,0.0041,**,0.611
+Floods & Flash Floods,wind,1.4596,0.0041,**,0.611
+Floods & Flash Floods,precipitation,4.344,0.0,***,0.611
+Landslides & Mass Movement,t90,0.7137,0.0,***,0.702
+Landslides & Mass Movement,t10,0.8357,0.3552,,0.702
+Landslides & Mass Movement,drought,0.8183,0.0027,**,0.702
+Landslides & Mass Movement,wind,1.7919,0.0,***,0.702
+Landslides & Mass Movement,precipitation,4.4093,0.0,***,0.702
+Windthrow (Vendaval),t90,0.9294,0.1777,,0.621
+Windthrow (Vendaval),t10,0.5789,0.0034,**,0.621
+Windthrow (Vendaval),drought,0.7617,0.0,***,0.621
+Windthrow (Vendaval),wind,1.0217,0.866,,0.621
+Windthrow (Vendaval),precipitation,1.0403,0.782,,0.621
+Droughts,t90,1.3259,0.2224,,0.327
+Droughts,t10,0.2792,0.1816,,0.327
+Droughts,drought,0.7881,0.3327,,0.327
+Droughts,wind,0.324,0.0734,,0.327
+Droughts,precipitation,0.1369,0.0023,**,0.327
+Vegetation Fires,t90,1.3612,0.0396,*,0.565
+Vegetation Fires,t10,2.387,0.0753,,0.565
+Vegetation Fires,drought,0.6243,0.0143,*,0.565
+Vegetation Fires,wind,0.2082,0.0,***,0.565
+Vegetation Fires,precipitation,0.1635,0.0,***,0.565
+Storms,t90,4.402,,,
+Storms,t10,1.6044,,,
+Storms,drought,23.1187,,,
+Storms,wind,0.2412,,,
+Storms,precipitation,0.6129,,,
+Frost,t90,5.9466,,,0.0
+Frost,t10,24.6478,,,0.0
+Frost,drought,0.9432,,,0.0
+Frost,wind,6.4751,,,0.0
+Frost,precipitation,30.5958,,,0.0
