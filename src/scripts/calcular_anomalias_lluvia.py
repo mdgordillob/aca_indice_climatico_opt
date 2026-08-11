@@ -31,23 +31,26 @@ def get_cached_estadisticas(estadisticas_file, shapefile_path):
     
     return _estadisticas_cache[cache_key]
 
-def load_grid_data(file_path, variable, shapefile):
+def load_grid_data(file_path, variable, shapefile=None):
     """
     Load grid data for a specific variable from a GRIB file.
     If a shapefile is provided, clips the data to the specified region.
-    
+
     Parameters:
     - file_path (str): Path to the GRIB file containing the data.
     - variable (str): Name of the variable to extract from the file.
-    - shapefile (GeoDataFrame): Shapefile that defines the region to clip.
+    - shapefile (GeoDataFrame): Shapefile that defines the region to clip. Optional --
+      pass None to get the unclipped grid (e.g. to decode once and clip to
+      several regions afterwards).
 
     Returns:
     - grid_data (xarray.DataArray): Selected variable data, clipped if shapefile provided.
     """
     grid_data = xr.open_dataset(file_path, engine="cfgrib")[variable]
-    grid_data = grid_data.rio.write_crs("EPSG:4326")
-    grid_data = grid_data.rio.clip(shapefile.geometry, shapefile.crs, drop=True)
-    
+    if shapefile is not None:
+        grid_data = grid_data.rio.write_crs("EPSG:4326")
+        grid_data = grid_data.rio.clip(shapefile.geometry, shapefile.crs, drop=True)
+
     return grid_data
 
 def resample_to_daily_precipitation(grid_data):
