@@ -133,3 +133,59 @@ def sync(drive_root, repo_root, mapping=None, mount_point=DEFAULT_MOUNT, copy=Tr
         synced[drive_sub] = dst
 
     return synced
+
+
+# ---------------------------------------------------------------------------
+# Result caching: upload computed outputs to Drive, restore them on a later
+# run instead of recomputing. Deliberately file-list-based, not whole-folder
+# -- callers name exactly what should be cached (e.g. the Stage 1/2 baseline
+# outputs, which are small, stable, and shared across every run regardless
+# of which regions/years Stage 3 is scoped to) rather than caching everything
+# and risking silently reusing something still-being-debugged (see
+# ARCHITECTURE.pdf's open multiprocessing-correctness questions -- Stage 3's
+# per-region outputs are deliberately NOT covered by this, only the baseline).
+# ---------------------------------------------------------------------------
+
+def cache_complete(filenames, drive_cache_dir):
+    """True if every name in filenames already exists in drive_cache_dir."""
+    if not os.path.isdir(drive_cache_dir):
+        return False
+    return all(os.path.exists(os.path.join(drive_cache_dir, name)) for name in filenames)
+
+
+def cache_restore(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUNT):
+    """Copy filenames from drive_cache_dir down into local_dir, where present.
+
+    Returns the list of filenames actually restored (a partial or empty list
+    if the cache is incomplete -- callers should treat that as a cache miss
+    and fall back to recomputing, not assume partial results are usable).
+    """
+    ensure_mounted(mount_point)
+    if not os.path.isdir(drive_cache_dir):
+        return []
+    os.makedirs(local_dir, exist_ok=True)
+    restored = []
+    for name in filenames:
+        src = os.path.join(drive_cache_dir, name)
+        if os.path.exists(src):
+            shutil.copy(src, os.path.join(local_dir, name))
+            restored.append(name)
+    return restored
+
+
+def cache_upload(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUNT):
+    """Copy filenames from local_dir up into drive_cache_dir (created if needed).
+
+    Returns the list of filenames actually uploaded (files missing from
+    local_dir are silently skipped, not an error -- e.g. if only some
+    variables finished).
+    """
+    ensure_mounted(mount_point)
+    os.makedirs(drive_cache_dir, exist_ok=True)
+    uploaded = []
+    for name in filenames:
+        src = os.path.join(local_dir, name)
+        if os.path.exists(src):
+            shutil.copy(src, os.path.join(drive_cache_dir, name))
+            uploaded.append(name)
+    return uploaded
