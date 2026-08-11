@@ -274,11 +274,21 @@ def process_year(args):
     
     # Find file for this year
     archivo_lluvia = [file for file in files if str(year) in file and file.endswith(".grib")]
-    
+
     if not archivo_lluvia:
         print(f"  ⚠️  No GRIB files found for {year}")
         return year_anomalies_lluvia, year_anomalies_sequia
-    
+
+    archivo_lluvia = [file for file in archivo_lluvia if "rain" in file]
+
+    if not archivo_lluvia:
+        print(f"  ⚠️  No rain files found for {year}")
+        return year_anomalies_lluvia, year_anomalies_sequia
+
+    if len(archivo_lluvia) != 1:
+        print(f"  ⚠️  Expected 1 rain file for {year}, found {len(archivo_lluvia)}")
+        return year_anomalies_lluvia, year_anomalies_sequia
+
     archivo_lluvia = archivo_lluvia[0]
     archivo_lluvia_full = os.path.join(ruta_grib, archivo_lluvia)
     
