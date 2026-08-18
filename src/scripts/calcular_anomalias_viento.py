@@ -28,8 +28,16 @@ def compute_wind_power(wind_speed):
     return (AIR_DENSITY * (wind_speed**3)) / 2
 
 def compute_occurrences(daily_data, percentile):
-    """Compute binary occurrences of days exceeding the percentile threshold (preserves time dimension)."""
-    count_above = (daily_data > percentile).astype(int)
+    """Compute binary occurrences of days exceeding the percentile threshold (preserves time dimension).
+
+    Uses xr.where(...).where(notnull) rather than .astype(int): the shapefile clip
+    upstream only crops to Colombia's bounding box, so cells inside the box but
+    outside the actual polygon are NaN, and a plain .astype(int) would turn their
+    always-False NaN comparison into a real 0 -- diluting the spatial mean over
+    the padded box instead of just the region. See calcular_anomalias_temperatura.py's
+    calcular_anomalias() for the same fix and full explanation.
+    """
+    count_above = xr.where(daily_data > percentile, 1.0, 0.0).where(daily_data.notnull())
     return count_above
 
 def load_annual_grid_data_safe(file_path, year, variable, shapefile_path=None):

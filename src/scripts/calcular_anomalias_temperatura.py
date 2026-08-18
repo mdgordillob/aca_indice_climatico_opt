@@ -119,10 +119,20 @@ def calcular_anomalias(archivo_percentiles, grid_data_monthly, year, month, sali
         percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
     # Temperature comparisons (only calculate once)
-    count_above_90_max = (daily_max > percentile_90_max).astype(int)
-    count_below_10_max = (daily_max < percentile_10_max).astype(int)
-    count_above_90_min = (daily_min > percentile_90_min).astype(int)
-    count_below_10_min = (daily_min < percentile_10_min).astype(int)
+    # NOTE: xr.where(...).where(notnull) instead of .astype(int) -- the shapefile
+    # clip above only crops to Colombia's bounding box (drop=True), it does not
+    # guarantee every cell inside that box is inside the polygon. A plain
+    # `(daily_max > percentile_90_max).astype(int)` turns the NaN-comparison
+    # (always False under IEEE754) into a real 0 at every out-of-polygon cell in
+    # the box, so the spatial mean below silently divides by the padded box
+    # instead of the ~45% of it that's actually Colombia -- diluting count_hot/
+    # count_cold by roughly that ratio. t_90/t_10 aren't affected by this (their
+    # NaN mask comes from mean_max/std_dev_max, clipped separately), only the
+    # raw count_hot/count_cold columns are.
+    count_above_90_max = xr.where(daily_max > percentile_90_max, 1.0, 0.0).where(daily_max.notnull())
+    count_below_10_max = xr.where(daily_max < percentile_10_max, 1.0, 0.0).where(daily_max.notnull())
+    count_above_90_min = xr.where(daily_min > percentile_90_min, 1.0, 0.0).where(daily_min.notnull())
+    count_below_10_min = xr.where(daily_min < percentile_10_min, 1.0, 0.0).where(daily_min.notnull())
 
     # Promedio de ocurrencias
     valores_max = (count_above_90_max + count_above_90_min) / 2
