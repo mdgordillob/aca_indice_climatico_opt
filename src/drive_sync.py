@@ -189,3 +189,64 @@ def cache_upload(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUN
             shutil.copy(src, os.path.join(drive_cache_dir, name))
             uploaded.append(name)
     return uploaded
+
+
+# ---------------------------------------------------------------------------
+# Raw-archive caching: cache_upload/cache_restore above copy one file at a
+# time, which is fine for a handful of small outputs but is exactly the slow
+# path for era5/completos's 195 loose .grib files -- many small files over a
+# mounted Drive is the specific bottleneck reported in
+# https://www.reddit.com/r/MachineLearning/comments/sxui5r/ (an hour just to
+# glob a Drive folder; OP's own fix was zip-once, download-the-single-file).
+# These two functions apply that fix to the raw grib fetch specifically:
+# zip a local directory's files into one archive (fast -- local disk, no
+# network-mount overhead) and cache that single file, instead of caching each
+# .grib individually.
+# ---------------------------------------------------------------------------
+
+def archive_and_cache_raw(local_dir, filenames, drive_cache_dir, archive_name="era5_completos.zip", mount_point=DEFAULT_MOUNT):
+    """Zip filenames from local_dir into one archive and upload it to drive_cache_dir.
+
+    ZIP_STORED (no compression), not ZIP_DEFLATED: GRIB2 already applies its
+    own internal packing, so further DEFLATE compression buys little size
+    reduction for real CPU cost -- the win here is one file instead of many,
+    not smaller bytes. Returns the Drive path of the uploaded archive, or
+    None if no listed files were found in local_dir.
+    """
+    ensure_mounted(mount_point)
+    present = [name for name in filenames if os.path.exists(os.path.join(local_dir, name))]
+    if not present:
+        return None
+    os.makedirs(drive_cache_dir, exist_ok=True)
+    local_archive = os.path.join(local_dir, archive_name)
+    with zipfile.ZipFile(local_archive, "w", zipfile.ZIP_STORED) as zf:
+        for name in present:
+            zf.write(os.path.join(local_dir, name), arcname=name)
+    dst = os.path.join(drive_cache_dir, archive_name)
+    shutil.copy(local_archive, dst)
+    os.remove(local_archive)  # don't leave a duplicate multi-GB file locally
+    return dst
+
+
+def restore_raw_archive(local_dir, expected_filenames, drive_cache_dir, archive_name="era5_completos.zip", mount_point=DEFAULT_MOUNT):
+    """Restore local_dir from a cached single-zip archive, if it covers expected_filenames.
+
+    Checks the archive's directory listing (fast -- metadata only, no
+    decompression) against expected_filenames before extracting anything.
+    Returns the list of filenames the archive actually covers (a subset of
+    expected_filenames) if it covers ALL of them and extraction happened, or
+    an empty list if the archive is missing/incomplete -- callers should
+    treat an empty list as a cache miss and fall back to the normal
+    per-file sync, same convention as cache_restore().
+    """
+    ensure_mounted(mount_point)
+    src = os.path.join(drive_cache_dir, archive_name)
+    if not os.path.exists(src):
+        return []
+    with zipfile.ZipFile(src) as zf:
+        available = set(zf.namelist())
+        if not set(expected_filenames).issubset(available):
+            return []
+        os.makedirs(local_dir, exist_ok=True)
+        zf.extractall(local_dir, members=expected_filenames)
+    return list(expected_filenames)
