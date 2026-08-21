@@ -250,3 +250,181 @@ def restore_raw_archive(local_dir, expected_filenames, drive_cache_dir, archive_
         os.makedirs(local_dir, exist_ok=True)
         zf.extractall(local_dir, members=expected_filenames)
     return list(expected_filenames)
+
+
+# ---------------------------------------------------------------------------
+# Drive-API fast path: everything above reads/writes through drive.mount()'s
+# FUSE-mounted filesystem, which has real per-read/per-write overhead for
+# large sequential I/O separate from the "many small files" problem the
+# archive functions above already solve -- widely reported for Colab
+# specifically. These functions use the Drive API directly instead
+# (google.colab.auth + googleapiclient, both preinstalled in Colab), which
+# streams the file over HTTP rather than through the mount. Stays private:
+# authenticates as whichever Google account is already logged into the
+# Colab session, no link-sharing needed (a plain public-link+gdown
+# download was tried early in this project for the shared "2. Datos"
+# folder and returned HTTP 401, since it isn't publicly shared -- see the
+# module docstring; the API path works the same way regardless of sharing
+# settings, using the account's own permissions instead).
+#
+# UNVERIFIED beyond code review: there is no Google Drive access from
+# outside Colab to test any of this against -- confirm the actual speedup,
+# and that it works at all in a given Colab environment, there. Every
+# function below falls back to the already-verified mount-based read/write
+# above on any failure (missing library, auth issue, folder not found,
+# quota, etc.), so this can only add speed, never remove functionality.
+# ---------------------------------------------------------------------------
+
+def _mounted_to_api_path(drive_dir, mount_point=DEFAULT_MOUNT):
+    """Convert a '/content/drive/MyDrive/a/b' mounted path to 'a/b' for the API.
+
+    Accepts an already-relative path unchanged, so callers can pass either
+    style. Path components are matched against Drive folder names via the
+    API, starting from the account's own Drive root -- unrelated to how the
+    path looks on the mounted filesystem, just a convenient shared way to
+    name the same location that the rest of this module already uses.
+
+    Deliberately POSIX-only (hardcoded "/", not os.path.join/os.sep): the
+    mounted path is always a Colab (Linux) path regardless of what platform
+    this function itself runs on, e.g. under a local test on Windows.
+    """
+    prefix = mount_point.rstrip("/") + "/MyDrive/"
+    if drive_dir.startswith(prefix):
+        drive_dir = drive_dir[len(prefix):]
+    return drive_dir.strip("/")
+
+
+def _drive_api_service():
+    from google.colab import auth
+    from googleapiclient.discovery import build
+
+    auth.authenticate_user()
+    return build("drive", "v3")
+
+
+def _resolve_folder_id(service, api_path, create=False):
+    """Walk 'a/b/c' one component at a time from the account's Drive root.
+
+    With create=False (read path): returns None as soon as a component
+    isn't found -- the caller should treat that as "nothing cached yet",
+    not an error. With create=True (write path): creates any missing
+    component so the destination always exists.
+    """
+    parent = "root"
+    for part in [p for p in api_path.split("/") if p]:
+        query = f"'{parent}' in parents and name = '{part}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false"
+        found = service.files().list(q=query, fields="files(id)").execute().get("files", [])
+        if found:
+            parent = found[0]["id"]
+        elif create:
+            meta = {"name": part, "mimeType": "application/vnd.google-apps.folder", "parents": [parent]}
+            parent = service.files().create(body=meta, fields="id").execute()["id"]
+        else:
+            return None
+    return parent
+
+
+def download_via_api(drive_dir, filename, dest_path):
+    """Download filename from a Drive folder via the API. Returns True if
+    downloaded, False if the folder or file wasn't found (a normal cache
+    miss, not an error -- raises only on an actual API/auth failure, which
+    callers should treat as "try the mount-based path instead").
+    """
+    from googleapiclient.http import MediaIoBaseDownload
+
+    service = _drive_api_service()
+    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir))
+    if folder_id is None:
+        return False
+
+    query = f"'{folder_id}' in parents and name = '{filename}' and trashed = false"
+    found = service.files().list(q=query, fields="files(id)").execute().get("files", [])
+    if not found:
+        return False
+
+    request = service.files().get_media(fileId=found[0]["id"])
+    with open(dest_path, "wb") as f:
+        downloader = MediaIoBaseDownload(f, request, chunksize=100 * 1024 * 1024)
+        done = False
+        while not done:
+            _, done = downloader.next_chunk()
+    return True
+
+
+def upload_via_api(local_path, drive_dir, filename=None):
+    """Upload local_path to a Drive folder via the API, creating the folder
+    path if needed. Replaces (deletes then re-creates) any existing file of
+    the same name rather than leaving duplicate copies. Returns the
+    uploaded file's Drive ID.
+    """
+    from googleapiclient.http import MediaFileUpload
+
+    service = _drive_api_service()
+    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir), create=True)
+    filename = filename or os.path.basename(local_path)
+
+    query = f"'{folder_id}' in parents and name = '{filename}' and trashed = false"
+    for existing in service.files().list(q=query, fields="files(id)").execute().get("files", []):
+        service.files().delete(fileId=existing["id"]).execute()
+
+    media = MediaFileUpload(local_path, resumable=True, chunksize=100 * 1024 * 1024)
+    request = service.files().create(body={"name": filename, "parents": [folder_id]}, media_body=media, fields="id")
+    response = None
+    while response is None:
+        _, response = request.next_chunk()
+    return response.get("id")
+
+
+def restore_raw_archive_fast(local_dir, expected_filenames, drive_cache_dir, archive_name="era5_completos.zip",
+                              staging_dir="/content/_drive_api_staging", mount_point=DEFAULT_MOUNT):
+    """Same contract as restore_raw_archive() (empty list = miss), tries the
+    Drive-API download first and falls back to the mount-based read for
+    anything the API path doesn't resolve cleanly -- an API failure, the
+    folder/file not found, or an incomplete archive.
+    """
+    try:
+        os.makedirs(staging_dir, exist_ok=True)
+        staged_path = os.path.join(staging_dir, archive_name)
+        try:
+            if download_via_api(drive_cache_dir, archive_name, staged_path):
+                with zipfile.ZipFile(staged_path) as zf:
+                    available = set(zf.namelist())
+                    if set(expected_filenames).issubset(available):
+                        os.makedirs(local_dir, exist_ok=True)
+                        zf.extractall(local_dir, members=expected_filenames)
+                        return list(expected_filenames)
+        finally:
+            if os.path.exists(staged_path):
+                os.remove(staged_path)
+    except Exception as e:
+        print(f"  (Drive-API download failed ({e}) -- falling back to mounted read)")
+    return restore_raw_archive(local_dir, expected_filenames, drive_cache_dir, archive_name, mount_point)
+
+
+def archive_and_cache_raw_fast(local_dir, filenames, drive_cache_dir, archive_name="era5_completos.zip", mount_point=DEFAULT_MOUNT):
+    """Same contract as archive_and_cache_raw() (returns the archive's
+    destination identifier, or None if nothing to archive), but uploads via
+    the Drive API instead of shutil.copy through the mount. Still builds the
+    zip locally first (same reasoning as archive_and_cache_raw -- local disk
+    has no per-file mount overhead), only the upload step differs. Falls
+    back to the mount-based upload on any API failure.
+    """
+    ensure_mounted(mount_point)
+    present = [name for name in filenames if os.path.exists(os.path.join(local_dir, name))]
+    if not present:
+        return None
+    local_archive = os.path.join(local_dir, archive_name)
+    with zipfile.ZipFile(local_archive, "w", zipfile.ZIP_STORED) as zf:
+        for name in present:
+            zf.write(os.path.join(local_dir, name), arcname=name)
+    try:
+        file_id = upload_via_api(local_archive, drive_cache_dir, archive_name)
+        os.remove(local_archive)
+        return file_id
+    except Exception as e:
+        print(f"  (Drive-API upload failed ({e}) -- falling back to mounted write)")
+        os.makedirs(drive_cache_dir, exist_ok=True)
+        dst = os.path.join(drive_cache_dir, archive_name)
+        shutil.copy(local_archive, dst)
+        os.remove(local_archive)
+        return dst
