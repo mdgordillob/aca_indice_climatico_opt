@@ -25,6 +25,30 @@ def get_cached_percentiles(percentile_file, month):
         _percentiles_cache[cache_key] = percentiles_data
     return _percentiles_cache[cache_key]
 
+_clipped_percentiles_cache = {}
+
+def get_cached_clipped_percentiles(percentile_file, month, shapefile_path):
+    """Load and cache percentiles for a month, already clipped to shapefile_path.
+
+    calcular_anomalias() used to re-clip the (already-cached) unclipped
+    percentiles to the same shapefile on every single call -- measured at
+    ~1.2-1.3s per call, ~90% of calcular_anomalias()'s own runtime -- even
+    though the clipped result for a given (percentile_file, month,
+    shapefile_path) never changes. Wasteful specifically across the years a
+    single multiprocessing worker handles for the same region (Colab
+    notebook's Stage 3): each of those calls re-did an identical clip.
+    Cached here the same way get_cached_percentiles() already caches the
+    unclipped load.
+    """
+    cache_key = (percentile_file, month, shapefile_path)
+    if cache_key not in _clipped_percentiles_cache:
+        percentiles_data = get_cached_percentiles(percentile_file, month)
+        shape = get_cached_shapefile(shapefile_path)
+        percentiles_data = percentiles_data.rio.write_crs("EPSG:4326", inplace=True)
+        percentiles_data = percentiles_data.rio.clip(shape.geometry, shape.crs, drop=True)
+        _clipped_percentiles_cache[cache_key] = percentiles_data
+    return _clipped_percentiles_cache[cache_key]
+
 def load_percentiles(percentile_file, month, shapefile_path=None):
     """Load and optionally clip percentiles for a specific month. Exportable function for other modules."""
     percentiles_data = get_cached_percentiles(percentile_file, month)
@@ -100,23 +124,18 @@ def calcular_anomalias(archivo_percentiles, grid_data_monthly, year, month, sali
     # Use pre-loaded monthly data
     daily_max, daily_min = resample_to_daily(grid_data_monthly)
 
-    # Load percentiles from cache
-    month_percentiles = get_cached_percentiles(archivo_percentiles, month)
-    
+    # Load percentiles from cache -- already clipped-and-cached if a shapefile
+    # is given, instead of re-clipping on every call (see
+    # get_cached_clipped_percentiles()'s docstring for why that mattered).
+    if shapefile_path:
+        month_percentiles = get_cached_clipped_percentiles(archivo_percentiles, month, shapefile_path)
+    else:
+        month_percentiles = get_cached_percentiles(archivo_percentiles, month)
+
     percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
     percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
     percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
     percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
-
-    # Clip percentiles if shapefile provided
-    if shapefile_path:
-        shape = get_cached_shapefile(shapefile_path)
-        month_percentiles = month_percentiles.rio.write_crs("EPSG:4326", inplace=True)
-        month_percentiles = month_percentiles.rio.clip(shape.geometry, shape.crs, drop=True)
-        percentile_10_max = month_percentiles['percentiles_max'].sel(quantile=0.1)
-        percentile_90_max = month_percentiles['percentiles_max'].sel(quantile=0.9)
-        percentile_10_min = month_percentiles['percentiles_min'].sel(quantile=0.1)
-        percentile_90_min = month_percentiles['percentiles_min'].sel(quantile=0.9)
 
     # Temperature comparisons (only calculate once)
     # NOTE: xr.where(...).where(notnull) instead of .astype(int) -- the shapefile

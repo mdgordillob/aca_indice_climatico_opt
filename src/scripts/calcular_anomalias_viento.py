@@ -12,6 +12,7 @@ from calcular_anomalias_temperatura import (
     get_available_years,
     get_cached_shapefile,
     get_cached_percentiles,
+    get_cached_clipped_percentiles,
     load_percentiles,
     load_grid_data,
     load_annual_grid_data,
@@ -97,18 +98,16 @@ def calcular_anomalias_viento(archivo_percentiles, grid_data_monthly, year, mont
     # Calculate wind power from pre-loaded monthly wind speed data
     wind_power = compute_wind_power(grid_data_monthly["wind_speed"])
     
-    # Load percentiles from cache
-    month_percentiles = get_cached_percentiles(archivo_percentiles, month)
-    
+    # Load percentiles from cache -- already clipped-and-cached if a shapefile
+    # is given, instead of re-clipping on every call (see
+    # get_cached_clipped_percentiles()'s docstring for why that mattered).
+    if shapefile_path:
+        month_percentiles = get_cached_clipped_percentiles(archivo_percentiles, month, shapefile_path)
+    else:
+        month_percentiles = get_cached_percentiles(archivo_percentiles, month)
+
     # Extract threshold (90th percentile of wind power)
     percentile_90_power = month_percentiles['threshold']
-    
-    # Clip percentiles if shapefile provided
-    if shapefile_path:
-        shape = get_cached_shapefile(shapefile_path)
-        month_percentiles = month_percentiles.rio.write_crs("EPSG:4326", inplace=True)
-        month_percentiles = month_percentiles.rio.clip(shape.geometry, shape.crs, drop=True)
-        percentile_90_power = month_percentiles['threshold']
     
     # Compute daily occurrences above threshold (preserves time dimension)
     count_above = compute_occurrences(wind_power, percentile_90_power)
