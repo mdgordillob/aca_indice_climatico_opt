@@ -58,6 +58,32 @@ import os
 import shutil
 import zipfile
 
+
+def _progress(label, done, total, unit="MB"):
+    """Print a single updating progress line (\\r, no newline) -- call once
+    per chunk/item, then print() a bare newline when done. Every long
+    transfer in this module uses this so a large file in progress looks
+    different from a hung cell, instead of going silent until it finishes.
+    """
+    pct = 100 * done / total if total else 100
+    print(f"\r  {label}: {pct:5.1f}% ({done:.0f}/{total:.0f} {unit})", end="", flush=True)
+
+
+def _copy_with_progress(src, dst, label, chunk_size=64 * 1024 * 1024):
+    """shutil.copy, but prints a progress line -- shutil.copy itself gives
+    no feedback until an entire multi-GB file is done."""
+    total = os.path.getsize(src) / 1e6
+    copied = 0.0
+    with open(src, "rb") as fsrc, open(dst, "wb") as fdst:
+        while True:
+            chunk = fsrc.read(chunk_size)
+            if not chunk:
+                break
+            fdst.write(chunk)
+            copied += len(chunk) / 1e6
+            _progress(label, copied, total)
+    print()
+
 DEFAULT_MOUNT = "/content/drive"
 
 # Drive subfolder (relative to drive_root) -> local path (relative to repo_root).
@@ -165,11 +191,15 @@ def cache_restore(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOU
         return []
     os.makedirs(local_dir, exist_ok=True)
     restored = []
-    for name in filenames:
+    for i, name in enumerate(filenames, 1):
         src = os.path.join(drive_cache_dir, name)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(local_dir, name))
             restored.append(name)
+        if len(filenames) > 1:
+            _progress(f"restoring from {os.path.basename(drive_cache_dir)}", i, len(filenames), unit="files")
+    if len(filenames) > 1:
+        print()
     return restored
 
 
@@ -183,11 +213,15 @@ def cache_upload(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUN
     ensure_mounted(mount_point)
     os.makedirs(drive_cache_dir, exist_ok=True)
     uploaded = []
-    for name in filenames:
+    for i, name in enumerate(filenames, 1):
         src = os.path.join(local_dir, name)
         if os.path.exists(src):
             shutil.copy(src, os.path.join(drive_cache_dir, name))
             uploaded.append(name)
+        if len(filenames) > 1:
+            _progress(f"caching to {os.path.basename(drive_cache_dir)}", i, len(filenames), unit="files")
+    if len(filenames) > 1:
+        print()
     return uploaded
 
 
@@ -220,10 +254,12 @@ def archive_and_cache_raw(local_dir, filenames, drive_cache_dir, archive_name="e
     os.makedirs(drive_cache_dir, exist_ok=True)
     local_archive = os.path.join(local_dir, archive_name)
     with zipfile.ZipFile(local_archive, "w", zipfile.ZIP_STORED) as zf:
-        for name in present:
+        for i, name in enumerate(present, 1):
             zf.write(os.path.join(local_dir, name), arcname=name)
+            _progress(f"zipping {archive_name}", i, len(present), unit="files")
+    print()
     dst = os.path.join(drive_cache_dir, archive_name)
-    shutil.copy(local_archive, dst)
+    _copy_with_progress(local_archive, dst, f"uploading {archive_name} (mounted)")
     os.remove(local_archive)  # don't leave a duplicate multi-GB file locally
     return dst
 
@@ -244,11 +280,16 @@ def restore_raw_archive(local_dir, expected_filenames, drive_cache_dir, archive_
     if not os.path.exists(src):
         return []
     with zipfile.ZipFile(src) as zf:
+        # metadata only (reads the central directory, not file bodies) -- cheap
+        # even over the mount, so check completeness before touching any bytes
         available = set(zf.namelist())
         if not set(expected_filenames).issubset(available):
             return []
         os.makedirs(local_dir, exist_ok=True)
-        zf.extractall(local_dir, members=expected_filenames)
+        for i, name in enumerate(expected_filenames, 1):
+            zf.extract(name, local_dir)
+            _progress(f"extracting {archive_name}", i, len(expected_filenames), unit="files")
+    print()
     return list(expected_filenames)
 
 
@@ -338,16 +379,20 @@ def download_via_api(drive_dir, filename, dest_path):
         return False
 
     query = f"'{folder_id}' in parents and name = '{filename}' and trashed = false"
-    found = service.files().list(q=query, fields="files(id)").execute().get("files", [])
+    found = service.files().list(q=query, fields="files(id, size)").execute().get("files", [])
     if not found:
         return False
+    size_mb = int(found[0].get("size") or 0) / 1e6
 
     request = service.files().get_media(fileId=found[0]["id"])
     with open(dest_path, "wb") as f:
         downloader = MediaIoBaseDownload(f, request, chunksize=100 * 1024 * 1024)
         done = False
         while not done:
-            _, done = downloader.next_chunk()
+            status, done = downloader.next_chunk()
+            if status:
+                _progress(f"downloading {filename} (API)", status.progress() * size_mb, size_mb)
+    print()
     return True
 
 
@@ -367,11 +412,15 @@ def upload_via_api(local_path, drive_dir, filename=None):
     for existing in service.files().list(q=query, fields="files(id)").execute().get("files", []):
         service.files().delete(fileId=existing["id"]).execute()
 
+    size_mb = os.path.getsize(local_path) / 1e6
     media = MediaFileUpload(local_path, resumable=True, chunksize=100 * 1024 * 1024)
     request = service.files().create(body={"name": filename, "parents": [folder_id]}, media_body=media, fields="id")
     response = None
     while response is None:
-        _, response = request.next_chunk()
+        status, response = request.next_chunk()
+        if status:
+            _progress(f"uploading {filename} (API)", status.progress() * size_mb, size_mb)
+    print()
     return response.get("id")
 
 
@@ -391,7 +440,10 @@ def restore_raw_archive_fast(local_dir, expected_filenames, drive_cache_dir, arc
                     available = set(zf.namelist())
                     if set(expected_filenames).issubset(available):
                         os.makedirs(local_dir, exist_ok=True)
-                        zf.extractall(local_dir, members=expected_filenames)
+                        for i, name in enumerate(expected_filenames, 1):
+                            zf.extract(name, local_dir)
+                            _progress(f"extracting {archive_name}", i, len(expected_filenames), unit="files")
+                        print()
                         return list(expected_filenames)
         finally:
             if os.path.exists(staged_path):
@@ -415,8 +467,10 @@ def archive_and_cache_raw_fast(local_dir, filenames, drive_cache_dir, archive_na
         return None
     local_archive = os.path.join(local_dir, archive_name)
     with zipfile.ZipFile(local_archive, "w", zipfile.ZIP_STORED) as zf:
-        for name in present:
+        for i, name in enumerate(present, 1):
             zf.write(os.path.join(local_dir, name), arcname=name)
+            _progress(f"zipping {archive_name}", i, len(present), unit="files")
+    print()
     try:
         file_id = upload_via_api(local_archive, drive_cache_dir, archive_name)
         os.remove(local_archive)
@@ -425,6 +479,6 @@ def archive_and_cache_raw_fast(local_dir, filenames, drive_cache_dir, archive_na
         print(f"  (Drive-API upload failed ({e}) -- falling back to mounted write)")
         os.makedirs(drive_cache_dir, exist_ok=True)
         dst = os.path.join(drive_cache_dir, archive_name)
-        shutil.copy(local_archive, dst)
+        _copy_with_progress(local_archive, dst, f"uploading {archive_name} (mounted)")
         os.remove(local_archive)
         return dst
