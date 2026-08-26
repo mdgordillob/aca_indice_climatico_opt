@@ -365,18 +365,10 @@ def _resolve_folder_id(service, api_path, create=False):
     return parent
 
 
-def download_via_api(drive_dir, filename, dest_path):
-    """Download filename from a Drive folder via the API. Returns True if
-    downloaded, False if the folder or file wasn't found (a normal cache
-    miss, not an error -- raises only on an actual API/auth failure, which
-    callers should treat as "try the mount-based path instead").
-    """
+def _download_file_by_id(service, folder_id, filename, dest_path):
+    """Download filename from an ALREADY-RESOLVED Drive folder. Returns True
+    if downloaded, False if not found in that folder (a normal miss)."""
     from googleapiclient.http import MediaIoBaseDownload
-
-    service = _drive_api_service()
-    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir))
-    if folder_id is None:
-        return False
 
     query = f"'{folder_id}' in parents and name = '{filename}' and trashed = false"
     found = service.files().list(q=query, fields="files(id, size)").execute().get("files", [])
@@ -396,17 +388,11 @@ def download_via_api(drive_dir, filename, dest_path):
     return True
 
 
-def upload_via_api(local_path, drive_dir, filename=None):
-    """Upload local_path to a Drive folder via the API, creating the folder
-    path if needed. Replaces (deletes then re-creates) any existing file of
-    the same name rather than leaving duplicate copies. Returns the
-    uploaded file's Drive ID.
-    """
+def _upload_file_to_folder(service, folder_id, local_path, filename):
+    """Upload local_path into an ALREADY-RESOLVED Drive folder. Replaces
+    (deletes then re-creates) any existing file of the same name rather than
+    leaving duplicate copies. Returns the uploaded file's Drive ID."""
     from googleapiclient.http import MediaFileUpload
-
-    service = _drive_api_service()
-    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir), create=True)
-    filename = filename or os.path.basename(local_path)
 
     query = f"'{folder_id}' in parents and name = '{filename}' and trashed = false"
     for existing in service.files().list(q=query, fields="files(id)").execute().get("files", []):
@@ -422,6 +408,34 @@ def upload_via_api(local_path, drive_dir, filename=None):
             _progress(f"uploading {filename} (API)", status.progress() * size_mb, size_mb)
     print()
     return response.get("id")
+
+
+def download_via_api(drive_dir, filename, dest_path):
+    """Single-file convenience wrapper -- resolves the folder on this call.
+    For many files from the same folder, resolve once and call
+    _download_file_by_id() directly instead (see cache_restore_fast()) --
+    otherwise every file pays its own folder-resolution round-trips.
+    Returns True if downloaded, False if the folder or file wasn't found (a
+    normal cache miss, not an error -- raises only on an actual API/auth
+    failure, which callers should treat as "try the mount-based path instead").
+    """
+    service = _drive_api_service()
+    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir))
+    if folder_id is None:
+        return False
+    return _download_file_by_id(service, folder_id, filename, dest_path)
+
+
+def upload_via_api(local_path, drive_dir, filename=None):
+    """Single-file convenience wrapper -- resolves the folder on this call
+    (see download_via_api()'s docstring; same reasoning for many-file
+    callers). Upload local_path to a Drive folder via the API, creating the
+    folder path if needed. Returns the uploaded file's Drive ID.
+    """
+    service = _drive_api_service()
+    folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_dir), create=True)
+    filename = filename or os.path.basename(local_path)
+    return _upload_file_to_folder(service, folder_id, local_path, filename)
 
 
 def restore_raw_archive_fast(local_dir, expected_filenames, drive_cache_dir, archive_name="era5_completos.zip",
@@ -482,3 +496,65 @@ def archive_and_cache_raw_fast(local_dir, filenames, drive_cache_dir, archive_na
         _copy_with_progress(local_archive, dst, f"uploading {archive_name} (mounted)")
         os.remove(local_archive)
         return dst
+
+
+# ---------------------------------------------------------------------------
+# cache_restore()/cache_upload() never got the API treatment above -- they
+# still copy one file at a time through the FUSE mount, which is exactly the
+# many-small-files-over-a-mount problem the archive functions solved,
+# just recurring here for the baseline (8 files) and decoded_hourly (up to
+# 128 files) caches. Naively calling download_via_api()/upload_via_api() per
+# file would re-resolve the same Drive folder on every single file (each
+# resolution itself walking the folder path via its own API round-trips) --
+# these resolve the folder ONCE and reuse it for every file in the batch.
+# ---------------------------------------------------------------------------
+
+def cache_restore_fast(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUNT):
+    """Same contract as cache_restore() (partial/empty list = miss for those
+    files), resolving the Drive folder once via the API and transferring
+    each file through it. Falls back to cache_restore()'s mount-based
+    per-file copy on any API failure (missing library, auth issue, folder
+    not found).
+    """
+    try:
+        service = _drive_api_service()
+        folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_cache_dir))
+        if folder_id is None:
+            raise RuntimeError(f"Drive folder not found via API: {drive_cache_dir}")
+        os.makedirs(local_dir, exist_ok=True)
+        restored = []
+        for i, name in enumerate(filenames, 1):
+            if _download_file_by_id(service, folder_id, name, os.path.join(local_dir, name)):
+                restored.append(name)
+            if len(filenames) > 1:
+                _progress(f"restoring from {os.path.basename(drive_cache_dir)} (API)", i, len(filenames), unit="files")
+        if len(filenames) > 1:
+            print()
+        return restored
+    except Exception as e:
+        print(f"  (Drive-API restore failed ({e}) -- falling back to mounted read)")
+        return cache_restore(local_dir, filenames, drive_cache_dir, mount_point)
+
+
+def cache_upload_fast(local_dir, filenames, drive_cache_dir, mount_point=DEFAULT_MOUNT):
+    """Same contract as cache_upload(), resolving the Drive folder once via
+    the API and transferring each file through it. Falls back to
+    cache_upload()'s mount-based per-file copy on any API failure.
+    """
+    try:
+        service = _drive_api_service()
+        folder_id = _resolve_folder_id(service, _mounted_to_api_path(drive_cache_dir), create=True)
+        uploaded = []
+        for i, name in enumerate(filenames, 1):
+            src = os.path.join(local_dir, name)
+            if os.path.exists(src):
+                _upload_file_to_folder(service, folder_id, src, name)
+                uploaded.append(name)
+            if len(filenames) > 1:
+                _progress(f"caching to {os.path.basename(drive_cache_dir)} (API)", i, len(filenames), unit="files")
+        if len(filenames) > 1:
+            print()
+        return uploaded
+    except Exception as e:
+        print(f"  (Drive-API upload failed ({e}) -- falling back to mounted write)")
+        return cache_upload(local_dir, filenames, drive_cache_dir, mount_point)
